@@ -1,62 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speculative Antennology Web</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 3rem 2rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: 2rem;
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        
-        p {
-            color: #666;
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        
-        .highlight {
-            color: #764ba2;
-            font-weight: 600;
-        }
-        
-        .subtitle {
-            font-size: 1rem;
-            color: #888;
-            font-style: italic;
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Speculative Antennology — Exposition</title>
+<link rel="stylesheet" href="styles/exposition.css?v=3"/>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  window.THREE = THREE;
+  window.SA_GLTFLoader = GLTFLoader;
+  window.dispatchEvent(new Event('three-ready'));
+</script>
+
+<script src="data/archive.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Hello World!</h1>
-        <p>Welcome to <span class="highlight">Speculative Antennology Web</span></p>
-        <p class="subtitle">Exploring the fascinating world of speculative antenna designs</p>
-    </div>
+<body data-density="regular" data-grid="1" data-numbering="arabic">
+<div id="root"></div>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="scripts/viewer.jsx"></script>
+<script type="text/babel" src="scripts/app.jsx"></script>
+<script type="text/babel">
+  function boot(){
+    const v = new URLSearchParams(location.search).get('v');
+    if (v === 'b') document.body.classList.add('var-b');
+    if (v === 'c') document.body.classList.add('var-c');
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<SA_App/>);
+  }
+  if (window.THREE && window.SA_GLTFLoader) boot();
+  else window.addEventListener('three-ready', boot, { once:true });
+</script>
 </body>
 </html>

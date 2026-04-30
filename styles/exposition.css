@@ -1,0 +1,550 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   SPECULATIVE ANTENNOLOGY — rhizomatic exposition
+   A pannable 2D field. Not paginated, not sequenced. Islands of text, plates,
+   archive fragments and specimens drift across an unbounded plane; thin ink
+   threads connect them by association. Strict black-and-white.
+───────────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --ink:#000;
+  --paper:#fff;
+  --muted:#555;
+  --dim:#888;
+  --faint:#bbb;
+  --gridline: color-mix(in srgb, #000 5%, transparent);
+
+  --f-grot:  "Neue Haas Grotesk Display Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --f-body:  "Neue Haas Grotesk Text Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --f-serif: "Times New Roman", Times, serif;
+  --f-mono:  "Courier New", "Courier", ui-monospace, monospace;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+  overflow:hidden; width:100%; height:100%;
+  font-family:var(--f-body); font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── ambient chrome ─────────────────────────────────────────────────────── */
+.chrome{
+  position:fixed; inset:0; pointer-events:none; z-index:1000;
+  color:var(--ink); font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.12em; text-transform:uppercase;
+}
+.chrome .tl,.chrome .tr,.chrome .bl,.chrome .br,.chrome .tc{
+  position:absolute; padding: .75rem 1rem; mix-blend-mode:difference; color:#fff;
+}
+.chrome .tl{top:0; left:0}
+.chrome .tr{top:0; right:0; text-align:right}
+.chrome .bl{bottom:0; left:0}
+.chrome .br{bottom:0; right:0; text-align:right; pointer-events:auto}
+.chrome .tc{top:0; left:50%; transform:translateX(-50%); text-align:center}
+
+.chrome .crop{ position:absolute; background:#000; }
+.chrome .crop.t{ top:0; height:1px; }
+.chrome .crop.b{ bottom:0; height:1px; }
+.chrome .crop.l{ left:0; width:1px; }
+.chrome .crop.r{ right:0; width:1px; }
+
+.chrome .compass{
+  position:absolute; right: 1rem; bottom: 1rem;
+  width: 90px; height: 90px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  pointer-events:auto;
+  font-family: var(--f-mono); font-size:9px;
+}
+.chrome .compass .vp{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(#0001 1px, transparent 1px) 0 0/ 12.857% 12.857%,
+    linear-gradient(90deg, #0001 1px, transparent 1px) 0 0/ 12.857% 12.857%;
+}
+.chrome .compass .here{
+  position:absolute; width:10px; height:10px; border:1px solid var(--ink); background:var(--paper);
+  transform: translate(-50%,-50%);
+}
+.chrome .compass .lbl{ position:absolute; bottom:-14px; right:0; text-transform:uppercase; letter-spacing:.1em }
+
+.chrome .legend{
+  position:absolute; left:1rem; bottom:1rem;
+  pointer-events:auto;
+  font-family:var(--f-mono); font-size:10px; line-height:1.45;
+  color:var(--ink);
+}
+.chrome .legend .row{display:flex; gap:.5rem; align-items:center}
+.chrome .legend .sw{width:18px; height:1px; background:var(--ink)}
+.chrome .legend .sw.d{background: transparent; border-top:1px dashed var(--ink); height:0}
+.chrome .legend .sw.t{height:3px; background:var(--ink)}
+
+.chrome .jumpmenu{
+  position:absolute; top:1rem; right:1rem;
+  pointer-events:auto;
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.12em; text-transform:uppercase;
+  background: var(--paper); border:1px solid var(--ink);
+  padding:.4rem .5rem;
+  display:flex; flex-direction:column; gap:.15rem;
+  max-width: 220px;
+}
+.chrome .jumpmenu .t{ color:var(--muted); margin-bottom:.25rem }
+.chrome .jumpmenu button{
+  font:inherit; letter-spacing:.1em; text-transform:uppercase;
+  background:transparent; border:0; text-align:left; padding:.15rem .25rem;
+  color:var(--ink); cursor:pointer; white-space:nowrap;
+}
+.chrome .jumpmenu button:hover{ background: var(--ink); color:var(--paper) }
+
+.chrome .help{
+  position:absolute; left:50%; bottom: 1rem; transform:translateX(-50%);
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted);
+}
+.chrome .help kbd{
+  display:inline-block; padding: 0 .35em; margin: 0 .1em;
+  border:1px solid var(--ink); background:var(--paper); color:var(--ink);
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.05em;
+}
+
+/* ── viewport (pan surface) ─────────────────────────────────────────────── */
+.viewport{
+  position:absolute; inset:0;
+  overflow:hidden;
+  cursor: grab;
+  background: var(--paper);
+}
+.viewport.panning{ cursor: grabbing }
+.viewport .world{
+  position:absolute; left:0; top:0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.viewport .bg-grid{
+  position:absolute; left:-20000px; top:-20000px;
+  width: 40000px; height: 40000px;
+  background-image:
+    linear-gradient(to right, var(--gridline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--gridline) 1px, transparent 1px);
+  background-size: 200px 200px, 200px 200px;
+  pointer-events:none;
+}
+.viewport .bg-axes{
+  position:absolute; left:-20000px; top:-20000px;
+  width:40000px; height:40000px;
+  pointer-events:none;
+}
+.viewport .bg-axes::before,
+.viewport .bg-axes::after{
+  content:""; position:absolute; background:#0001;
+}
+.viewport .bg-axes::before{ left:0; right:0; top:20000px; height:1px }
+.viewport .bg-axes::after { top:0; bottom:0; left:20000px; width:1px }
+
+/* ── svg thread layer ───────────────────────────────────────────────────── */
+.threads{
+  position:absolute; left:-20000px; top:-20000px;
+  width:40000px; height:40000px;
+  pointer-events:none;
+}
+.threads path{ fill:none; stroke:var(--ink); stroke-width:1 }
+.threads path.d{ stroke-dasharray: 4 4 }
+.threads path.dd{ stroke-dasharray: 1 3 }
+.threads path.t{ stroke-width: 2 }
+.threads text{
+  font-family: var(--f-mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; fill: var(--ink);
+}
+.threads .edge-label-bg{ fill: var(--paper); }
+
+/* ── islands (generic card) ─────────────────────────────────────────────── */
+.island{
+  position:absolute;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+}
+.island.bordered{ border: 1px solid var(--ink); }
+.island.double{ box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--ink); border:0; }
+.island.thick{ border: 3px solid var(--ink); }
+.island .hdr{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding: .45rem .6rem;
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing:.14em; text-transform:uppercase;
+  color: var(--ink);
+  background: var(--paper);
+}
+.island .hdr .id{ color: var(--muted) }
+.island .body{ padding: .8rem .9rem 1rem; }
+.island .body p{ margin: 0 0 .75em }
+.island .body p:last-child{ margin-bottom:0 }
+
+/* type flavours */
+.island.title h1{
+  margin:0;
+  font-family: var(--f-grot);
+  font-weight: 500;
+  font-size: 6.5rem;
+  line-height:.92;
+  letter-spacing: -.025em;
+}
+.island.title h1 em{
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing:-.01em;
+}
+.island.title .sub{
+  margin-top: 1.25rem;
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  max-width: 44ch;
+}
+.island.title .auth{
+  margin-top: 2rem;
+  font-family: var(--f-grot);
+  font-size: 13px;
+  letter-spacing:.02em;
+  display:flex; flex-wrap: wrap; gap: .2rem 1.5rem;
+}
+.island.title .auth .aff{ color: var(--muted); font-size: 11px }
+.island.title{ padding: 2rem 2.25rem 2.25rem; border: 6px solid var(--ink); }
+
+/* masthead: top strip */
+.masthead{
+  position: fixed; top:0; left:0; right:0;
+  display:grid; grid-template-columns: 1fr auto 1fr;
+  align-items: baseline; gap: 1rem;
+  padding: .55rem 1rem;
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper);
+  z-index: 900;
+  font-family: var(--f-grot);
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.masthead .centre{ text-align: center }
+.masthead .jar{ text-align:right; font-variant-numeric: tabular-nums }
+
+/* prose island (essay fragment) */
+.island.prose-frag{ width: 460px; padding: 0; }
+.island.prose-frag .body{ padding: 1rem 1.2rem 1.25rem }
+.island.prose-frag .body p{
+  font-family: var(--f-serif); font-size: 14.5px; line-height: 1.5;
+}
+.island.prose-frag .body p.lede{
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 17px; line-height: 1.35;
+}
+.island.prose-frag .body blockquote{
+  margin: 1em 0; padding: .2em 0 .2em 1em;
+  border-left: 3px solid var(--ink);
+  font-style: italic; font-family: var(--f-serif);
+}
+.island.prose-frag .body blockquote footer{
+  margin-top:.3em; font-style: normal; font-family: var(--f-grot);
+  font-size:10px; letter-spacing:.12em; text-transform:uppercase; color: var(--muted);
+}
+.island.prose-frag .body em{ font-style: italic }
+
+/* pull-quote */
+.island.pullquote{
+  border: 0;
+  padding: 0;
+  width: 520px;
+}
+.island.pullquote blockquote{
+  margin:0; padding:0;
+  font-family: var(--f-serif); font-style: italic;
+  font-size: 2.1rem; line-height: 1.15;
+  letter-spacing:-.01em;
+}
+.island.pullquote cite{
+  display:block;
+  margin-top:.9rem;
+  font-family: var(--f-grot); font-size: 10px;
+  letter-spacing:.18em; text-transform:uppercase;
+  color: var(--muted);
+  font-style: normal;
+}
+
+/* viewer island */
+.island.viewer{
+  padding:0; background: var(--paper);
+  border: 1px solid var(--ink);
+  width: 640px;
+}
+.island.viewer .stage{
+  position:relative;
+  aspect-ratio: 4/3;
+  border-bottom: 1px solid var(--ink);
+  overflow:hidden;
+  background: var(--paper);
+}
+.island.viewer canvas{ display:block; width:100%; height:100%; }
+.island.viewer .controls{
+  display:grid; grid-template-columns: auto 1fr auto; gap:.6rem;
+  align-items: center;
+  padding: .45rem .6rem;
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing:.12em; text-transform: uppercase;
+}
+.island.viewer .controls .spec{ color: var(--ink); font-variant-numeric: tabular-nums }
+.island.viewer .controls .name{
+  font-family: var(--f-serif); font-style: italic; letter-spacing:0; text-transform:none;
+  font-size: 12px; color: var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.island.viewer .controls .buttons{ display:flex; gap:.2rem }
+.island.viewer .controls button{
+  font:inherit; letter-spacing:.12em; text-transform:uppercase;
+  border:1px solid var(--ink); background:var(--paper); color:var(--ink);
+  padding:.25rem .5rem; cursor:pointer;
+}
+.island.viewer .controls button:hover{ background:var(--ink); color:var(--paper) }
+.island.viewer .meta{
+  display:grid; grid-template-columns: repeat(3, 1fr);
+  gap: .1rem .75rem;
+  padding: .5rem .6rem;
+  font-family: var(--f-mono); font-size: 10px;
+  color: var(--ink);
+}
+.island.viewer .meta dt{ color: var(--muted); text-transform:uppercase; letter-spacing:.12em }
+.island.viewer .meta dd{ margin:0; font-variant-numeric: tabular-nums }
+
+/* specimen plate (single archive entry as a loose card) */
+.island.spec{
+  width: 220px;
+  padding: 0;
+  border: 1px solid var(--ink);
+}
+.island.spec .plate{
+  border-bottom: 1px solid var(--ink);
+  aspect-ratio: 5/4;
+  position:relative;
+  background: var(--paper);
+}
+.island.spec .plate svg{ display:block; width:100%; height:100% }
+.island.spec .info{ padding: .5rem .6rem .7rem }
+.island.spec .no{
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing:.14em; text-transform:uppercase;
+  color: var(--muted);
+  display:flex; justify-content: space-between;
+}
+.island.spec h3{
+  margin: .15rem 0 .2rem;
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 13px; line-height:1.2; letter-spacing:-.005em;
+}
+.island.spec dl{
+  margin:0; font-family: var(--f-mono);
+  font-size: 10px;
+  display:grid; grid-template-columns: 4ch 1fr; gap: 0 .4rem;
+}
+.island.spec dl dt{ color: var(--muted); text-transform:uppercase }
+.island.spec dl dd{ margin:0 }
+.island.spec .desc{
+  margin-top:.45rem;
+  font-family: var(--f-serif); font-size: 11.5px; line-height: 1.4;
+}
+
+/* archive constellation (80 specimens loose in the plane — drawn by JS) */
+
+/* field plate (photograph island) */
+.island.field{ padding: 0; border: 1px solid var(--ink); width: 420px; }
+.island.field .fig{
+  border-bottom: 1px solid var(--ink);
+  aspect-ratio: 3/2; overflow: hidden;
+}
+.island.field .fig img{ display:block; width:100%; height:100%; object-fit: cover; filter: grayscale(1) contrast(1.03); }
+.island.field .cap{
+  padding: .55rem .7rem .75rem;
+  font-family: var(--f-grot); font-size: 11px;
+  letter-spacing:.08em; text-transform:uppercase;
+}
+.island.field .cap .no{ color: var(--muted); margin-right:.5rem }
+.island.field .cap .note{
+  display:block; margin-top:.3rem;
+  font-family: var(--f-serif); font-style: italic;
+  text-transform: none; letter-spacing: 0;
+  font-size: 12px; line-height:1.4;
+}
+
+/* glossary fragment */
+.island.gloss{ width: 300px; padding: 0; border: 1px solid var(--ink); }
+.island.gloss .term{
+  border-bottom: 1px solid var(--ink);
+  padding: .5rem .65rem;
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 14px; letter-spacing:-.005em;
+}
+.island.gloss .term::before{
+  content:"gloss. ";
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: .14em; text-transform:uppercase;
+  color: var(--muted); font-weight: 400;
+}
+.island.gloss .def{
+  padding: .55rem .65rem .75rem;
+  font-family: var(--f-serif); font-size: 12.5px; line-height:1.45;
+}
+
+/* marginalia / drifting annotation */
+.island.note{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  max-width: 240px;
+  font-family: var(--f-grot); font-size: 10.5px;
+  letter-spacing:.1em; text-transform: uppercase;
+  line-height:1.45;
+  color: var(--muted);
+}
+.island.note::before{
+  content:"note →";
+  display:block;
+  color: var(--ink);
+  font-family: var(--f-mono);
+  font-size: 10px; letter-spacing:.18em;
+  margin-bottom:.25rem;
+}
+
+/* handwritten-feeling italic caption (drifting phrase) */
+.island.whisper{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  max-width: 340px;
+  font-family: var(--f-serif); font-style: italic;
+  font-size: 1.25rem; line-height: 1.25;
+  color: var(--ink);
+}
+.island.whisper::after{
+  content: "";
+  display:block;
+  width: 32px; height: 1px; background: var(--ink);
+  margin-top: .6rem;
+}
+
+/* bibliography stack */
+.island.bib{ width: 420px; padding:0; border: 1px solid var(--ink); }
+.island.bib ol{
+  margin:0; padding: .6rem .7rem .8rem;
+  list-style:none;
+  display:grid; grid-template-columns: 3ch 1fr; gap: .4rem .6rem;
+  font-family: var(--f-serif);
+  font-size: 12px; line-height:1.4;
+}
+.island.bib ol .n{ font-family: var(--f-mono); color: var(--muted); font-size: 10px; padding-top:.15em; }
+.island.bib ol .e{ border-bottom: 1px dotted var(--faint); padding-bottom:.35rem }
+.island.bib ol .e:last-child{ border-bottom: 0 }
+
+/* method list */
+.island.method{ width: 360px; padding:0; border:1px solid var(--ink); }
+.island.method ul{ margin:0; padding:0; list-style:none }
+.island.method li{
+  border-bottom: 1px solid var(--ink);
+  padding: .55rem .7rem;
+  display:grid; grid-template-columns: 3ch 1fr; gap: 0 .6rem;
+}
+.island.method li:last-child{ border-bottom: 0 }
+.island.method li .n{
+  font-family: var(--f-mono); font-size: 10px; color: var(--muted);
+  padding-top: .2em; letter-spacing: .14em; text-transform:uppercase;
+}
+.island.method li h4{
+  margin: 0 0 .2rem;
+  font-family: var(--f-grot); font-weight: 500; font-size: 13px; letter-spacing:-.005em;
+}
+.island.method li p{
+  margin:0; font-family: var(--f-serif); font-size: 12px; line-height:1.4;
+}
+
+/* colophon */
+.island.colophon{
+  border-top: 6px solid var(--ink);
+  padding: 1rem 1.2rem 1.25rem;
+  width: 480px;
+  background: var(--paper);
+  font-family: var(--f-grot); font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase;
+  line-height: 1.5;
+}
+.island.colophon p{ margin: 0 0 .5rem }
+.island.colophon em{
+  font-family: var(--f-serif); font-style: italic;
+  text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--muted);
+}
+
+/* specimen archive — dense scatter: small thumbs */
+.island.thumb{
+  width: 120px; padding: 0; border: 1px solid var(--ink);
+  background: var(--paper);
+}
+.island.thumb .plate{
+  border-bottom: 1px solid var(--ink);
+  aspect-ratio: 1/1;
+  position: relative;
+}
+.island.thumb .plate svg{ display:block; width:100%; height:100% }
+.island.thumb .info{ padding: .3rem .4rem .4rem }
+.island.thumb .no{
+  font-family: var(--f-mono); font-size: 9.5px; letter-spacing:.14em;
+  color: var(--muted); text-transform:uppercase;
+}
+.island.thumb .nm{
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 10.5px; line-height: 1.15; letter-spacing:-.005em;
+  margin-top: .1rem;
+}
+
+/* cluster header (subtle ground-text like "archive", "essay") */
+.island.cluster-head{
+  background: transparent; border: 0; padding: 0;
+}
+.island.cluster-head .k{
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 11rem; line-height:.85; letter-spacing:-.04em;
+  color: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.island.cluster-head .n{
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: .35rem;
+}
+
+/* hover affordance — specimens */
+.island.spec:hover, .island.thumb:hover, .island.field:hover{
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+/* grid-toggle */
+body[data-grid="0"] .viewport .bg-grid{ opacity: 0; }
+body[data-grid="0"] .chrome .compass .vp{ opacity: .25 }
+
+/* tweaks */
+body[data-density="airy"] .island.prose-frag{ width: 520px }
+body[data-density="compact"] .island.prose-frag{ width: 400px }
+body[data-density="compact"] .island.prose-frag .body p{ font-size: 13px }
+body[data-density="archival"] .island.prose-frag{ width: 340px }
+body[data-density="archival"] .island.prose-frag .body p{ font-size: 12px }
+body[data-density="archival"] .island.thumb{ width: 92px }
+
+body[data-numbering="roman"] .figno .n{ font-variant: small-caps; font-family: var(--f-serif); }
+
+/* mobile: keep it working but reduce */
+@media (max-width: 720px){
+  .chrome .compass{ display:none }
+  .chrome .legend{ display:none }
+  .chrome .jumpmenu{ max-width: 160px }
+  .island.title h1{ font-size: 3.5rem }
+  .island.cluster-head .k{ font-size: 5rem }
+}
