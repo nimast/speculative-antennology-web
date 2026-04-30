@@ -29,41 +29,17 @@ const VIEWER_SPECIMENS = [
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
-// Silhouette placeholder for specimen thumbs
+// Archive photograph plate — cycles through 48 real images
 
 function Plate({ n }){
-  const kind = n % 6;
+  const idx = ((n - 1) % 48).toString().padStart(2, '0');
   return (
-    <svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid meet">
-      {kind===0 && (<g stroke="#000" strokeWidth="1" fill="none">
-        <line x1="50" y1="10" x2="50" y2="70"/>
-        {[18,26,34,42,50,58].map((y,i)=>(<line key={i} x1={50-8-i} y1={y} x2={50+8+i} y2={y}/>))}
-      </g>)}
-      {kind===1 && (<g stroke="#000" strokeWidth="1" fill="none">
-        <circle cx="50" cy="40" r="20"/>
-        <circle cx="50" cy="40" r="28" strokeDasharray="2 3"/>
-        <line x1="50" y1="10" x2="50" y2="70"/>
-      </g>)}
-      {kind===2 && (<g stroke="#000" strokeWidth="1" fill="none">
-        <polygon points="50,12 30,68 70,68"/>
-        <line x1="50" y1="68" x2="50" y2="78"/>
-      </g>)}
-      {kind===3 && (<g stroke="#000" strokeWidth="1" fill="none">
-        {[...Array(10)].map((_,i)=>{ const y = 18 + i*5; const w = 4 + i*3;
-          return <line key={i} x1={50-w} y1={y} x2={50+w} y2={y}/>; })}
-        <line x1="50" y1="14" x2="50" y2="72"/>
-      </g>)}
-      {kind===4 && (<g stroke="#000" strokeWidth="1" fill="none">
-        <rect x="30" y="20" width="40" height="8"/>
-        <rect x="30" y="30" width="40" height="8"/>
-        <rect x="30" y="40" width="40" height="8"/>
-        <line x1="50" y1="48" x2="50" y2="72"/>
-      </g>)}
-      {kind===5 && (<g stroke="#000" strokeWidth="1" fill="none">
-        <path d="M20 40 Q35 10 50 40 T80 40"/>
-        <path d="M20 50 Q35 20 50 50 T80 50" strokeDasharray="1 2"/>
-      </g>)}
-    </svg>
+    <img
+      src={`assets/archive/ant-${idx}.jpg`}
+      alt=""
+      style={{ display:'block', width:'100%', height:'100%', objectFit:'cover',
+               filter:'grayscale(1) contrast(1.05)' }}
+    />
   );
 }
 
