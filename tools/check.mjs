@@ -67,20 +67,43 @@ for (const [a, b] of threads) {
 if (threadFails === 0) ok(`threads: all ${threads.length} edges reference defined islands`);
 
 // ───── 2. archive ↔ notion-mapping ────────────────────────────────────────
+// Tolerates both mapping shapes:
+//   OLD: flat array of { archiveI, ... }                 (1-indexed specimen #)
+//   NEW: { pages: [{ archiveImages: [...], ... }] }      (0-indexed positions
+//        into the archive array; one Notion page may cover multiple specimens)
 
-const mapping    = JSON.parse(fs.readFileSync(path.join(root, 'data/notion-mapping.json'), 'utf8'));
+const mappingRaw = JSON.parse(fs.readFileSync(path.join(root, 'data/notion-mapping.json'), 'utf8'));
+const pages      = Array.isArray(mappingRaw) ? mappingRaw : (mappingRaw.pages || []);
+
+const referencedIs = []; // collected 1-indexed specimen "i" values, with origin for error msgs
+const refsForPage = (p, idx) => {
+  if (typeof p.archiveI === 'number') return [{ i: p.archiveI, origin: `archiveI=${p.archiveI}` }];
+  if (Array.isArray(p.archiveImages)) {
+    return p.archiveImages.map(pos => {
+      const i = archiveIs[pos];
+      return { i, origin: `pages[${idx}].archiveImages[${pos}]${i == null ? ' (out of range)' : ''}` };
+    });
+  }
+  return [];
+};
+
 const archiveSet = new Set(archiveIs);
-const mappedSet  = new Set(mapping.map(m => m.archiveI));
+const mappedSet  = new Set();
 
 let mapFails = 0;
-for (const m of mapping) {
-  if (!archiveSet.has(m.archiveI)) {
-    fail(`notion-mapping row references missing archive specimen: archiveI=${m.archiveI}`);
-    mapFails++;
+pages.forEach((p, idx) => {
+  for (const { i, origin } of refsForPage(p, idx)) {
+    if (i == null || !archiveSet.has(i)) {
+      fail(`notion-mapping references missing archive specimen: ${origin}`);
+      mapFails++;
+    } else {
+      mappedSet.add(i);
+    }
   }
-}
+});
+
 if (mapFails === 0) {
-  ok(`notion-mapping: all ${mapping.length} rows point to real archive specimens`);
+  ok(`notion-mapping: all ${pages.length} entries point to real archive specimens`);
 }
 
 const unmapped = archiveIs.filter(i => !mappedSet.has(i));
