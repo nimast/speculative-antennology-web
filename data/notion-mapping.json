@@ -1,481 +1,747 @@
-[
-  {
-    "antIdx": 0,
-    "archiveI": 1,
-    "nid": "58bc3c60-0f4e-47ab-9831-1d4a979f4b6a",
-    "def": "",
-    "app": ["TV & Radio", "Military"],
-    "era": null,
-    "freq": ["VHF", "L Band"],
-    "type": null,
-    "urls": []
+{
+  "pages": [
+    {
+      "pageId": "58bc3c60-0f4e-47ab-9831-1d4a979f4b6a",
+      "title": "Antenna radar 3d VRRVY| Tiedosoto TAR Finland",
+      "inExposition": true,
+      "archiveImages": [
+        0
+      ],
+      "allImageFilenames": [
+        "1168px-Antenna_radar_3d_VRRVY_Finland"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "TV & Radio",
+          "Military"
+        ],
+        "era": null,
+        "freq": [
+          "VHF",
+          "L Band"
+        ],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "f27179f0-089a-4a21-a1db-d5450ec59639",
+      "title": "Holmdel Horn Antenna | Holmdel, NJ",
+      "inExposition": true,
+      "archiveImages": [
+        1,
+        18,
+        26
+      ],
+      "allImageFilenames": [
+        "Screen_Shot_2022-11-02_at_19.56.32",
+        "1280px-Holmdel_Horn_Antenna",
+        "Horn_Antenna-in_Holmdel_New_Jersey_-_restoration1"
+      ],
+      "properties": {
+        "def": "The Holmdel Horn Antenna, used by Bell Labs researchers, Dr. Robert Wilson and Dr. Arno Penzias, to observe cosmic microwave background radiation and demonstrate the Big Bang theory of cosmology. Consequently, both men won the Nobel Prize for their discoveries.",
+        "app": [
+          "Scientific Research",
+          "Spacecraft"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "UHF",
+          "SHF"
+        ],
+        "type": [
+          "Horn",
+          "Aperture"
+        ],
+        "urls": [
+          "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
+          "https://www.youtube.com/watch?v=U2HAuDnqWME",
+          "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
+        ]
+      }
+    },
+    {
+      "pageId": "de6c2b4a-6b14-402b-9c0c-b70321f87495",
+      "title": "Hoop Column Antenna | Anechoic Chamber at NASA Washington DC",
+      "inExposition": true,
+      "archiveImages": [
+        2
+      ],
+      "allImageFilenames": [
+        "1500px-Hoop_Column_Antenna_-_GPN-2000-001912"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Scientific Research"
+        ],
+        "era": "21st Century",
+        "freq": [
+          "UHF"
+        ],
+        "type": [],
+        "urls": [
+          "https://www.mvg-world.com/en/products/antenna-measurement/anechoic-chambers",
+          "https://www.dvidshub.net/image/730229/hoop-column-antenna"
+        ]
+      }
+    },
+    {
+      "pageId": "d8814d8c-43ca-4297-bd02-2bfeab475150",
+      "title": "US AIR Force satellite antenna (REFORGER '86)",
+      "inExposition": true,
+      "archiveImages": [
+        3
+      ],
+      "allImageFilenames": [
+        "1600px-DF-ST-87-07198"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Military"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "UHF"
+        ],
+        "type": [],
+        "urls": [
+          "https://en.wikipedia.org/wiki/Exercise_Reforger"
+        ]
+      }
+    },
+    {
+      "pageId": "ceff9bbd-2367-4d8c-bf3f-c3d1232acfcd",
+      "title": "Dipoles of GURT radio telescope antenna array | Ukraine",
+      "inExposition": true,
+      "archiveImages": [
+        4
+      ],
+      "allImageFilenames": [
+        "1600px-Dipoles_of_GURT_radio_telescope"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "TV & Radio",
+          "Scientific Research"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "VHF",
+          "HF"
+        ],
+        "type": [],
+        "urls": [
+          "https://en.wikipedia.org/wiki/Giant_Ukrainian_Radio_Telescope"
+        ]
+      }
+    },
+    {
+      "pageId": "ea659021-06df-4130-ad4c-8f6dae841a74",
+      "title": "Duga Antenna | Soviet Russia",
+      "inExposition": true,
+      "archiveImages": [
+        5,
+        8,
+        13,
+        30
+      ],
+      "allImageFilenames": [
+        "190227125458-taken-pixabay2jpg",
+        "Screen_Shot_2022-12-05_at_14.30.56",
+        "3pr6vnv1zr3af5e1dc40e69e8e8c7_IMG_9557",
+        "DUGA_Radar_Array_near_Chernobyl"
+      ],
+      "properties": {
+        "def": "Duga was an over-the-horizon radar (OTH) system used in the Soviet Union as part of its early-warning radar network for missile defense.",
+        "app": [
+          "Military"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": [
+          "https://en.wikipedia.org/wiki/Duga_radar",
+          "https://www.youtube.com/watch?v=CGSlpQjV5SU"
+        ]
+      }
+    },
+    {
+      "pageId": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
+      "title": "ALMA antennas",
+      "inExposition": true,
+      "archiveImages": [
+        6,
+        38,
+        42
+      ],
+      "allImageFilenames": [
+        "eso1342a",
+        "aca-antennas",
+        "1aaeaf49-0ad7-4de0-98fd-553ee30493e1"
+      ],
+      "properties": {
+        "def": "ALMA site. Archaeological remains in the barren landscape near the site of the Atacama Large Millimetre/sub-millimetre Array (ALMA, in background). ALMA is an array of 66 radio antennas that combines data by interferometry, making it one of the most powerful telescopes in the world. It is located on the Chajnantor plateau in the Chilean Andes.",
+        "app": [
+          "TV & Radio"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "EHF",
+          "Infra Red",
+          "UHF",
+          "SHF",
+          "THF"
+        ],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+      "title": "Nauen Transmitter Station | Germany",
+      "inExposition": true,
+      "archiveImages": [
+        7,
+        40,
+        41,
+        44
+      ],
+      "allImageFilenames": [
+        "20171006_exkursion_radiofreunde_friedersdorf_nauen",
+        "d_funk_nauen_drehstandantenne",
+        "d_funk_nauen_kurzwellenantenne",
+        "img_9598_933p"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Telegraphy"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": [
+          "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
+          "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
+        ]
+      }
+    },
+    {
+      "pageId": "5712a153-3d34-4c7d-a6ea-9f05fe5943c5",
+      "title": "Space Flower Antenna Application Technology Satellite (ATS)",
+      "inExposition": true,
+      "archiveImages": [
+        10
+      ],
+      "allImageFilenames": [
+        "936px-Space_Flower_Antenna"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Satellite",
+          "Spacecraft"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "6a5b2e7f-0f2a-4e14-8824-02fd3cda26c2",
+      "title": "Blitzortung H-feld Antenna",
+      "inExposition": true,
+      "archiveImages": [
+        11
+      ],
+      "allImageFilenames": [
+        "Blitzortung_H-feld-Antenna_blue"
+      ],
+      "properties": {
+        "def": "H-field antennas can be sub-divided into loop antennas and ferrite rod antennas.",
+        "app": [
+          "Weather",
+          "Scientific Research"
+        ],
+        "era": "21st Century",
+        "freq": [
+          "Radio - High"
+        ],
+        "type": [
+          "Loop"
+        ],
+        "urls": [
+          "https://docs.lightningmaps.org/doku.php?id=en:hardware:antennas:h-field",
+          "https://www.blitzortung.org/ru/whats_new.php",
+          "https://www.ferrite-rod-antennas.de"
+        ]
+      }
+    },
+    {
+      "pageId": "6954b305-bed4-4b1b-9ba9-9a94f64274ad",
+      "title": "Australian Satellite | NBN Satellite",
+      "inExposition": true,
+      "archiveImages": [
+        12
+      ],
+      "allImageFilenames": [
+        "CGYGO"
+      ],
+      "properties": {
+        "def": "A satellite designed to drastically improve internet access for Australia's regional and remote communities has been launched...",
+        "app": [
+          "Satellite",
+          "Spacecraft"
+        ],
+        "era": null,
+        "freq": [
+          "UHF"
+        ],
+        "type": [],
+        "urls": [
+          "https://www.news.com.au/technology/online/nbn/unhappy-with-the-nbn-these-residents-are-taking-matters-into-their-own-hands/news-story/6fd21e2ba590cfb8299d28e90ddc1258"
+        ]
+      }
+    },
+    {
+      "pageId": "85cceecc-d191-47d8-9695-7b5938da808d",
+      "title": "Cassegrain Horn Antenna | TT&C Antenna (NASA)",
+      "inExposition": true,
+      "archiveImages": [
+        16,
+        21,
+        24
+      ],
+      "allImageFilenames": [
+        "OTC_Carnarvon_TTC",
+        "GW_Casshorn",
+        "JH_OTC_cass03"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Satellite",
+          "Spacecraft"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "UHF",
+          "SHF"
+        ],
+        "type": [
+          "Horn",
+          "Reflector"
+        ],
+        "urls": [
+          "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
+          "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
+        ]
+      }
+    },
+    {
+      "pageId": "fa13e82b-585c-4be5-bce4-cfd38cf3f1e1",
+      "title": "Hoop Column Reflector Antenna | Harris (patent image)",
+      "inExposition": true,
+      "archiveImages": [
+        17
+      ],
+      "allImageFilenames": [
+        "Hoop-column-reflector-antenna-by-Harris"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Satellite",
+          "Scientific Research"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [
+          "Reflector"
+        ],
+        "urls": [
+          "https://www.researchgate.net/figure/The-Harris-hoop-column-maypole-mesh-antenna-deployed-Skeletal-image-11-p-12-and-15_fig1_330197695",
+          "https://www.researchgate.net/figure/Left-image-ESA-ARTES-Ultra-Rapid-Deployable-antenna-Courtesy-of-HPS-GmbH-Germany-Right_fig1_327832547"
+        ]
+      }
+    },
+    {
+      "pageId": "5338b9eb-aa59-4a03-8348-28b6f375caf9",
+      "title": "Hubble Space Telescope | High-gain antenna",
+      "inExposition": true,
+      "archiveImages": [
+        19
+      ],
+      "allImageFilenames": [
+        "Hubble_Space_Telescope_high_gain_antenna"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Spacecraft",
+          "Satellite"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "THF"
+        ],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "cbb871c3-d596-4626-bb34-c6978224ef4f",
+      "title": "MTI Antenna outdoor",
+      "inExposition": true,
+      "archiveImages": [
+        23
+      ],
+      "allImageFilenames": [
+        "MTI_Antenna_outdoor"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "RFID"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": [
+          "https://www.mtiwe.com/?CategoryID=312"
+        ]
+      }
+    },
+    {
+      "pageId": "17071d1e-7e60-45fd-b3c7-94229f76e247",
+      "title": "ALMA2 Antennas",
+      "inExposition": true,
+      "archiveImages": [
+        27
+      ],
+      "allImageFilenames": [
+        "Screen_Shot_2022-11-22_at_11.19.34"
+      ],
+      "properties": {
+        "def": "ALMA site. Archaeological remains in the barren landscape...",
+        "app": [
+          "TV & Radio"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "SHF",
+          "UHF",
+          "THF",
+          "EHF",
+          "Infra Red"
+        ],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "1115e878-381d-446b-976a-474886414e3d",
+      "title": "ALMA Antenna1",
+      "inExposition": true,
+      "archiveImages": [
+        28
+      ],
+      "allImageFilenames": [
+        "Screen_Shot_2022-11-22_at_11.20.02"
+      ],
+      "properties": {
+        "def": "ALMA site. Archaeological remains in the barren landscape...",
+        "app": [
+          "TV & Radio"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "THF",
+          "EHF",
+          "UHF",
+          "SHF",
+          "Infra Red"
+        ],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "e58d7f71-26d5-4fd8-ad0c-34ec29d97cfa",
+      "title": "Sugar Scoop Antenna OTC Satellite Earth Station Carnarvon",
+      "inExposition": true,
+      "archiveImages": [
+        31
+      ],
+      "allImageFilenames": [
+        "Sugar_Scoop_Antenna_OTC_Satellite_Earth_Station"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Satellite"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "UHF"
+        ],
+        "type": [],
+        "urls": [
+          "https://en.m.wikipedia.org/wiki/OTC_Satellite_Earth_Station_Carnarvon"
+        ]
+      }
+    },
+    {
+      "pageId": "d91cd0f4-43e9-488b-ad97-58b5d7c7572a",
+      "title": "TIROS antenna | Spac0212",
+      "inExposition": true,
+      "archiveImages": [
+        32
+      ],
+      "allImageFilenames": [
+        "TIROS_antenna_Spac0212"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Satellite",
+          "Weather"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "MF",
+          "HF"
+        ],
+        "type": [],
+        "urls": [
+          "https://www.darpa.mil/about-us/timeline/tiros"
+        ]
+      }
+    },
+    {
+      "pageId": "9b3c1b6e-dbfb-47e1-98a8-60a253eb7280",
+      "title": "The Marconi Company first antenna system at Poldhu",
+      "inExposition": true,
+      "archiveImages": [
+        33
+      ],
+      "allImageFilenames": [
+        "The_Marconi_Company_first_antenna_system_at_Poldhu"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "TV & Radio"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "Radio - Low"
+        ],
+        "type": [],
+        "urls": [
+          "https://www.baesystems.com/en/marconi-company-page-part-1",
+          "https://www.southwestantennas.com/news/rf-history-guglielmo-marconi"
+        ]
+      }
+    },
+    {
+      "pageId": "3764b53a-5ab7-416c-bfb6-313301fb96e2",
+      "title": "Torre antenna | SIP Monte Prasanto Canzo, Como, Lombardy, Italy (2021)",
+      "inExposition": true,
+      "archiveImages": [
+        34
+      ],
+      "allImageFilenames": [
+        "Torre_antenna_SIP_Monte_Prasanto"
+      ],
+      "properties": {
+        "def": "",
+        "app": [],
+        "era": null,
+        "freq": [],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "0e3973ee-ea37-4efc-af59-2c0fb31b99f9",
+      "title": "Tower antenna | SIP Mountain Prasanto Lombardy Italy",
+      "inExposition": true,
+      "archiveImages": [
+        35
+      ],
+      "allImageFilenames": [
+        "Tower_antenna_SIP_Mountain_Prasanto"
+      ],
+      "properties": {
+        "def": "",
+        "app": [],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "ebb48f56-c680-48e1-a17a-7959b475f6eb",
+      "title": "Uomidake Antenna",
+      "inExposition": true,
+      "archiveImages": [
+        37
+      ],
+      "allImageFilenames": [
+        "Uomidake_antenna_-_panoramio"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Spacecraft"
+        ],
+        "era": "20th Century",
+        "freq": [],
+        "type": [],
+        "urls": []
+      }
+    },
+    {
+      "pageId": "53ef2219-4eb3-4e58-b747-a38ebdd0f4c8",
+      "title": "Alexloop Antenna",
+      "inExposition": true,
+      "archiveImages": [
+        39
+      ],
+      "allImageFilenames": [
+        "alexloop"
+      ],
+      "properties": {
+        "def": "",
+        "app": [],
+        "era": "21st Century",
+        "freq": [
+          "ELF",
+          "HF",
+          "SLF",
+          "LF",
+          "MF",
+          "ULF"
+        ],
+        "type": [],
+        "urls": [
+          "https://www.mhzoutdoor.com/en/alexloop-magnetic-loop-portable-10-40m-20w-11475-0650414686729"
+        ]
+      }
+    },
+    {
+      "pageId": "063ac89a-8270-4c70-9737-1ae84dd715eb",
+      "title": "Helix Antenna",
+      "inExposition": true,
+      "archiveImages": [
+        43
+      ],
+      "allImageFilenames": [
+        "helixantenna"
+      ],
+      "properties": {
+        "def": "",
+        "app": [],
+        "era": null,
+        "freq": [
+          "VHF",
+          "UHF",
+          "SHF"
+        ],
+        "type": [
+          "Helix"
+        ],
+        "urls": [
+          "https://www.antenna-theory.com/antennas/travelling/helix.php"
+        ]
+      }
+    },
+    {
+      "pageId": "88e5168f-c762-410a-83cc-9d47cc224414",
+      "title": "Military Defense Antennas",
+      "inExposition": true,
+      "archiveImages": [
+        47
+      ],
+      "allImageFilenames": [
+        "military-antennas"
+      ],
+      "properties": {
+        "def": "",
+        "app": [
+          "Military"
+        ],
+        "era": "21st Century",
+        "freq": [],
+        "type": [],
+        "urls": []
+      }
+    }
+  ],
+  "antMapping": {
+    "0": "58bc3c60-0f4e-47ab-9831-1d4a979f4b6a",
+    "1": "f27179f0-089a-4a21-a1db-d5450ec59639",
+    "2": "de6c2b4a-6b14-402b-9c0c-b70321f87495",
+    "3": "d8814d8c-43ca-4297-bd02-2bfeab475150",
+    "4": "ceff9bbd-2367-4d8c-bf3f-c3d1232acfcd",
+    "5": "ea659021-06df-4130-ad4c-8f6dae841a74",
+    "6": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
+    "7": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+    "8": "ea659021-06df-4130-ad4c-8f6dae841a74",
+    "10": "5712a153-3d34-4c7d-a6ea-9f05fe5943c5",
+    "11": "6a5b2e7f-0f2a-4e14-8824-02fd3cda26c2",
+    "12": "6954b305-bed4-4b1b-9ba9-9a94f64274ad",
+    "13": "ea659021-06df-4130-ad4c-8f6dae841a74",
+    "16": "85cceecc-d191-47d8-9695-7b5938da808d",
+    "17": "fa13e82b-585c-4be5-bce4-cfd38cf3f1e1",
+    "18": "f27179f0-089a-4a21-a1db-d5450ec59639",
+    "19": "5338b9eb-aa59-4a03-8348-28b6f375caf9",
+    "21": "85cceecc-d191-47d8-9695-7b5938da808d",
+    "23": "cbb871c3-d596-4626-bb34-c6978224ef4f",
+    "24": "85cceecc-d191-47d8-9695-7b5938da808d",
+    "26": "f27179f0-089a-4a21-a1db-d5450ec59639",
+    "27": "17071d1e-7e60-45fd-b3c7-94229f76e247",
+    "28": "1115e878-381d-446b-976a-474886414e3d",
+    "30": "ea659021-06df-4130-ad4c-8f6dae841a74",
+    "31": "e58d7f71-26d5-4fd8-ad0c-34ec29d97cfa",
+    "32": "d91cd0f4-43e9-488b-ad97-58b5d7c7572a",
+    "33": "9b3c1b6e-dbfb-47e1-98a8-60a253eb7280",
+    "34": "3764b53a-5ab7-416c-bfb6-313301fb96e2",
+    "35": "0e3973ee-ea37-4efc-af59-2c0fb31b99f9",
+    "37": "ebb48f56-c680-48e1-a17a-7959b475f6eb",
+    "38": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
+    "39": "53ef2219-4eb3-4e58-b747-a38ebdd0f4c8",
+    "40": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+    "41": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+    "42": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
+    "43": "063ac89a-8270-4c70-9737-1ae84dd715eb",
+    "44": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+    "47": "88e5168f-c762-410a-83cc-9d47cc224414"
   },
-  {
-    "antIdx": 1,
-    "archiveI": 2,
-    "nid": "f27179f0-089a-4a21-a1db-d5450ec59639",
-    "def": "The Holmdel Horn Antenna, used by Bell Labs researchers, Dr. Robert Wilson and Dr. Arno Penzias, to observe cosmic microwave background radiation and demonstrate the Big Bang theory of cosmology. Consequently, both men won the Nobel Prize for their discoveries.",
-    "app": ["Scientific Research", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Aperture"],
-    "urls": [
-      "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
-      "https://www.youtube.com/watch?v=U2HAuDnqWME",
-      "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
-    ]
-  },
-  {
-    "antIdx": 2,
-    "archiveI": 3,
-    "nid": "de6c2b4a-6b14-402b-9c0c-b70321f87495",
-    "def": "",
-    "app": ["Scientific Research"],
-    "era": "21st Century",
-    "freq": ["UHF"],
-    "type": null,
-    "urls": [
-      "https://www.mvg-world.com/en/products/antenna-measurement/anechoic-chambers",
-      "https://www.dvidshub.net/image/730229/hoop-column-antenna"
-    ]
-  },
-  {
-    "antIdx": 3,
-    "archiveI": 4,
-    "nid": "d8814d8c-43ca-4297-bd02-2bfeab475150",
-    "def": "",
-    "app": ["Military"],
-    "era": "20th Century",
-    "freq": ["UHF"],
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Exercise_Reforger"
-    ]
-  },
-  {
-    "antIdx": 4,
-    "archiveI": 5,
-    "nid": "ceff9bbd-2367-4d8c-bf3f-c3d1232acfcd",
-    "def": "",
-    "app": ["TV & Radio", "Scientific Research"],
-    "era": "20th Century",
-    "freq": ["VHF", "HF"],
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Giant_Ukrainian_Radio_Telescope"
-    ]
-  },
-  {
-    "antIdx": 5,
-    "archiveI": 6,
-    "nid": "ea659021-06df-4130-ad4c-8f6dae841a74",
-    "def": "Duga was an over-the-horizon radar (OTH) system used in the Soviet Union as part of its early-warning radar network for missile defense.",
-    "app": ["Military"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Duga_radar",
-      "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-    ]
-  },
-  {
-    "antIdx": 6,
-    "archiveI": 7,
-    "nid": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
-    "def": "ALMA site. Archaeological remains in the barren landscape...",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["EHF", "Infra Red", "UHF", "SHF", "THF"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 7,
-    "archiveI": 8,
-    "nid": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
-    "def": "",
-    "app": ["Telegraphy"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
-      "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-    ]
-  },
-  {
-    "antIdx": 8,
-    "archiveI": 9,
-    "nid": "ea659021-06df-4130-ad4c-8f6dae841a74",
-    "def": "Duga was an over-the-horizon radar (OTH) system used in the Soviet Union as part of its early-warning radar network for missile defense.",
-    "app": ["Military"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Duga_radar",
-      "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-    ]
-  },
-  {
-    "antIdx": 10,
-    "archiveI": 11,
-    "nid": "5712a153-3d34-4c7d-a6ea-9f05fe5943c5",
-    "def": "",
-    "app": ["Satellite", "Spacecraft"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 11,
-    "archiveI": 12,
-    "nid": "6a5b2e7f-0f2a-4e14-8824-02fd3cda26c2",
-    "def": "H-field antennas can be sub-divided into loop antennas and ferrite rod antennas.",
-    "app": ["Weather", "Scientific Research"],
-    "era": "21st Century",
-    "freq": ["Radio - High"],
-    "type": ["Loop"],
-    "urls": [
-      "https://docs.lightningmaps.org/doku.php?id=en:hardware:antennas:h-field",
-      "https://www.blitzortung.org/ru/whats_new.php",
-      "https://www.ferrite-rod-antennas.de"
-    ]
-  },
-  {
-    "antIdx": 12,
-    "archiveI": 13,
-    "nid": "6954b305-b93b-4ad1-b048-b1c94f94ff47",
-    "def": "A satellite designed to drastically improve internet access...",
-    "app": ["Satellite", "Spacecraft"],
-    "era": null,
-    "freq": ["UHF"],
-    "type": null,
-    "urls": [
-      "https://www.news.com.au/technology/online/nbn/"
-    ]
-  },
-  {
-    "antIdx": 13,
-    "archiveI": 14,
-    "nid": "ea659021-06df-4130-ad4c-8f6dae841a74",
-    "def": "Duga was an over-the-horizon radar (OTH) system used in the Soviet Union as part of its early-warning radar network for missile defense.",
-    "app": ["Military"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Duga_radar",
-      "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-    ]
-  },
-  {
-    "antIdx": 16,
-    "archiveI": 17,
-    "nid": "85cceecc-d191-47d8-9695-7b5938da808d",
-    "def": "",
-    "app": ["Satellite", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Reflector"],
-    "urls": [
-      "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
-      "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
-    ]
-  },
-  {
-    "antIdx": 17,
-    "archiveI": 18,
-    "nid": "fa13e82b-585c-4be5-bce4-cfd38cf3f1e1",
-    "def": "",
-    "app": ["Satellite", "Scientific Research"],
-    "era": "20th Century",
-    "freq": null,
-    "type": ["Reflector"],
-    "urls": [
-      "https://www.researchgate.net/figure/The-Harris-hoop-column-maypole-mesh-antenna-deployed-Skeletal-image-11-p-12-and-15_fig1_330197695",
-      "https://www.researchgate.net/figure/Left-image-ESA-ARTES-Ultra-Rapid-Deployable-antenna-Courtesy-of-HPS-GmbH-Germany-Right_fig1_327832547"
-    ]
-  },
-  {
-    "antIdx": 18,
-    "archiveI": 19,
-    "nid": "f27179f0-089a-4a21-a1db-d5450ec59639",
-    "def": "The Holmdel Horn Antenna, used by Bell Labs researchers, Dr. Robert Wilson and Dr. Arno Penzias, to observe cosmic microwave background radiation and demonstrate the Big Bang theory of cosmology. Consequently, both men won the Nobel Prize for their discoveries.",
-    "app": ["Scientific Research", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Aperture"],
-    "urls": [
-      "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
-      "https://www.youtube.com/watch?v=U2HAuDnqWME",
-      "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
-    ]
-  },
-  {
-    "antIdx": 19,
-    "archiveI": 20,
-    "nid": "5338b9eb-aa59-4a03-8348-28b6f375caf9",
-    "def": "",
-    "app": ["Spacecraft", "Satellite"],
-    "era": "20th Century",
-    "freq": ["THF"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 21,
-    "archiveI": 22,
-    "nid": "85cceecc-d191-47d8-9695-7b5938da808d",
-    "def": "",
-    "app": ["Satellite", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Reflector"],
-    "urls": [
-      "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
-      "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
-    ]
-  },
-  {
-    "antIdx": 23,
-    "archiveI": 24,
-    "nid": "cbb871c3-d596-4626-bb34-c6978224ef4f",
-    "def": "",
-    "app": ["RFID"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://www.mtiwe.com/?CategoryID=312"
-    ]
-  },
-  {
-    "antIdx": 24,
-    "archiveI": 25,
-    "nid": "85cceecc-d191-47d8-9695-7b5938da808d",
-    "def": "",
-    "app": ["Satellite", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Reflector"],
-    "urls": [
-      "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
-      "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
-    ]
-  },
-  {
-    "antIdx": 26,
-    "archiveI": 27,
-    "nid": "f27179f0-089a-4a21-a1db-d5450ec59639",
-    "def": "The Holmdel Horn Antenna, used by Bell Labs researchers, Dr. Robert Wilson and Dr. Arno Penzias, to observe cosmic microwave background radiation and demonstrate the Big Bang theory of cosmology. Consequently, both men won the Nobel Prize for their discoveries.",
-    "app": ["Scientific Research", "Spacecraft"],
-    "era": "20th Century",
-    "freq": ["UHF", "SHF"],
-    "type": ["Horn", "Aperture"],
-    "urls": [
-      "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
-      "https://www.youtube.com/watch?v=U2HAuDnqWME",
-      "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
-    ]
-  },
-  {
-    "antIdx": 27,
-    "archiveI": 28,
-    "nid": "17071d1e-7e60-45fd-b3c7-94229f76e247",
-    "def": "ALMA site. Archaeological remains in the barren landscape...",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["SHF", "UHF", "THF", "EHF", "Infra Red"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 28,
-    "archiveI": 29,
-    "nid": "1115e878-381d-446b-976a-474886414e3d",
-    "def": "ALMA site. Archaeological remains in the barren landscape...",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["THF", "EHF", "UHF", "SHF", "Infra Red"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 30,
-    "archiveI": 31,
-    "nid": "ea659021-06df-4130-ad4c-8f6dae841a74",
-    "def": "Duga was an over-the-horizon radar (OTH) system used in the Soviet Union as part of its early-warning radar network for missile defense.",
-    "app": ["Military"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://en.wikipedia.org/wiki/Duga_radar",
-      "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-    ]
-  },
-  {
-    "antIdx": 31,
-    "archiveI": 32,
-    "nid": "e58d7f71-26d5-4fd8-ad0c-34ec29d97cfa",
-    "def": "",
-    "app": ["Satellite"],
-    "era": "20th Century",
-    "freq": ["UHF"],
-    "type": null,
-    "urls": [
-      "https://en.m.wikipedia.org/wiki/OTC_Satellite_Earth_Station_Carnarvon"
-    ]
-  },
-  {
-    "antIdx": 32,
-    "archiveI": 33,
-    "nid": "d91cd0f4-43e9-488b-ad97-58b5d7c7572a",
-    "def": "",
-    "app": ["Satellite", "Weather"],
-    "era": "20th Century",
-    "freq": ["MF", "HF"],
-    "type": null,
-    "urls": [
-      "https://www.darpa.mil/about-us/timeline/tiros"
-    ]
-  },
-  {
-    "antIdx": 33,
-    "archiveI": 34,
-    "nid": "9b3c1b6e-dbfb-47e1-98a8-60a253eb7280",
-    "def": "",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["Radio - Low"],
-    "type": null,
-    "urls": [
-      "https://www.baesystems.com/en/marconi-company-page-part-1",
-      "https://www.southwestantennas.com/news/rf-history-guglielmo-marconi"
-    ]
-  },
-  {
-    "antIdx": 34,
-    "archiveI": 35,
-    "nid": "3764b53a-5ab7-416c-bfb6-313301fb96e2",
-    "def": "",
-    "app": null,
-    "era": null,
-    "freq": null,
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 35,
-    "archiveI": 36,
-    "nid": "0e3973ee-ea37-4efc-af59-2c0fb31b99f9",
-    "def": "",
-    "app": null,
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 37,
-    "archiveI": 38,
-    "nid": "ebb48f56-c680-48e1-a17a-7959b475f6eb",
-    "def": "",
-    "app": ["Spacecraft"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 38,
-    "archiveI": 39,
-    "nid": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
-    "def": "ALMA site. Archaeological remains in the barren landscape...",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["EHF", "Infra Red", "UHF", "SHF", "THF"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 40,
-    "archiveI": 41,
-    "nid": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
-    "def": "",
-    "app": ["Telegraphy"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
-      "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-    ]
-  },
-  {
-    "antIdx": 41,
-    "archiveI": 42,
-    "nid": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
-    "def": "",
-    "app": ["Telegraphy"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
-      "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-    ]
-  },
-  {
-    "antIdx": 42,
-    "archiveI": 43,
-    "nid": "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
-    "def": "ALMA site. Archaeological remains in the barren landscape...",
-    "app": ["TV & Radio"],
-    "era": "20th Century",
-    "freq": ["EHF", "Infra Red", "UHF", "SHF", "THF"],
-    "type": null,
-    "urls": []
-  },
-  {
-    "antIdx": 43,
-    "archiveI": 44,
-    "nid": "063ac89a-8270-4c70-9737-1ae84dd715eb",
-    "def": "",
-    "app": null,
-    "era": null,
-    "freq": ["VHF", "UHF", "SHF"],
-    "type": ["Helix"],
-    "urls": [
-      "https://www.antenna-theory.com/antennas/travelling/helix.php"
-    ]
-  },
-  {
-    "antIdx": 44,
-    "archiveI": 45,
-    "nid": "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
-    "def": "",
-    "app": ["Telegraphy"],
-    "era": "20th Century",
-    "freq": null,
-    "type": null,
-    "urls": [
-      "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
-      "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-    ]
-  },
-  {
-    "antIdx": 47,
-    "archiveI": 48,
-    "nid": "88e5168f-c762-410a-83cc-9d47cc224414",
-    "def": "",
-    "app": ["Military"],
-    "era": "21st Century",
-    "freq": null,
-    "type": null,
-    "urls": []
-  }
-]
+  "multiImagePages": [
+    "2c4ab7d3-28e0-4e63-bd49-001d32c65afd",
+    "5099191e-adb2-436c-80d5-dc2ee43e4ee9",
+    "85cceecc-d191-47d8-9695-7b5938da808d",
+    "ea659021-06df-4130-ad4c-8f6dae841a74",
+    "f27179f0-089a-4a21-a1db-d5450ec59639"
+  ],
+  "unmatchedAnts": [
+    9,
+    14,
+    15,
+    20,
+    22,
+    25,
+    29,
+    36,
+    45,
+    46
+  ]
+}
