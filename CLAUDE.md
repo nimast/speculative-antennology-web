@@ -8,10 +8,20 @@
 - `node tools/check.mjs` — validates thread endpoints, archive ↔ notion-mapping coverage, Notion DB sync (the third only if `NOTION_TOKEN` is exported).
 - CI runs the same script on every PR via `.github/workflows/check.yml`.
 
-## Editing islands in `scripts/app.jsx`
-- Stable-ID islands (prefixes `ess-`, `pq-`, `wh-`, `gl-`, `nt-`, `field-`, plus `title`, `method`, `bib`, `colophon`) are mirrored 1:1 in the Notion **Exposition Text Fragments** DB (data source `f5ea6f45-5f08-4099-88de-451d80df9aff`). Add/remove a fragment in both places, or `check.mjs` will fail.
-- Dynamic IDs (`arc-N`, `sp-N`, plus `viewer`, `arc-head`) are generated from `data/archive.js` and are NOT mirrored.
-- Known mismatch: app.jsx uses `id: "col"` for the colophon island, mirrored as Node ID `colophon` in Notion. `check.mjs` accepts this; don't "fix" it.
+## Editing islands
+
+**Notion is the source of truth** for stable-ID islands. To add or edit one:
+1. Open the **Exposition Text Fragments** DB (link below) and edit the row.
+2. Set `Status = final` when ready to publish.
+3. The daily `notion-sync` workflow regenerates `data/islands.generated.js` and opens a PR.
+
+To run the sync locally: `NOTION_TOKEN=… node tools/sync-from-notion.mjs`.
+
+Body conventions per Kind are in `NOTION.md` — read that before editing fragment bodies.
+
+- `data/islands.generated.js` is **auto-generated** — never hand-edit. It exposes `window.SA_ISLANDS` and `window.SA_THREADS_FROM_NOTION`.
+- `scripts/app.jsx` reads those at load time, then appends dynamic islands (`viewer`, `arc-head`, `arc-N`, `sp-N`) and dynamic threads (those involving non-Notion endpoints). Edit `app.jsx` when changing dynamic island layout or rendering, never to add/edit fragment content.
+- The colophon island uses `id: "colophon"` (matches Notion). Threads to it must use `"colophon"`, not the legacy `"col"`.
 
 ## Notion IDs
 - Exposition Text Fragments DB: `c721d57e7d21435097690b0bb8c0b25c` (data source `f5ea6f45-5f08-4099-88de-451d80df9aff`)
