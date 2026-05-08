@@ -18,6 +18,13 @@
 - Archive images live at `assets/archive/ant-00.jpg` through `ant-47.jpg` (zero-padded).
 - `archive.js` uses 1-based `i` values (1–48); `notion-mapping.json` uses 0-based indices (0–47).
 - Some Notion pages contain multiple archive images (multi-image pages, e.g. Misato → ant-18 + ant-19).
+- Notion is the canonical source for all antenna images. If an archive entry appears "unmatched", the Notion page exists but wasn't found — search harder rather than creating new pages.
+
+## Notion taxonomy conventions
+- Application categories reflect domains of use (what antennas are used FOR), not technical kinds (what they ARE). Aligned with media-theoretical framing.
+- Preferred mappings: NFC Payments → "Finance", Energy Harvesting → "Energy Production", Defense/ECM → "Military", RDF → "Navigation", Olfactory/Scent → "Pheromone Communication", TV/Radio/Media → "TV & Radio".
+- Radar is a technology, not an application — map contextually (Military, Air Traffic Control, etc.).
+- "Swarm Intelligence" and "communication" are too vague to be applications. "Further research needed" is a status, not an application.
 
 ## Notion IDs
 - Exposition Text Fragments DB: `c721d57e7d21435097690b0bb8c0b25c` (data source `f5ea6f45-5f08-4099-88de-451d80df9aff`)
