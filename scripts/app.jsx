@@ -32,7 +32,7 @@ const VIEWER_SPECIMENS = [
 // Archive photograph plate — cycles through 48 real images
 
 function Plate({ n }){
-  const idx = ((n - 1) % 48).toString().padStart(2, '0');
+  const idx = (n - 1).toString().padStart(2, '0');
   return (
     <img
       src={`assets/archive/ant-${idx}.jpg`}
@@ -77,6 +77,55 @@ const ISLANDS = (function(){
   });
   items.push({ id: "ess-6", kind: "prose", x: 2160, y: 620, w: 460,
     text: "The antenna is the <em>only</em> object explicitly designed to participate in that exchange — the shaped interface at which current becomes field, and field becomes current. Its geometry is not decoration. It is the partial embodiment of a theory of propagation. To catalogue antennas is to catalogue an infrastructure of assumption."
+  });
+
+  // East arc — Cosmos to Canvas: VLA, Lightning Field, biology, directivity, transceiver
+  items.push({ id: "ess-7", kind: "prose", x: 2820, y: 1000, w: 460,
+    text: "On the Plains of San Agustin, twenty-seven dish antennas — each twenty-five metres across — sit on tracks that let them be reconfigured from compact to thirty-nine kilometres apart. Each dish collects radio frequency from space; the interferences are combined into a single high-resolution image. The instrument is, in effect, an aperture the size of the desert."
+  });
+  items.push({ id: "ess-8", kind: "prose", x: 3380, y: 720, w: 460,
+    text: "On a level plane in Catron County, four hundred stainless-steel poles stand in a grid one mile by one kilometre, spaced two hundred and twenty feet apart. The pole tips form a plane fine enough to support an imaginary sheet of glass. The structure is at once sculpture, a study in atmospheric physics, and an array of lightning rods awaiting weather."
+  });
+  items.push({ id: "ess-9", kind: "prose", x: 3380, y: 1280, w: 460,
+    text: "Antennae appeared first as biological appendages — extending the membrane of an animate body out into its environment. Insect and crustacean antennae translate chemical, mechanical, and electromagnetic signals into electrical impulses a nervous system can read. Engineered antennae arrived later, doing the same work in metal: <em>Maxwell&rsquo;s equations made into a rod</em>."
+  });
+  items.push({ id: "ess-10", kind: "prose", x: 3940, y: 1000, w: 460,
+    text: "Form follows wavelength. The lengths and diameters of antennae are tuned to fractions of the waves they receive. The fan of a Rhipicera beetle maps the gradient of a pheromone; the parabola of a radio telescope focuses cosmic signal onto a receiver suspended at its focus. In biology and in engineering, the same constraint operates — proportion to the unseen."
+  });
+  items.push({ id: "ess-11", kind: "prose", x: 3940, y: 1540, w: 460,
+    text: "The decisive difference between biological and engineered antennae is not direction but <em>directivity</em>: the patterned distribution of sensitivity across space. A moth scans, aligning to a chemical gradient. A Yagi-Uda antenna does not move. Its preferred angles are baked into geometry. To install one is to make a permanent claim about where signal lives."
+  });
+  items.push({ id: "ess-12", kind: "prose", x: 4500, y: 1280, w: 460,
+    text: "Connected to a transceiver, an antenna can transmit and receive on the same frequency — through other antennae of the same species. The function refers to itself: filtration, materiality, conductivity, applied recursively from a ground station, through one continent to the next, all the way to the rig aboard the International Space Station. An operative chain extending from human to element to cosmos."
+  });
+
+  items.push({ id: "pq-2", kind: "pullquote", x: 3060, y: 1740, w: 540,
+    q: "Antennae are doors — but doors opening to a cosmos devoid of an outdoors.",
+    cite: "After Blake, by way of Siegert."
+  });
+  items.push({ id: "pq-3", kind: "pullquote", x: 4480, y: 1820, w: 540,
+    q: "Art as radar acts as an early alarm system, enabling us to discover social and psychic targets in lots of time to prepare to cope with them.",
+    cite: "Marshall McLuhan, via Wershler."
+  });
+
+  items.push({ id: "wh-3", kind: "whisper", x: 3260, y: 480, w: 320,
+    text: "the return stroke travels skyward — what we see is the answer, not the call"
+  });
+  items.push({ id: "wh-4", kind: "whisper", x: 4520, y: 740, w: 320,
+    text: "the male silk moth is tuned to a single frequency — pheromone"
+  });
+
+  items.push({ id: "gl-5", kind: "gloss", x: 5080, y: 1620, w: 300,
+    term: "directivity",
+    def: "The patterned distribution of an antenna&rsquo;s sensitivity across space. Distinct from mobility. Most engineered antennae are fixed; their preferred angles are baked into geometry."
+  });
+  items.push({ id: "gl-6", kind: "gloss", x: 3760, y: 360, w: 300,
+    term: "elemental media",
+    def: "Media not as message-relay but as material, embodied, immersive — the precondition of contemporary life. After Peters."
+  });
+
+  items.push({ id: "nt-4", kind: "note", x: 5060, y: 940, w: 240,
+    text: "jim creek, oso, washington — wartime antennae sunk into the valley to reach submarines."
   });
 
   // Viewer — single prominent island anchored near the essay
@@ -182,7 +231,7 @@ const ISLANDS = (function(){
 
   // Featured specimens — larger cards near the archive header
   for (let k = 0; k < 4; k++){
-    const a = ARCHIVE[[0, 16, 35, 64][k]];
+    const a = ARCHIVE[[0, 16, 35, 47][k]];
     items.push({ id: "sp-"+a.i, kind: "spec",
       x: -1400 + k * 260, y: 1480, w: 220, a
     });
@@ -213,7 +262,7 @@ const THREADS = [
   ["arc-head", "sp-1"],
   ["arc-head", "sp-17"],
   ["arc-head", "sp-36"],
-  ["arc-head", "sp-65"],
+  ["arc-head", "sp-48"],
   ["gl-2", "arc-head"],
   ["gl-3", "ess-5"],
   ["gl-4", "arc-head"],
@@ -224,6 +273,23 @@ const THREADS = [
   ["field-2", "method"],
   ["wh-2", "viewer"],
   ["col", "arc-head"],
+  // East arc — Cosmos to Canvas
+  ["ess-6", "ess-7"],
+  ["ess-7", "ess-8"],
+  ["ess-7", "ess-9"],
+  ["ess-8", "ess-10"],
+  ["ess-9", "ess-10"],
+  ["ess-9", "wh-4"],
+  ["ess-10", "ess-11"],
+  ["ess-11", "gl-5"],
+  ["ess-11", "ess-12"],
+  ["ess-12", "pq-2"],
+  ["ess-12", "pq-3"],
+  ["pq-2", "gl-6"],
+  ["pq-3", "arc-head"],
+  ["ess-9", "nt-4"],
+  ["wh-3", "ess-8"],
+  ["gl-6", "method"],
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
