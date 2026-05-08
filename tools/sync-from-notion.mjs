@@ -113,14 +113,27 @@ function isAllItalic(rt) {
   return rt.length > 0 && rt.every(t => t.annotations.italic && t.plain_text.trim());
 }
 
+// A cite paragraph is either fully italic, or starts with an em-dash (—/–/-).
+const CITE_DASH_RE = /^\s*[—–-]\s/;
+function isCite(block) {
+  if (block.type !== 'paragraph') return false;
+  const rt = block.paragraph.rich_text;
+  if (rt.length === 0) return false;
+  if (isAllItalic(rt)) return true;
+  return CITE_DASH_RE.test(richToPlain(rt));
+}
+function citeText(block) {
+  return richToPlain(block.paragraph.rich_text).replace(/^\s*[—–-]\s*/, '').trim();
+}
+
 function parseProse(blocks) {
   const out = {};
   let bs = blocks.filter(b => b.type === 'paragraph' || b.type === 'quote');
 
-  // Trailing italic paragraph → cite
+  // Trailing cite paragraph (italic or "— ...")
   const last = bs[bs.length - 1];
-  if (last && last.type === 'paragraph' && isAllItalic(last.paragraph.rich_text)) {
-    out.cite = richToPlain(last.paragraph.rich_text).replace(/^—\s*/, '').trim();
+  if (last && isCite(last)) {
+    out.cite = citeText(last);
     bs = bs.slice(0, -1);
   }
 
@@ -146,9 +159,8 @@ function parsePullquote(blocks) {
     const p = blocks.find(b => b.type === 'paragraph');
     if (p) out.q = blockText.paragraph_plain(p);
   }
-  const citeP = blocks.find(b =>
-    b.type === 'paragraph' && isAllItalic(b.paragraph.rich_text));
-  if (citeP) out.cite = richToPlain(citeP.paragraph.rich_text).replace(/^—\s*/, '').trim();
+  const citeP = blocks.find(b => isCite(b));
+  if (citeP) out.cite = citeText(citeP);
   return out;
 }
 
@@ -191,11 +203,10 @@ function parseList(blocks) {
     .map(b => b.type === 'bulleted_list_item' ? blockText.bulleted_list_item(b) : blockText.numbered_list_item(b));
 }
 
-function parseField(blocks) {
-  const img = blocks.find(b => b.type === 'image');
+function parseField(blocks, imagePath) {
   const cap = blocks.find(b => b.type === 'paragraph');
   return {
-    img: img?.image?.external?.url || img?.image?.file?.url || '',
+    img: imagePath || '',
     cap: cap ? blockText.paragraph_plain(cap) : '',
   };
 }
@@ -203,12 +214,13 @@ function parseField(blocks) {
 // ───── shape an island for the generated file ─────────────────────────────
 
 function islandFromPage(page, blocks) {
-  const props   = page.properties;
-  const nodeId  = props['Node ID']?.rich_text?.[0]?.plain_text;
-  const nKind   = props.Kind?.select?.name;
-  const x       = props.X?.number;
-  const y       = props.Y?.number;
-  const w       = props.W?.number;
+  const props    = page.properties;
+  const nodeId   = props['Node ID']?.rich_text?.[0]?.plain_text;
+  const nKind    = props.Kind?.select?.name;
+  const x        = props.X?.number;
+  const y        = props.Y?.number;
+  const w        = props.W?.number;
+  const imageStr = richToPlain(props.Image?.rich_text || []);
 
   if (!nodeId) throw new Error(`page ${page.id} missing Node ID`);
   if (!(nKind in KIND_TO_JSX)) throw new Error(`page ${nodeId}: unknown Kind "${nKind}"`);
@@ -230,7 +242,7 @@ function islandFromPage(page, blocks) {
     case 'gloss':     extra = parseGloss(blocks);     break;
     case 'method':    extra = { steps:   parseList(blocks) }; break;
     case 'bib':       extra = { entries: parseList(blocks) }; break;
-    case 'field':     extra = parseField(blocks);    break;
+    case 'field':     extra = parseField(blocks, imageStr); break;
   }
   return { ...island, ...extra };
 }
