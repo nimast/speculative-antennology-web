@@ -21,8 +21,15 @@
           "VHF",
           "L Band"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Aperture"
+        ],
+        "urls": [],
+        "sub": "3D phased-array radar",
+        "bandGroup": [
+          "VHF",
+          "Microwave"
+        ]
       }
     },
     {
@@ -55,6 +62,9 @@
           "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
           "https://www.youtube.com/watch?v=U2HAuDnqWME",
           "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -77,10 +87,16 @@
         "freq": [
           "UHF"
         ],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://www.mvg-world.com/en/products/antenna-measurement/anechoic-chambers",
           "https://www.dvidshub.net/image/730229/hoop-column-antenna"
+        ],
+        "sub": "Hoop-column deployable mesh",
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -103,9 +119,15 @@
         "freq": [
           "UHF"
         ],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Exercise_Reforger"
+        ],
+        "sub": "Tactical satcom dish",
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -130,9 +152,16 @@
           "VHF",
           "HF"
         ],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Giant_Ukrainian_Radio_Telescope"
+        ],
+        "sub": "GURT phased dipole array",
+        "bandGroup": [
+          "VHF",
+          "Shortwave"
         ]
       }
     },
@@ -153,11 +182,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Duga_radar",
           "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-        ]
+        ],
+        "sub": "Curtain dipole OTH-radar"
       }
     },
     {
@@ -184,8 +216,15 @@
           "SHF",
           "THF"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain (ALMA array)",
+        "bandGroup": [
+          "Microwave",
+          "Light-end"
+        ]
       }
     },
     {
@@ -205,11 +244,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Wire"
+        ],
         "urls": [
           "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
           "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-        ]
+        ],
+        "sub": "Longwave vertical/curtain"
       }
     },
     {
@@ -230,11 +272,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Duga_radar",
           "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-        ]
+        ],
+        "sub": "Curtain dipole OTH-radar"
       }
     },
     {
@@ -255,8 +300,11 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain Earth station"
       }
     },
     {
@@ -277,8 +325,11 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Deployable mesh \"flower\""
       }
     },
     {
@@ -305,8 +356,15 @@
           "SHF",
           "THF"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain (ALMA compact)",
+        "bandGroup": [
+          "Microwave",
+          "Light-end"
+        ]
       }
     },
     {
@@ -331,9 +389,16 @@
           "MF",
           "ULF"
         ],
-        "type": [],
+        "type": [
+          "Loop"
+        ],
         "urls": [
           "https://www.mhzoutdoor.com/en/alexloop-magnetic-loop-portable-10-40m-20w-11475-0650414686729"
+        ],
+        "sub": "Small magnetic loop",
+        "bandGroup": [
+          "Longwave",
+          "Shortwave"
         ]
       }
     },
@@ -364,7 +429,8 @@
           "https://docs.lightningmaps.org/doku.php?id=en:hardware:antennas:h-field",
           "https://www.blitzortung.org/ru/whats_new.php",
           "https://www.ferrite-rod-antennas.de"
-        ]
+        ],
+        "sub": "Ferrite H-field"
       }
     },
     {
@@ -387,9 +453,15 @@
         "freq": [
           "UHF"
         ],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://www.news.com.au/technology/online/nbn/unhappy-with-the-nbn-these-residents-are-taking-matters-into-their-own-hands/news-story/6fd21e2ba590cfb8299d28e90ddc1258"
+        ],
+        "sub": "Geostationary dish",
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -411,11 +483,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
           "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-        ]
+        ],
+        "sub": "Rotating curtain dipole"
       }
     },
     {
@@ -436,11 +511,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Wire"
+        ],
         "urls": [
           "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
           "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-        ]
+        ],
+        "sub": "Shortwave curtain"
       }
     },
     {
@@ -461,11 +539,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Duga_radar",
           "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-        ]
+        ],
+        "sub": "Curtain dipole OTH-radar"
       }
     },
     {
@@ -487,10 +568,13 @@
         ],
         "era": "21st Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://japanshopping.org/search/shops/detail/34523"
-        ]
+        ],
+        "sub": "Parabolic radio telescope"
       }
     },
     {
@@ -516,8 +600,15 @@
           "SHF",
           "THF"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain (ALMA)",
+        "bandGroup": [
+          "Microwave",
+          "Light-end"
+        ]
       }
     },
     {
@@ -549,6 +640,9 @@
         "urls": [
           "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
           "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -576,6 +670,10 @@
         ],
         "urls": [
           "https://www.antenna-theory.com/antennas/travelling/helix.php"
+        ],
+        "bandGroup": [
+          "VHF",
+          "Microwave"
         ]
       }
     },
@@ -636,6 +734,9 @@
           "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
           "https://www.youtube.com/watch?v=U2HAuDnqWME",
           "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -659,8 +760,14 @@
         "freq": [
           "THF"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Parabolic HGA",
+        "bandGroup": [
+          "Light-end"
+        ]
       }
     },
     {
@@ -680,9 +787,15 @@
         "freq": [
           "UHF"
         ],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://www.intelsat.com/global-network/satellite-network/launches/intelsat-39/"
+        ],
+        "sub": "Geostationary multi-beam",
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -704,11 +817,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://www.radiomuseum.org/museum/d/grossfunkstelle-nauen/",
           "https://en.wikipedia.org/wiki/Nauen_Transmitter_Station"
-        ]
+        ],
+        "sub": "Tower-mounted dipoles"
       }
     },
     {
@@ -740,6 +856,9 @@
         "urls": [
           "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
           "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -760,12 +879,15 @@
         "app": [],
         "era": null,
         "freq": [],
-        "type": [],
+        "type": [
+          "Wire"
+        ],
         "urls": [
           "https://www.youtube.com/watch?v=7GbVb9On8tY",
           "http://www.n3ox.net/projects/n3oxflex/",
           "https://www.onallbands.com/what-is-an-antenna-capacity-hat/"
-        ]
+        ],
+        "sub": "Top-loaded vertical"
       }
     },
     {
@@ -785,8 +907,11 @@
         ],
         "era": "21st Century",
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Yagi"
+        ],
+        "urls": [],
+        "sub": "Mobile VHF radar (stacked Yagi array)"
       }
     },
     {
@@ -808,8 +933,16 @@
           "UHF",
           "VHF"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Loop"
+        ],
+        "urls": [],
+        "sub": "Koch-fractal loop",
+        "bandGroup": [
+          "Shortwave",
+          "Microwave",
+          "VHF"
+        ]
       }
     },
     {
@@ -829,10 +962,13 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Aperture"
+        ],
         "urls": [
           "https://www.mtiwe.com/?CategoryID=312"
-        ]
+        ],
+        "sub": "UHF RFID panel (patch array)"
       }
     },
     {
@@ -863,6 +999,9 @@
         "urls": [
           "https://honeysucklecreek.net/other_stations/carnarvon_OTC/42ft.html",
           "https://www.radartutorial.eu/06.antennas/Cassegrain%20Antenna.en.html"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -883,10 +1022,13 @@
         ],
         "era": "21st Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Aperture"
+        ],
         "urls": [
           "https://www.nrl.navy.mil/Media/News/Article/2500713/new-nrl-3d-printed-antenna-designs-reduce-cost-weight-and-size/"
-        ]
+        ],
+        "sub": "NRL 3D-printed (waveguide-derived)"
       }
     },
     {
@@ -918,6 +1060,9 @@
           "https://www.aps.org/programs/honors/history/historicsites/penziaswilson.cfm",
           "https://www.youtube.com/watch?v=U2HAuDnqWME",
           "https://www.sciencefriday.com/articles/the-antenna-that-detected-the-big-bang/"
+        ],
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -944,8 +1089,15 @@
           "EHF",
           "Infra Red"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain (ALMA)",
+        "bandGroup": [
+          "Microwave",
+          "Light-end"
+        ]
       }
     },
     {
@@ -971,8 +1123,15 @@
           "SHF",
           "Infra Red"
         ],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Cassegrain (ALMA)",
+        "bandGroup": [
+          "Light-end",
+          "Microwave"
+        ]
       }
     },
     {
@@ -1003,6 +1162,11 @@
         ],
         "urls": [
           "https://www.sueddeutsche.de/bayern/geheime-anlage-in-schwaben-das-grosse-ohr-des-bnd-1.1737575"
+        ],
+        "sub": "Wullenweber CDAA",
+        "bandGroup": [
+          "Shortwave",
+          "Microwave"
         ]
       }
     },
@@ -1024,11 +1188,14 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://en.wikipedia.org/wiki/Duga_radar",
           "https://www.youtube.com/watch?v=CGSlpQjV5SU"
-        ]
+        ],
+        "sub": "Curtain dipole OTH-radar"
       }
     },
     {
@@ -1050,9 +1217,15 @@
         "freq": [
           "UHF"
         ],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "https://en.m.wikipedia.org/wiki/OTC_Satellite_Earth_Station_Carnarvon"
+        ],
+        "sub": "Sugar-scoop Cassegrain",
+        "bandGroup": [
+          "Microwave"
         ]
       }
     },
@@ -1075,11 +1248,14 @@
         "freq": [
           "Radio - Low"
         ],
-        "type": [],
+        "type": [
+          "Wire"
+        ],
         "urls": [
           "https://www.baesystems.com/en/marconi-company-page-part-1",
           "https://www.southwestantennas.com/news/rf-history-guglielmo-marconi"
-        ]
+        ],
+        "sub": "Fan/curtain transmitter"
       }
     },
     {
@@ -1103,9 +1279,16 @@
           "MF",
           "HF"
         ],
-        "type": [],
+        "type": [
+          "Dipole"
+        ],
         "urls": [
           "https://www.darpa.mil/about-us/timeline/tiros"
+        ],
+        "sub": "Crossed-dipole turnstile",
+        "bandGroup": [
+          "Longwave",
+          "Shortwave"
         ]
       }
     },
@@ -1124,8 +1307,11 @@
         "app": [],
         "era": null,
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Wire"
+        ],
+        "urls": [],
+        "sub": "Broadcast/relay tower"
       }
     },
     {
@@ -1143,8 +1329,11 @@
         "app": [],
         "era": "20th Century",
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Wire"
+        ],
+        "urls": [],
+        "sub": "Broadcast/relay tower"
       }
     },
     {
@@ -1162,10 +1351,13 @@
         "app": [],
         "era": "20th Century",
         "freq": [],
-        "type": [],
+        "type": [
+          "Reflector"
+        ],
         "urls": [
           "http://www.vla.nrao.edu/"
-        ]
+        ],
+        "sub": "Cassegrain (VLA dish)"
       }
     },
     {
@@ -1185,8 +1377,11 @@
         ],
         "era": "20th Century",
         "freq": [],
-        "type": [],
-        "urls": []
+        "type": [
+          "Reflector"
+        ],
+        "urls": [],
+        "sub": "Microwave relay tower (drum-shrouded)"
       }
     }
   ],

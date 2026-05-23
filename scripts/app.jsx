@@ -8,7 +8,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "grid": true,
   "numbering": "arabic",
   "threads": true,
-  "autoRotate": true
+  "autoRotate": true,
+  "grouping": "scatter"
 }/*EDITMODE-END*/;
 
 const ARCHIVE = window.SA_ARCHIVE || [];
@@ -48,7 +49,87 @@ function Plate({ n }){
 // Organized loosely into zones so threads read, but with no TOC surface.
 // (0,0) is the title; negative/positive in both axes.
 
-const ISLANDS = (function(){
+const GROUP_MODES = ["scatter", "application", "decade", "frequency", "type"];
+const GROUP_MODES_BIN = ["application", "decade", "frequency", "type"]; // non-scatter
+
+// Friendly label per mode — used by the tab bar, the group label meta line,
+// and the hidden picker so all three stay in lockstep.
+const MODE_LABEL = {
+  scatter: "scatter",
+  application: "application",
+  decade: "decade",
+  frequency: "band",
+  type: "form",
+};
+
+// Grouping keys read directly from Notion fields. Notion is canonical:
+// `notion.type` and `notion.bandGroup` are maintained in the Antenna
+// Repository DB and flow in via data/notion-mapping.json → data/archive.js.
+// "decade" is derived locally from a.y (year-of-acquisition), kept granular.
+function pickGroupKey(a, mode){
+  const n = a.notion || {};
+  if (mode === "application") return (n.app && n.app[0])       || "Unspecified";
+  if (mode === "decade")      return a.y ? (Math.floor(a.y/10)*10 + "s") : "Unspecified";
+  if (mode === "frequency")   return (n.bandGroup && n.bandGroup[0]) || "Unspecified";
+  if (mode === "type")        return (n.type && n.type[0])     || "Unspecified";
+  return "all";
+}
+
+// Geometry shared between scatter and grouped layouts and the label layer.
+const ARCHIVE_LAYOUT = {
+  startX: -600,
+  scatterStartY: 1760,
+  groupedStartY: 1860,
+  groupedLabelOffsetY: -120,
+  colsInGroup: 3,
+  thumbPitchX: 130,
+  thumbPitchY: 140,
+  get colWidth(){ return this.colsInGroup * this.thumbPitchX + 40; },
+};
+
+function layoutGroupMode(mode){
+  const groups = new Map();
+  for (const a of ARCHIVE){
+    const key = pickGroupKey(a, mode);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(a);
+  }
+  const ordered = [...groups.entries()].sort((A, B) => {
+    if (A[0] === "Unspecified") return 1;
+    if (B[0] === "Unspecified") return -1;
+    return B[1].length - A[1].length;
+  });
+
+  const L = ARCHIVE_LAYOUT;
+  const labels = [];
+  const thumbs = [];
+  ordered.forEach(([key, list], gi) => {
+    const gx = L.startX + gi * L.colWidth;
+    labels.push({
+      id: "grp-" + mode + "-" + key.replace(/\s+/g, "_"),
+      kind: "group-label",
+      mode, x: gx, y: L.groupedStartY + L.groupedLabelOffsetY,
+      w: L.colWidth - 40, label: key, count: list.length,
+    });
+    list.forEach((a, k) => {
+      const col = k % L.colsInGroup;
+      const row = Math.floor(k / L.colsInGroup);
+      thumbs.push({ id: "arc-"+a.i, kind: "thumb",
+        x: gx + col * L.thumbPitchX,
+        y: L.groupedStartY + row * L.thumbPitchY,
+        w: 120, a
+      });
+    });
+  });
+  return { labels, thumbs };
+}
+
+// Pre-compute every label for every grouping mode. The label layer renders
+// all of them at all times, controlling visibility via opacity so the fade
+// in/out is symmetric instead of a hard mount/unmount pop.
+const ALL_GROUP_LABELS = GROUP_MODES_BIN.flatMap(m => layoutGroupMode(m).labels);
+
+function buildIslands(grouping){
   const items = [];
 
   // Notion-driven stable-ID islands. Sourced from data/islands.generated.js
@@ -62,32 +143,34 @@ const ISLANDS = (function(){
   items.push({ id: "arc-head", kind: "cluster-head",
     x: -600, y: 1400, k: "archive", n: "gathered · ongoing"
   });
+  // In-world tab selector — sits beneath the giant "archive" wash so it reads
+  // as a section index rather than floating chrome.
+  items.push({ id: "group-tabs", kind: "group-tabs",
+    x: -600, y: 1620, w: 900
+  });
 
-  // Archive thumbs — seeded pseudo-random distribution
-  let seed = 97;
-  const rand = ()=>{ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (const a of ARCHIVE){
-    const col = (a.i - 1) % 10;
-    const row = Math.floor((a.i - 1) / 10);
-    const jx = (rand() - 0.5) * 80;
-    const jy = (rand() - 0.5) * 60;
-    const baseX = -600 + col * 170 + jx;
-    const baseY = 1680 + row * 220 + jy;
-    items.push({ id: "arc-"+a.i, kind: "thumb",
-      x: baseX, y: baseY, w: 120, a
-    });
-  }
-
-  // Featured specimens — larger cards near the archive header
-  for (let k = 0; k < 4; k++){
-    const a = ARCHIVE[[0, 16, 35, 47][k]];
-    items.push({ id: "sp-"+a.i, kind: "spec",
-      x: -1400 + k * 260, y: 1480, w: 220, a
-    });
+  if (grouping === "scatter") {
+    // Archive thumbs — seeded pseudo-random distribution (original layout)
+    let seed = 97;
+    const rand = ()=>{ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    for (const a of ARCHIVE){
+      const col = (a.i - 1) % 10;
+      const row = Math.floor((a.i - 1) / 10);
+      const jx = (rand() - 0.5) * 80;
+      const jy = (rand() - 0.5) * 60;
+      const baseX = ARCHIVE_LAYOUT.startX + col * 170 + jx;
+      const baseY = ARCHIVE_LAYOUT.scatterStartY + row * 220 + jy;
+      items.push({ id: "arc-"+a.i, kind: "thumb",
+        x: baseX, y: baseY, w: 120, a
+      });
+    }
+  } else {
+    const { thumbs } = layoutGroupMode(grouping);
+    items.push(...thumbs);
   }
 
   return items;
-})();
+}
 
 // Threads = Notion-driven (between stable islands) + dynamic (involving
 // viewer / arc-head / sp-* — non-Notion islands).
@@ -97,12 +180,7 @@ const THREADS = [
   ["ess-6", "viewer"],
   ["title", "viewer"],
   ["viewer", "arc-head"],
-  ["viewer", "sp-17"],
   ["field-1", "arc-head"],
-  ["arc-head", "sp-1"],
-  ["arc-head", "sp-17"],
-  ["arc-head", "sp-36"],
-  ["arc-head", "sp-48"],
   ["gl-2", "arc-head"],
   ["gl-4", "arc-head"],
   ["pq-1", "viewer"],
@@ -114,7 +192,7 @@ const THREADS = [
 // ───────────────────────────────────────────────────────────────────────────
 // Islands
 
-function Island({ it, viewer }){
+function Island({ it, viewer, groupingCtl }){
   const style = { left: it.x + "px", top: it.y + "px", width: it.w + "px" };
 
   if (it.kind === "title") {
@@ -234,6 +312,34 @@ function Island({ it, viewer }){
     );
   }
 
+  if (it.kind === "group-label") {
+    return (
+      <div className="island group-label" style={style} data-id={it.id}>
+        <div className="meta">grouped by · {it.mode}</div>
+        <div className="lbl">{it.label}</div>
+        <div className="cnt">{it.count} specimen{it.count !== 1 ? "s" : ""}</div>
+      </div>
+    );
+  }
+
+  if (it.kind === "group-tabs") {
+    return (
+      <div className="island group-tabs" style={style} data-id={it.id}>
+        <div className="t">arrange archive by</div>
+        <div className="tabs" role="tablist">
+          {GROUP_MODES.map(m => (
+            <button key={m} role="tab"
+              aria-selected={groupingCtl.value === m}
+              className={groupingCtl.value === m ? "on" : ""}
+              onClick={()=> groupingCtl.set(m)}>
+              {MODE_LABEL[m]}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (it.kind === "thumb") {
     const a = it.a;
     return (
@@ -291,9 +397,33 @@ function Island({ it, viewer }){
 }
 
 // ───────────────────────────────────────────────────────────────────────────
+// Group label layer — every mode's labels stay mounted at all times. Only
+// the active mode renders opaque; the others stay at opacity 0. Switching
+// modes is then a pure crossfade rather than a DOM mount/unmount.
+
+function GroupLabelLayer({ labels, active }){
+  return labels.map(lbl => {
+    const visible = lbl.mode === active;
+    return (
+      <div key={lbl.id}
+        className="island group-label"
+        style={{
+          left: lbl.x + "px", top: lbl.y + "px", width: lbl.w + "px",
+          opacity: visible ? 1 : 0,
+        }}
+        aria-hidden={!visible}>
+        <div className="meta">grouped by · {MODE_LABEL[lbl.mode] || lbl.mode}</div>
+        <div className="lbl">{lbl.label}</div>
+        <div className="cnt">{lbl.count} specimen{lbl.count !== 1 ? "s" : ""}</div>
+      </div>
+    );
+  });
+}
+
+// ───────────────────────────────────────────────────────────────────────────
 // Threads — drawn as an SVG layer in plane coords.
 
-function Threads({ islands, show }){
+function Threads({ islands, threads, show }){
   // Compute centres of islands using ids
   const byId = {};
   for (const it of islands) byId[it.id] = it;
@@ -302,15 +432,16 @@ function Threads({ islands, show }){
     const hByKind = {
       title: 360, prose: 180, pullquote: 200, whisper: 80, note: 80,
       field: 340, gloss: 130, method: 280, bib: 340, colophon: 160,
-      "cluster-head": 280, thumb: 170, spec: 300, viewer: 580
+      "cluster-head": 280, thumb: 170, spec: 300, viewer: 580,
+      "group-label": 100, "group-tabs": 64
     };
     const h = hByKind[it.kind] || 160;
     const w = it.w || 240;
     return { cx: it.x + w/2, cy: it.y + h/2 };
   }
   const paths = [];
-  for (let i = 0; i < THREADS.length; i++){
-    const [a, b] = THREADS[i];
+  for (let i = 0; i < threads.length; i++){
+    const [a, b] = threads[i];
     const A = byId[a]; const B = byId[b];
     if (!A || !B) continue;
     const p1 = centre(A); const p2 = centre(B);
@@ -462,12 +593,41 @@ function App(){
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [idx, setIdx] = React.useState(0);
   const [pose, setPose] = React.useState({x:0, y:0, k:0.85});
+  const [groupPicker, setGroupPicker] = React.useState(false);
+
+  const grouping = GROUP_MODES.includes(t.grouping) ? t.grouping : "scatter";
+  const islands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  const groupingCtl = React.useMemo(()=> ({
+    value: grouping,
+    set: (m) => setTweak("grouping", m),
+  }), [grouping, setTweak]);
+
+  // Hidden grouping picker — press `g` to toggle, Esc to close.
+  React.useEffect(()=>{
+    const onKey = (e) => {
+      const tag = e.target && e.target.tagName;
+      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+      if (e.key === "g" || e.key === "G") {
+        setGroupPicker(p => !p);
+        e.preventDefault();
+      } else if (e.key === "Escape") {
+        setGroupPicker(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return ()=> window.removeEventListener("keydown", onKey);
+  }, []);
+  // Drop dynamic-archive threads whose endpoint thumbs no longer share the
+  // featured layout; the curated THREADS list addresses sp-N + arc-head only,
+  // both of which stay put, so the list itself is grouping-independent.
+  const threads = THREADS;
 
   React.useEffect(()=>{
     document.body.setAttribute("data-density", t.density);
     document.body.setAttribute("data-grid", t.grid ? "1" : "0");
     document.body.setAttribute("data-numbering", t.numbering);
-  }, [t.density, t.grid, t.numbering]);
+    document.body.setAttribute("data-grouping", grouping);
+  }, [t.density, t.grid, t.numbering, grouping]);
 
   const viewer = {
     idx, setIdx,
@@ -488,8 +648,9 @@ function App(){
       <Viewport onPose={setPose}>
         <div className="bg-grid"/>
         <div className="bg-axes"/>
-        <Threads islands={ISLANDS} show={t.threads}/>
-        {ISLANDS.map(it => <Island key={it.id} it={it} viewer={viewer}/>)}
+        <Threads islands={islands} threads={threads} show={t.threads}/>
+        {islands.map(it => <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl}/>)}
+        <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
       </Viewport>
 
       <header className="masthead">
@@ -513,6 +674,11 @@ function App(){
         <div className="help">
           <kbd>drag</kbd> pan · <kbd>wheel</kbd> zoom · <kbd>shift+wheel</kbd> pan · <kbd>0</kbd> reset
         </div>
+
+        <button className="tweaks-toggle" type="button"
+          onClick={()=>window.postMessage({ type: '__activate_edit_mode' }, '*')}>
+          tweaks ⌥
+        </button>
 
         <div className="legend">
           <div className="row"><span className="sw t"/><span>island</span></div>
@@ -546,6 +712,23 @@ function App(){
         <TweakToggle label="auto-rotate" value={t.autoRotate}
           onChange={v=>setTweak("autoRotate", v)}/>
       </TweaksPanel>
+
+      {groupPicker && (
+        <div className="group-picker" role="dialog" aria-label="grouping picker">
+          <div className="t">group by</div>
+          {GROUP_MODES.map(m => (
+            <button key={m} className={grouping === m ? "on" : ""}
+              onClick={()=>{ setTweak("grouping", m); setGroupPicker(false); }}>
+              <span className="caret">{grouping === m ? "▸" : " "}</span>
+              <span>{m === "scatter"   ? "scatter (default)"
+                   : m === "frequency" ? "band (frequency)"
+                   : m === "type"      ? "form (archetype)"
+                   : MODE_LABEL[m] || m}</span>
+            </button>
+          ))}
+          <div className="hint">esc to close · g to toggle</div>
+        </div>
+      )}
     </>
   );
 }
