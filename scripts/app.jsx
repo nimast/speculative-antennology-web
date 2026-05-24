@@ -76,15 +76,40 @@ function pickGroupKey(a, mode){
 }
 
 // Geometry shared between scatter and grouped layouts and the label layer.
+// Grouped modes pack clusters into a 2D grid (clustersPerRow wide) instead of
+// a single horizontal strip; each cluster gets a thin framed box.
 const ARCHIVE_LAYOUT = {
   startX: -600,
   scatterStartY: 1760,
-  groupedStartY: 1860,
-  groupedLabelOffsetY: -120,
+  groupedStartY: 1820,
   colsInGroup: 3,
+  thumbW: 120,
   thumbPitchX: 130,
   thumbPitchY: 140,
-  get colWidth(){ return this.colsInGroup * this.thumbPitchX + 40; },
+  // within a cluster: tight label area then thumbs
+  labelHeight: 62,
+  labelToThumbsGap: 10,
+  framePadX: 14,
+  framePadTop: 10,
+  framePadBottom: 14,
+  // Safety padding (px) between content and ellipse stroke before the √2
+  // circumscribe scale-up. Big enough to absorb the wobble-filter swing
+  // (penWobble below) plus the stroke half-width.
+  framePenSafety: 12,
+  // Cloud arrangement: clusters orbit the tab picker below it, in an arc
+  // that fans across [angleMin..angleMax] (radians, 0=right, π/2=down).
+  // Largest clusters are placed first so they claim the inner orbits; the
+  // rest are rejection-sampled outward until they find a clear spot.
+  cloudCenterX: -150,
+  cloudCenterY: 2240,
+  cloudMinRadius: 360,
+  cloudMaxRadius: 1400,
+  cloudAngleMin: Math.PI / 6,        //  30° from horizontal-right
+  cloudAngleMax: Math.PI * 5 / 6,    // 150° (i.e. through the bottom)
+  // Required clear gap (px) between ellipse bounding boxes. Has to clear
+  // 2× the wobble swing so adjacent pen strokes don't touch.
+  cloudClearance: 22,
+  get colsInnerWidth(){ return (this.colsInGroup - 1) * this.thumbPitchX + this.thumbW; },
 };
 
 function layoutGroupMode(mode){
@@ -103,31 +128,151 @@ function layoutGroupMode(mode){
   const L = ARCHIVE_LAYOUT;
   const labels = [];
   const thumbs = [];
-  ordered.forEach(([key, list], gi) => {
-    const gx = L.startX + gi * L.colWidth;
-    labels.push({
-      id: "grp-" + mode + "-" + key.replace(/\s+/g, "_"),
-      kind: "group-label",
-      mode, x: gx, y: L.groupedStartY + L.groupedLabelOffsetY,
-      w: L.colWidth - 40, label: key, count: list.length,
+  const frames = [];
+
+  // Each pen ellipse circumscribes its own content rectangle (label area +
+  // thumb grid). For a rect of W×H, the smallest ellipse that contains all
+  // four corners has axes (W/2·√2, H/2·√2) — plus a safety pad so the stroke
+  // wobble doesn't graze the contents. The ellipse is centered on the
+  // content's centroid, not on the padded cluster origin.
+  const clusters = ordered.map(([key, list]) => {
+    const rows = Math.max(1, Math.ceil(list.length / L.colsInGroup));
+    const thumbsHeight = (rows - 1) * L.thumbPitchY + L.thumbW;
+    const innerW = L.colsInnerWidth;
+    const innerH = L.labelHeight + L.labelToThumbsGap + thumbsHeight;
+    const rx = Math.ceil((innerW / 2 + L.framePenSafety) * Math.SQRT2);
+    const ry = Math.ceil((innerH / 2 + L.framePenSafety) * Math.SQRT2);
+    const ccX = L.framePadX + innerW / 2;
+    const ccY = L.framePadTop + innerH / 2;
+    return { key, list, rows, innerW, innerH, rx, ry, ccX, ccY,
+             ellipseW: 2 * rx, ellipseH: 2 * ry };
+  });
+
+  // Polar cloud around the tab picker. Each cluster picks a random angle
+  // in [angleMin..angleMax] and a radius growing with attempt count, then
+  // gets rejected if its ellipse centre is too close to an already-placed
+  // ellipse. Largest clusters are placed first so they claim inner orbits;
+  // smaller ones fill out the periphery.
+  let seed = 1023 + mode.length * 17;
+  const rand = ()=>{ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+  // Forbidden zones — bounding rects around UI that ellipses must avoid.
+  // Tab picker is at (-600, 1620) w:900, height ~64; the "archive" wash
+  // (cluster-head) is at (-600, 1400) and visually tall.
+  const FORBIDDEN = [
+    { x1: -640, y1: 1580, x2:  320, y2: 1720 }, // group-tabs island
+    { x1: -640, y1: 1380, x2:  360, y2: 1610 }, // arc-head "archive" wash
+  ];
+  const clearsForbidden = (f_x, f_y, f_w, f_h) => {
+    for (const z of FORBIDDEN) {
+      if (f_x < z.x2 && f_x + f_w > z.x1 &&
+          f_y < z.y2 && f_y + f_h > z.y1) return false;
+    }
+    return true;
+  };
+
+  const placed = [];
+  const ATTEMPTS = 600;
+  const PAD = L.cloudClearance;
+  for (const c of clusters) {
+    let chosen = null;
+    for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+      const angle = L.cloudAngleMin + rand() * (L.cloudAngleMax - L.cloudAngleMin);
+      const grow = attempt / ATTEMPTS;
+      const radius = L.cloudMinRadius
+        + grow * (L.cloudMaxRadius - L.cloudMinRadius)
+        + (rand() - 0.5) * 60;
+      const cx = L.cloudCenterX + Math.cos(angle) * radius;
+      const cy = L.cloudCenterY + Math.sin(angle) * radius;
+      const f_x = cx - c.ellipseW / 2;
+      const f_y = cy - c.ellipseH / 2;
+
+      // Bounding-box separation: ellipses (and their wobble strokes) stay
+      // clear of each other iff the bboxes are PAD apart on at least one
+      // axis. This is stricter than necessary at the bbox corners, which
+      // is fine — we want guaranteed clearance, not maximum density.
+      let conflict = false;
+      for (const p of placed) {
+        if (Math.abs(cx - p.cx) < c.rx + p.c.rx + PAD &&
+            Math.abs(cy - p.cy) < c.ry + p.c.ry + PAD) {
+          conflict = true; break;
+        }
+      }
+      if (!conflict && !clearsForbidden(f_x, f_y, c.ellipseW, c.ellipseH)) {
+        conflict = true;
+      }
+      if (!conflict) { chosen = { cx, cy }; break; }
+    }
+    if (!chosen) {
+      // Fallback: linear scan outward at a random angle until something fits.
+      let r = L.cloudMaxRadius;
+      for (let step = 0; step < 60; step++) {
+        const angle = L.cloudAngleMin + rand() * (L.cloudAngleMax - L.cloudAngleMin);
+        const cx = L.cloudCenterX + Math.cos(angle) * r;
+        const cy = L.cloudCenterY + Math.sin(angle) * r;
+        const f_x = cx - c.ellipseW / 2, f_y = cy - c.ellipseH / 2;
+        let conflict = false;
+        for (const p of placed) {
+          if (Math.abs(cx - p.cx) < c.rx + p.c.rx + PAD &&
+              Math.abs(cy - p.cy) < c.ry + p.c.ry + PAD) {
+            conflict = true; break;
+          }
+        }
+        if (!conflict && clearsForbidden(f_x, f_y, c.ellipseW, c.ellipseH)) {
+          chosen = { cx, cy }; break;
+        }
+        r += 80;
+      }
+      if (!chosen) {
+        // Absolute last resort: drop it straight below the cloud centre at
+        // an unused y so the cluster is still legible.
+        chosen = { cx: L.cloudCenterX, cy: L.cloudCenterY + L.cloudMaxRadius + placed.length * 40 };
+      }
+    }
+    placed.push({ c, cx: chosen.cx, cy: chosen.cy });
+  }
+
+  for (const p of placed) {
+    const c = p.c;
+    const f_x = p.cx - c.ellipseW / 2;
+    const f_y = p.cy - c.ellipseH / 2;
+    // cluster origin (cx, cy) is where label/thumbs anchor, picked so the
+    // content centroid lands at the ellipse centre.
+    const cx = f_x + c.rx - c.ccX;
+    const cy = f_y + c.ry - c.ccY;
+    const idKey = c.key.replace(/\s+/g, "_");
+
+    frames.push({
+      id: "frm-" + mode + "-" + idKey,
+      kind: "group-frame", mode,
+      x: f_x, y: f_y, w: c.ellipseW, h: c.ellipseH,
     });
-    list.forEach((a, k) => {
+    labels.push({
+      id: "grp-" + mode + "-" + idKey,
+      kind: "group-label", mode,
+      x: cx + L.framePadX, y: cy + L.framePadTop,
+      w: L.colsInnerWidth,
+      label: c.key, count: c.list.length,
+    });
+    c.list.forEach((a, k) => {
       const col = k % L.colsInGroup;
-      const row = Math.floor(k / L.colsInGroup);
-      thumbs.push({ id: "arc-"+a.i, kind: "thumb",
-        x: gx + col * L.thumbPitchX,
-        y: L.groupedStartY + row * L.thumbPitchY,
-        w: 120, a
+      const tr = Math.floor(k / L.colsInGroup);
+      thumbs.push({
+        id: "arc-"+a.i, kind: "thumb",
+        x: cx + L.framePadX + col * L.thumbPitchX,
+        y: cy + L.framePadTop + L.labelHeight + L.labelToThumbsGap + tr * L.thumbPitchY,
+        w: L.thumbW, a,
       });
     });
-  });
-  return { labels, thumbs };
+  }
+  return { labels, thumbs, frames };
 }
 
-// Pre-compute every label for every grouping mode. The label layer renders
-// all of them at all times, controlling visibility via opacity so the fade
-// in/out is symmetric instead of a hard mount/unmount pop.
+// Pre-compute labels + frames for every grouping mode. Both layers stay mounted
+// at all times; only the active mode renders opaque so switching is a
+// symmetric crossfade instead of a hard mount/unmount pop.
 const ALL_GROUP_LABELS = GROUP_MODES_BIN.flatMap(m => layoutGroupMode(m).labels);
+const ALL_GROUP_FRAMES = GROUP_MODES_BIN.flatMap(m => layoutGroupMode(m).frames);
 
 function buildIslands(grouping){
   const items = [];
@@ -401,6 +546,48 @@ function Island({ it, viewer, groupingCtl }){
 // the active mode renders opaque; the others stay at opacity 0. Switching
 // modes is then a pure crossfade rather than a DOM mount/unmount.
 
+// Cluster frames are SVG ellipses passed through a turbulence/displacement
+// filter so the stroke reads as a hand-drawn pen circle. App declares a small
+// pool of filters with different seeds (#sa-pen-0..N); each ellipse picks one
+// deterministically from its id, so overlapping rings have distinct wobble.
+const PEN_FILTER_COUNT = 6;
+function hashStringTo(n){
+  return (s) => {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) { h = Math.imul(h ^ s.charCodeAt(i), 16777619); }
+    return (h >>> 0) % n;
+  };
+}
+const pickPenFilter = hashStringTo(PEN_FILTER_COUNT);
+
+function GroupFrameLayer({ frames, active }){
+  return frames.map(f => {
+    const visible = f.mode === active;
+    const filterId = `sa-pen-${pickPenFilter(f.id)}`;
+    return (
+      <svg key={f.id}
+        className="island group-frame"
+        style={{
+          left: f.x + "px", top: f.y + "px",
+          width: f.w + "px", height: f.h + "px",
+          opacity: visible ? 1 : 0,
+        }}
+        viewBox={`0 0 ${f.w} ${f.h}`}
+        preserveAspectRatio="none"
+        aria-hidden={!visible}>
+        <ellipse
+          cx={f.w / 2} cy={f.h / 2}
+          rx={f.w / 2 - 3} ry={f.h / 2 - 3}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          filter={`url(#${filterId})`}
+        />
+      </svg>
+    );
+  });
+}
+
 function GroupLabelLayer({ labels, active }){
   return labels.map(lbl => {
     const visible = lbl.mode === active;
@@ -645,9 +832,25 @@ function App(){
 
   return (
     <>
+      <svg className="sa-defs" width="0" height="0" aria-hidden="true"
+        style={{position:'absolute', width:0, height:0, pointerEvents:'none'}}>
+        <defs>
+          {/* hand-drawn pen wobble; one filter per seed so overlapping
+              ellipses don't share an identical edge pattern */}
+          {Array.from({length: PEN_FILTER_COUNT}, (_, i) => (
+            <filter key={i} id={`sa-pen-${i}`}
+              x="-3%" y="-3%" width="106%" height="106%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.022"
+                numOctaves="2" seed={11 + i * 23} result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="3"/>
+            </filter>
+          ))}
+        </defs>
+      </svg>
       <Viewport onPose={setPose}>
         <div className="bg-grid"/>
         <div className="bg-axes"/>
+        <GroupFrameLayer frames={ALL_GROUP_FRAMES} active={grouping}/>
         <Threads islands={islands} threads={threads} show={t.threads}/>
         {islands.map(it => <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl}/>)}
         <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
