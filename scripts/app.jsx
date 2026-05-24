@@ -38,8 +38,7 @@ function Plate({ n }){
     <img
       src={`assets/archive/ant-${idx}.jpg`}
       alt=""
-      style={{ display:'block', width:'100%', height:'100%', objectFit:'cover',
-               filter:'grayscale(1) contrast(1.05)' }}
+      style={{ display:'block', width:'100%', height:'100%', objectFit:'cover' }}
     />
   );
 }
@@ -97,6 +96,8 @@ function layoutGroupMode(mode){
   const ordered = [...groups.entries()].sort((A, B) => {
     if (A[0] === "Unspecified") return 1;
     if (B[0] === "Unspecified") return -1;
+    // Decades read chronologically; all other modes stay sorted by size.
+    if (mode === "decade") return parseInt(A[0], 10) - parseInt(B[0], 10);
     return B[1].length - A[1].length;
   });
 
