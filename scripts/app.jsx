@@ -725,11 +725,6 @@ function App(){
           <kbd>drag</kbd> pan · <kbd>wheel</kbd> zoom · <kbd>shift+wheel</kbd> pan · <kbd>0</kbd> reset
         </div>
 
-        <button className="tweaks-toggle" type="button"
-          onClick={()=>window.postMessage({ type: '__activate_edit_mode' }, '*')}>
-          tweaks ⌥
-        </button>
-
         <div className="legend">
           <div className="row"><span className="sw t"/><span>island</span></div>
           <div className="row"><span className="sw"/><span>direct</span></div>

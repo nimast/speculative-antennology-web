@@ -131,16 +131,6 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   letter-spacing:.12em; text-transform:uppercase;
   color:var(--muted);
 }
-.chrome .tweaks-toggle{
-  position:absolute; left: 1rem; top: 3rem;
-  pointer-events:auto;
-  font-family:var(--f-mono); font-size:10px;
-  letter-spacing:.12em; text-transform:uppercase;
-  background: var(--paper); color: var(--ink);
-  border:1px solid var(--ink); padding:.35rem .55rem;
-  cursor:pointer;
-}
-.chrome .tweaks-toggle:hover{ background:var(--ink); color:var(--paper) }
 
 /* Hidden grouping picker — opens on `g`, closes on Esc. Not chrome-bound
    because it's intentionally undiscoverable. */
