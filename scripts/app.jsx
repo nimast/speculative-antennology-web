@@ -189,10 +189,25 @@ const THREADS = [
   ["pq-3", "arc-head"],
 ];
 
+// Ordered reader path: "One Possible Route Through the Field"
+const READER_PATH = [
+  "ess-1",   // The Work Begins Where Perception Fails
+  "ess-13",  // Against the Visible
+  "ess-2",   // Conceptual Art Was Never Dematerialised
+  "ess-14",  // Light as Carrier, Not Image
+  "ess-6",   // The Antenna Is Not a Metaphor
+  "ess-15",  // Ground Is Part of the Circuit
+  "ess-16",  // The Gallery Was Never Empty
+  "ess-17",  // Simulation as Retinal Contract
+  "ess-18",  // A Signal Leaves Earth
+  "ess-4",   // Energy Too Remembers
+  "ess-19",  // Oeuvre as Array
+];
+
 // ───────────────────────────────────────────────────────────────────────────
 // Islands
 
-function Island({ it, viewer, groupingCtl }){
+function Island({ it, viewer, groupingCtl, pathCurrent }){
   const style = { left: it.x + "px", top: it.y + "px", width: it.w + "px" };
 
   if (it.kind === "title") {
@@ -212,7 +227,7 @@ function Island({ it, viewer, groupingCtl }){
 
   if (it.kind === "prose") {
     return (
-      <div className="island prose-frag" style={style} data-id={it.id}>
+      <div className="island prose-frag" style={style} data-id={it.id} data-path-current={pathCurrent || undefined}>
         <div className="body">
           {it.lede
             ? <p className="lede" dangerouslySetInnerHTML={{__html: "&ldquo;"+it.text+"&rdquo;"}}/>
@@ -594,6 +609,8 @@ function App(){
   const [idx, setIdx] = React.useState(0);
   const [pose, setPose] = React.useState({x:0, y:0, k:0.85});
   const [groupPicker, setGroupPicker] = React.useState(false);
+  const [pathMode, setPathMode] = React.useState(false);
+  const [pathStep, setPathStep] = React.useState(0);
 
   const grouping = GROUP_MODES.includes(t.grouping) ? t.grouping : "scatter";
   const islands = React.useMemo(()=> buildIslands(grouping), [grouping]);
@@ -622,6 +639,23 @@ function App(){
   // both of which stay put, so the list itself is grouping-independent.
   const threads = THREADS;
 
+  function goToIsland(id) {
+    const island = islands.find(it => it.id === id);
+    if (!island || !window.SA_goTo) return;
+    const world = document.querySelector('.world');
+    if (world) { world.classList.add('path-anim'); setTimeout(()=>world.classList.remove('path-anim'), 650); }
+    window.SA_goTo(island.x + (island.w || 460) / 2, island.y + 100, 1.0);
+  }
+
+  function enterPath() { setPathMode(true); setPathStep(0); goToIsland(READER_PATH[0]); }
+  function exitPath()  { setPathMode(false); }
+  function navPath(dir) {
+    const next = pathStep + dir;
+    if (next < 0 || next >= READER_PATH.length) return;
+    setPathStep(next);
+    goToIsland(READER_PATH[next]);
+  }
+
   React.useEffect(()=>{
     document.body.setAttribute("data-density", t.density);
     document.body.setAttribute("data-grid", t.grid ? "1" : "0");
@@ -649,7 +683,7 @@ function App(){
         <div className="bg-grid"/>
         <div className="bg-axes"/>
         <Threads islands={islands} threads={threads} show={t.threads}/>
-        {islands.map(it => <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl}/>)}
+        {islands.map(it => <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl} pathCurrent={pathMode && READER_PATH[pathStep] === it.id}/>)}
         <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
       </Viewport>
 
@@ -669,6 +703,21 @@ function App(){
               {j.label}
             </button>
           ))}
+        </div>
+
+        <div className="routepath">
+          {!pathMode ? (
+            <button onClick={enterPath}>one possible route →</button>
+          ) : (
+            <>
+              <button className="exit" onClick={exitPath}>× exit route</button>
+              <div className="step">
+                <button onClick={()=>navPath(-1)} disabled={pathStep===0}>◂</button>
+                <span>{pathStep+1} / {READER_PATH.length}</span>
+                <button onClick={()=>navPath(1)} disabled={pathStep===READER_PATH.length-1}>▸</button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="help">
