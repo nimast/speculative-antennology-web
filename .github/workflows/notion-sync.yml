@@ -1,9 +1,6 @@
 name: notion-sync
 
 on:
-  schedule:
-    # Daily at 06:00 UTC (≈ early morning CET / late evening US west)
-    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
