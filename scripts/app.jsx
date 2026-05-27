@@ -208,7 +208,7 @@ const READER_PATH = [
 // ───────────────────────────────────────────────────────────────────────────
 // Islands
 
-function Island({ it, viewer, groupingCtl, pathCurrent }){
+function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
   const style = { left: it.x + "px", top: it.y + "px", width: it.w + "px" };
 
   if (it.kind === "title") {
@@ -229,6 +229,7 @@ function Island({ it, viewer, groupingCtl, pathCurrent }){
   if (it.kind === "prose") {
     return (
       <div className="island prose-frag" style={style} data-id={it.id} data-path-current={pathCurrent || undefined}>
+        {pathIndex > 0 && <span className="path-num">{pathIndex}</span>}
         <div className="body">
           {it.lede
             ? <p className="lede" dangerouslySetInnerHTML={{__html: "&ldquo;"+it.text+"&rdquo;"}}/>
@@ -684,7 +685,11 @@ function App(){
         <div className="bg-grid"/>
         <div className="bg-axes"/>
         <Threads islands={islands} threads={threads} show={t.threads}/>
-        {islands.map(it => <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl} pathCurrent={pathMode && READER_PATH[pathStep] === it.id}/>)}
+        {islands.map(it => {
+          const pathIdx = pathMode ? READER_PATH.indexOf(it.id) : -1;
+          return <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl}
+            pathCurrent={pathIdx === pathStep} pathIndex={pathIdx >= 0 ? pathIdx + 1 : 0}/>;
+        })}
         <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
       </Viewport>
 

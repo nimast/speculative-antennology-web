@@ -124,6 +124,13 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   outline: 1px solid var(--ink);
   box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--ink);
 }
+.island .path-num{
+  position:absolute; top:-1.1rem; left:-.3rem;
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.1em;
+  background:var(--ink); color:var(--paper);
+  padding:.1rem .35rem;
+  pointer-events:none; user-select:none;
+}
 
 .chrome .help{
   position:absolute; left:50%; bottom: 1rem; transform:translateX(-50%);

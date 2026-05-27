@@ -1,4 +1,4 @@
-// 48 antenna archive entries. Each is a "found specimen" gathered by the
+// 49 antenna archive entries. Each is a "found specimen" gathered by the
 // Speculative Antennology project. Entries are intentionally heterogeneous —
 // industrial, domestic, derelict, military, vernacular — to sit inside a
 // catalogue frame rather than a taxonomy.
@@ -106,4 +106,6 @@ window.SA_ARCHIVE = [
     notion: { era: "20th Century", type: ["Reflector"], sub: "Cassegrain (VLA dish)", urls: ["http://www.vla.nrao.edu/"], nid: "69668b9f" } },
   { i: 48,  name: "Rubber-duck, handheld",             loc: "Rescue service, IL",          y: 2012, k: "UHF portable", d: "Helical inside rubber jacket. Threaded SMA connector.",
     notion: { app: ["Spacecraft"], era: "20th Century", type: ["Reflector"], sub: "Microwave relay tower (drum-shrouded)", nid: "ebb48f56" } },
+  { i: 49,  name: "Duga OTH phased array — 'The Ribs'", loc: "Ivankiv Raion, UA (Chernobyl zone)", y: 1976, k: "OTH radar", d: "Curtain dipole array. Close detail of phased array elements ('the ribs'). Duga-3, Chernobyl exclusion zone. Photo: Stanislav Nepochatov, CC BY-SA 3.0.",
+    notion: { def: "Duga was an over-the-horizon (OTH) radar system used by the Soviet Union for missile early-warning. The 'Ribs' are the phased dipole array elements of Duga-3, located in the Chernobyl exclusion zone. The structure spans approximately 150m tall × 500m wide.", app: ["Military"], era: "20th Century", freq: ["HF"], type: ["Dipole"], bandGroup: ["Shortwave"], sub: "Curtain dipole OTH-radar", urls: ["https://commons.wikimedia.org/wiki/File:The_Ribs_(217249975).jpeg"], nid: "36d43677" } },
 ];

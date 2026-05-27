@@ -1383,6 +1383,34 @@
         "urls": [],
         "sub": "Microwave relay tower (drum-shrouded)"
       }
+    },
+    {
+      "pageId": "36d43677-0500-81aa-9677-c589f9b98621",
+      "title": "Duga OTH phased array — 'The Ribs'",
+      "inExposition": true,
+      "archiveImages": [
+        48
+      ],
+      "allImageFilenames": [
+        "The_Ribs_(217249975)"
+      ],
+      "properties": {
+        "def": "Duga was an over-the-horizon (OTH) radar system used by the Soviet Union for missile early-warning. The 'Ribs' are the phased dipole array elements of Duga-3, located in the Chernobyl exclusion zone.",
+        "app": [
+          "Military"
+        ],
+        "era": "20th Century",
+        "freq": [
+          "HF"
+        ],
+        "type": [
+          "Dipole"
+        ],
+        "urls": [
+          "https://commons.wikimedia.org/wiki/File:The_Ribs_(217249975).jpeg"
+        ],
+        "sub": "Curtain dipole OTH-radar"
+      }
     }
   ],
   "antMapping": {
@@ -1433,7 +1461,8 @@
     "44": "3764b53a-5ab7-416c-bfb6-313301fb96e2",
     "45": "0e3973ee-ea37-4efc-af59-2c0fb31b99f9",
     "46": "69668b9f-e0d5-4507-a9af-57db51730397",
-    "47": "ebb48f56-c680-48e1-a17a-7959b475f6eb"
+    "47": "ebb48f56-c680-48e1-a17a-7959b475f6eb",
+    "48": "36d43677-0500-81aa-9677-c589f9b98621"
   },
   "multiImagePages": [
     {
