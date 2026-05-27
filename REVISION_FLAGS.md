@@ -140,26 +140,3 @@ Status column: `[ ]` open · `[x]` done · `[-]` skipped
 ### H3 · Node 7 — Section heading verification
 **Status:** `[ ]` — Check that "Minimizing Interference" and "Harvesting Clarity" survived final edit of ANTENNAE ms before using them as reference points in the exposition apparatus.
 
----
-
-## FIELD ISLANDS — archive specimens to wire into exposition
-
-Candidates for fi-08+: create as `kind: field-caption` in Notion and place adjacent to the indicated prose island. Image URLs are GitHub raw (`assets/archive/ant-XX.jpg`).
-
-### FI-A · Elefantenkäfig CDAA (ant-40, i:40)
-**Status:** `[ ]`
-**Place near:** ess-11 (Directivity) or ess-12 (Transceiving)
-**Rationale:** The 300m-diameter Wullenweber circular array in Gablingen, Bavaria. Its geometry *is* its directional resolution — the radius of the ring determines bearing precision. Strongest available image of the "geometry bakes in preferred angles" argument.
-**Notion page:** `35943677-0500-819e-9df7-ef52494f95df`
-
-### FI-B · Holmdel Horn (ant-02, i:2)
-**Status:** `[ ]`
-**Place near:** ess-7 (VLA / Distributed Eye) or ess-13 (Against the Visible)
-**Rationale:** Bell Labs horn that picked up the CMB — Penzias & Wilson received something they couldn't identify as signal. Directly relevant to the reception-without-recognition argument. Several Holmdel entries in archive (ant-01, ant-24, ant-36 also possible).
-**Notion page:** `35943677-0500-81c1-ac0d-c6315baf6766`
-
-### FI-C · Duga aerial / full curtain (ant-06 or ant-09, i:6 or i:9)
-**Status:** `[ ]`
-**Place near:** ess-11 (Directivity)
-**Rationale:** Wide-angle view of the full Duga OTH curtain structure, to complement the 'Ribs' detail (ant-48, fi-07). Shows the scale of directional infrastructure. Multiple Duga entries already in archive.
-**Notion pages:** `ea659021` (ant-06) or `35943677` (ant-09)
