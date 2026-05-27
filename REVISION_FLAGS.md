@@ -139,3 +139,4 @@ Status column: `[ ]` open · `[x]` done · `[-]` skipped
 
 ### H3 · Node 7 — Section heading verification
 **Status:** `[ ]` — Check that "Minimizing Interference" and "Harvesting Clarity" survived final edit of ANTENNAE ms before using them as reference points in the exposition apparatus.
+
