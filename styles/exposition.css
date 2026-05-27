@@ -97,7 +97,7 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
 .chrome .jumpmenu button:hover{ background: var(--ink); color:var(--paper) }
 
 .chrome .routepath{
-  position:absolute; top:3rem; left:1rem;
+  position:absolute; top:1rem; left:1rem;
   pointer-events:auto;
   font-family:var(--f-mono); font-size:10px;
   letter-spacing:.12em; text-transform:uppercase;

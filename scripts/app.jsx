@@ -693,11 +693,6 @@ function App(){
         <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
       </Viewport>
 
-      <header className="masthead">
-        <div>Journal of Artistic Research · Research Catalogue</div>
-        <div className="centre">Speculative Antennology</div>
-        <div className="jar">exposition · open field · MMXXVI</div>
-      </header>
 
       <div className="chrome">
         <div className="crop t"/><div className="crop b"/><div className="crop l"/><div className="crop r"/>
