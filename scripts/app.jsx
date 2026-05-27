@@ -14,6 +14,15 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
 const ARCHIVE = window.SA_ARCHIVE || [];
 
+// Archive entries already placed as field islands on the canvas — excluded from the grid.
+const FIELD_ARCHIVE_IS = new Set(
+  (window.SA_ISLANDS || [])
+    .filter(it => it.kind === "field" && it.img)
+    .map(it => { const m = it.img.match(/ant-(\d+)\.jpg/); return m ? parseInt(m[1], 10) + 1 : null; })
+    .filter(Boolean)
+);
+const ARCHIVE_GRID = ARCHIVE.filter(a => !FIELD_ARCHIVE_IS.has(a.i));
+
 const VIEWER_SPECIMENS = [
   { i: 80, meshIdx: 37   },
   { i: 81, meshIdx: 154  },
@@ -88,7 +97,7 @@ const ARCHIVE_LAYOUT = {
 
 function layoutGroupMode(mode){
   const groups = new Map();
-  for (const a of ARCHIVE){
+  for (const a of ARCHIVE_GRID){
     const key = pickGroupKey(a, mode);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(a);
@@ -154,7 +163,7 @@ function buildIslands(grouping){
     // Archive thumbs — seeded pseudo-random distribution (original layout)
     let seed = 97;
     const rand = ()=>{ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-    for (const a of ARCHIVE){
+    for (const a of ARCHIVE_GRID){
       const col = (a.i - 1) % 10;
       const row = Math.floor((a.i - 1) / 10);
       const jx = (rand() - 0.5) * 80;
