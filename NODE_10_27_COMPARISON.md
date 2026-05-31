@@ -168,4 +168,4 @@ generated file:
   (near `ess-4`/`ess-5`, ~x:5800).
 - Optionally add to the `READER_PATH` array in `scripts/app.jsx` if the full versions
   should replace `ess-6`/`ess-4` as the path's step 5 / step 10.
-- The daily `notion-sync` workflow regenerates `data/islands.generated.js`.
+- Trigger the `notion-sync` workflow (`workflow_dispatch`) to regenerate `data/islands.generated.js`.

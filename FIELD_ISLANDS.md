@@ -49,5 +49,5 @@ Status: `[ ]` outstanding · `[x]` done · `[-]` skipped
    - Body: image block using `https://raw.githubusercontent.com/nimast/speculative-antennology-web/main/assets/archive/ant-XX.jpg` + paragraph caption
    - `Status: final`
    - `Connects`: the target prose island (`ess-N`)
-3. Run `NOTION_TOKEN=… node tools/sync-from-notion.mjs` locally, or wait for the daily notion-sync PR.
+3. Run `NOTION_TOKEN=… node tools/sync-from-notion.mjs` locally, or trigger the `notion-sync` workflow (`workflow_dispatch`) to open a PR.
 4. Update this file.

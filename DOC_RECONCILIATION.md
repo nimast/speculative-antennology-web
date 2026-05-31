@@ -143,9 +143,9 @@ assets that can't be produced here.
 
 Nodes 10 & 27 are done: `ess-35`/`ess-36` created in Notion (`Status = final`) and wired into
 `READER_PATH`. The generated file / live site update on the next `notion-sync` (needs
-`NOTION_TOKEN`, not set locally) or the daily workflow. Outstanding:
+`NOTION_TOKEN`, not set locally) or a manual run of the `notion-sync` workflow. Outstanding:
 
 1. **Open footnotes** needing author content: endnotes 1, 3, 5, 6; inline title/earth-signal
    rephrase; assets for nodes 15, 20, 24 (see §4).
-2. Run `tools/sync-from-notion.mjs` (or let the daily workflow run) to regenerate
+2. Run `tools/sync-from-notion.mjs` (or trigger the `notion-sync` workflow) to regenerate
    `data/islands.generated.js` so `ess-35`/`ess-36` appear on the site.
