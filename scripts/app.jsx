@@ -181,6 +181,139 @@ function buildIslands(grouping){
   return items;
 }
 
+// ───────────────────────────────────────────────────────────────────────────
+// Overlap relaxation — islands carry only (x, y, w); their height is content-
+// driven (and shifts with the `density` tweak), so vertical overlap can't be
+// known from the data. After render we measure each card's real box and nudge
+// overlapping ones apart, keeping every card as close to its authored Notion
+// position as possible. The archive grid, labels and background wash are laid
+// out deliberately, so they're excluded from packing.
+const PACK_EXCLUDE = new Set(["thumb", "group-label", "group-tabs", "cluster-head"]);
+const PACK_FIXED   = new Set(["title", "model"]); // anchors: act as obstacles, never move
+const PACK_GUTTER  = 20;                  // breathing room kept between cards
+
+function boxesOverlap(a, b, g){
+  return a.x - g < b.x + b.w + g && a.x + a.w + g > b.x - g &&
+         a.y - g < b.y + b.h + g && a.y + a.h + g > b.y - g;
+}
+
+// Greedy placement. Fixed anchors (title, models, archive) are obstacles placed
+// first. Each movable card keeps its authored spot if free; otherwise it spirals
+// outward to the nearest free spot. Deterministic and jam-proof on the open
+// canvas — unlike pairwise relaxation, it can't settle into an overlapping
+// local minimum, because a card is never placed until it sits clear of every
+// box already down.
+function packBoxes(boxes, gutter){
+  const g = gutter / 2;
+  const placed = boxes.filter(b => b.fixed);
+  const movable = boxes.filter(b => !b.fixed)
+    .sort((a, b) => (a.y - b.y) || (a.x - b.x));
+  const clear = box => !placed.some(p => boxesOverlap(box, p, g));
+  for (const box of movable){
+    if (!clear(box)){
+      const ox = box.x, oy = box.y;
+      let found = false;
+      const step = 24;
+      for (let ring = 1; ring <= 240 && !found; ring++){
+        const rad = ring * step;
+        const samples = ring * 8;
+        for (let s = 0; s < samples; s++){
+          const ang = (s / samples) * Math.PI * 2;
+          box.x = ox + Math.cos(ang) * rad;
+          box.y = oy + Math.sin(ang) * rad;
+          if (clear(box)){ found = true; break; }
+        }
+      }
+      if (!found){ box.x = ox; box.y = oy; }
+    }
+    placed.push(box);
+  }
+}
+
+// The archive (specimen grid + its tab bar) is laid out as one deliberate
+// block. We don't repack it, but it must not be covered by — or pushed under —
+// editorial cards, so we feed it in as one immovable obstacle: the union box of
+// every thumb plus the group-tabs bar. Editorial cards then flow around it.
+function archiveObstacle(islands, measured){
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (const it of islands){
+    if (it.kind !== "thumb" && it.kind !== "group-tabs") continue;
+    const m = measured[it.id];
+    const w = m ? m.w : (it.w || 120), h = m ? m.h : 120;
+    x1 = Math.min(x1, it.x); y1 = Math.min(y1, it.y);
+    x2 = Math.max(x2, it.x + w); y2 = Math.max(y2, it.y + h);
+  }
+  if (x1 === Infinity) return null;
+  return { id: "__archive__", x: x1, y: y1, w: x2 - x1, h: y2 - y1, fixed: true };
+}
+
+// Measure rendered boxes, resolve overlaps, and return id → {x, y} overrides.
+// Deterministic from the authored positions, so it converges in one re-render.
+function usePackedIslands(islands, deps){
+  const [overrides, setOverrides] = React.useState({});
+  // Async content (3D model canvases, archive images, web fonts) finishes
+  // sizing after first paint, so the initial measurement under-reads heights.
+  // A ResizeObserver bumps this tick when any card's size settles, re-running
+  // the pass so the final layout reflects real heights.
+  const [tick, setTick] = React.useState(0);
+  const sizesRef = React.useRef({});
+  React.useLayoutEffect(()=>{
+    const world = document.querySelector(".world");
+    if (!world) return;
+    const measured = {};
+    world.querySelectorAll(".island[data-id]").forEach(el => {
+      measured[el.getAttribute("data-id")] = { w: el.offsetWidth, h: el.offsetHeight };
+    });
+    sizesRef.current = measured;
+    const boxes = islands
+      .filter(it => !PACK_EXCLUDE.has(it.kind))
+      .map(it => {
+        const m = measured[it.id];
+        return {
+          id: it.id, x: it.x, y: it.y,
+          w: m ? m.w : (it.w || 240),
+          h: m ? m.h : 160,
+          fixed: PACK_FIXED.has(it.kind),
+        };
+      });
+    const archive = archiveObstacle(islands, measured);
+    if (archive) boxes.push(archive);
+    packBoxes(boxes, PACK_GUTTER);
+    const next = {};
+    for (const b of boxes){
+      if (b.fixed) continue;
+      const o = islands.find(i => i.id === b.id);
+      const nx = Math.round(b.x), ny = Math.round(b.y);
+      if (nx !== o.x || ny !== o.y) next[b.id] = { x: nx, y: ny };
+    }
+    setOverrides(prev => {
+      const ka = Object.keys(prev), kb = Object.keys(next);
+      const same = ka.length === kb.length &&
+        kb.every(k => prev[k] && prev[k].x === next[k].x && prev[k].y === next[k].y);
+      return same ? prev : next;
+    });
+
+    // Re-pack when content settles. ResizeObserver only reports size changes,
+    // not the position changes we apply, so this can't loop on its own output.
+    let raf = 0;
+    const ro = new ResizeObserver(entries => {
+      const changed = entries.some(e => {
+        const id = e.target.getAttribute("data-id");
+        const prev = sizesRef.current[id];
+        return !prev || Math.abs(prev.w - e.target.offsetWidth) > 1
+                     || Math.abs(prev.h - e.target.offsetHeight) > 1;
+      });
+      if (changed){ cancelAnimationFrame(raf); raf = requestAnimationFrame(()=> setTick(t => t + 1)); }
+    });
+    world.querySelectorAll(".island[data-id]").forEach(el => ro.observe(el));
+    return ()=>{ cancelAnimationFrame(raf); ro.disconnect(); };
+  }, [...deps, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  return React.useMemo(
+    () => islands.map(it => overrides[it.id] ? { ...it, ...overrides[it.id] } : it),
+    [islands, overrides]
+  );
+}
+
 // Threads = Notion-driven (between stable islands) + dynamic (involving
 // viewer / arc-head / sp-* — non-Notion islands).
 const THREADS = [
@@ -619,7 +752,10 @@ function App(){
   const [pathStep, setPathStep] = React.useState(0);
 
   const grouping = GROUP_MODES.includes(t.grouping) ? t.grouping : "scatter";
-  const islands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  const baseIslands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  // Nudge overlapping cards apart using their real measured heights; re-runs
+  // when the layout (grouping) or card sizing (density) changes.
+  const islands = usePackedIslands(baseIslands, [baseIslands, t.density]);
   const groupingCtl = React.useMemo(()=> ({
     value: grouping,
     set: (m) => setTweak("grouping", m),
@@ -649,7 +785,7 @@ function App(){
     const island = islands.find(it => it.id === id);
     if (!island || !window.SA_goTo) return;
     const world = document.querySelector('.world');
-    if (world) { world.classList.add('path-anim'); setTimeout(()=>world.classList.remove('path-anim'), 650); }
+    if (world) { world.classList.add('path-anim'); setTimeout(()=>world.classList.remove('path-anim'), 1400); }
     window.SA_goTo(island.x + (island.w || 460) / 2, island.y + 100, 1.0);
   }
 
@@ -699,6 +835,8 @@ function App(){
 
       <div className="chrome">
         <div className="crop t"/><div className="crop b"/><div className="crop l"/><div className="crop r"/>
+
+        <div className="wip">work in progress</div>
 
         <div className="jumpmenu">
           <div className="t">drift to →</div>

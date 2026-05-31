@@ -118,7 +118,7 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
 .chrome .routepath .step span{ flex:1; text-align:center }
 .chrome .routepath .exit{ color:var(--muted) }
 
-.world.path-anim{ transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) }
+.world.path-anim{ transition: transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) }
 
 .island[data-path-current]{
   outline: 1px solid var(--ink);
@@ -137,6 +137,14 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   font-family:var(--f-mono); font-size:10px;
   letter-spacing:.12em; text-transform:uppercase;
   color:var(--muted);
+}
+
+.chrome .wip{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  padding:.3rem .7rem;
+  background:var(--ink); color:var(--paper);
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.18em; text-transform:uppercase;
 }
 
 /* Hidden grouping picker — opens on `g`, closes on Esc. Not chrome-bound
