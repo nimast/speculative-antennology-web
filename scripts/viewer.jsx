@@ -20,30 +20,22 @@ const SA_VIEWER_CSS = `
   .sa-viewer-overlay .tr{ top:0; right:0; text-align:right }
   .sa-viewer-overlay .bl{ bottom:0; left:0 }
   .sa-viewer-overlay .br{ bottom:0; right:0; text-align:right }
-  .sa-viewer-overlay .crosshair{
+  .sa-viewer-overlay .loading{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:80px; height:80px;
+    font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+    animation: sa-blink 1.1s steps(2, start) infinite;
   }
-  .sa-viewer-overlay .crosshair::before,
-  .sa-viewer-overlay .crosshair::after{
-    content:""; position:absolute; background:#000;
-  }
-  .sa-viewer-overlay .crosshair::before{ left:0; right:0; top:50%; height:1px }
-  .sa-viewer-overlay .crosshair::after{ top:0; bottom:0; left:50%; width:1px }
-  .sa-viewer-overlay .tick{
-    position:absolute; background:#000;
-  }
-  .sa-viewer-overlay .tick.x{ height:1px; width:8px; top:50%; transform:translateY(-50%) }
-  .sa-viewer-overlay .tick.y{ width:1px; height:8px; left:50%; transform:translateX(-50%) }
+  @keyframes sa-blink{ 50%{ opacity:.25 } }
 `;
 
 (function(){
   const s = document.createElement('style'); s.textContent = SA_VIEWER_CSS; document.head.appendChild(s);
 })();
 
-function SAModelViewer({ src, autoRotate }){
+function SAModelViewer({ src, label, autoRotate }){
   const mountRef = React.useRef(null);
   const stateRef = React.useRef({});
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(()=>{
     const mount = mountRef.current;
@@ -93,7 +85,7 @@ function SAModelViewer({ src, autoRotate }){
     // ── interaction: drag to orbit, wheel to zoom ──
     const rot = { x: 0.25, y: 0.6 };
     const target = new THREE.Vector3();
-    let dist = 6.7;
+    let dist = 3.8;
 
     let dragging = false, lx = 0, ly = 0;
     mount.addEventListener('pointerdown', (e)=>{
@@ -143,7 +135,9 @@ function SAModelViewer({ src, autoRotate }){
           float rim = smoothstep(uEdge, uEdge + 0.05, n);
           // a faint hatching step to suggest form without becoming "illustrative"
           float shade = step(0.55, n);
-          vec3 col = mix(vec3(0.0), vec3(1.0), rim);
+          // camera-facing surfaces get a light-grey fill (not pure white) so the
+          // specimen and its podium read against the white background.
+          vec3 col = mix(vec3(0.0), vec3(0.82), rim);
           // subtle mid tone step
           col = mix(col, vec3(0.35), (1.0 - shade) * rim);
           gl_FragColor = vec4(col, 1.0);
@@ -160,6 +154,7 @@ function SAModelViewer({ src, autoRotate }){
     function loadModel(url){
       if (!url) return;
       state.loading = url;
+      setLoading(true);
       loader.load(url, (gltf)=>{
         if (state.disposed || state.loading !== url) return;
         while (root.children.length) root.remove(root.children[0]);
@@ -172,6 +167,7 @@ function SAModelViewer({ src, autoRotate }){
         group.add(obj);
         group.scale.setScalar(1.0 / Math.max(0.0001, sphere.radius));
         root.add(group);
+        setLoading(false);
         if (!state.animating){ state.animating = true; animate(); }
       }, undefined, (err)=>{
         console.error('GLB load error', url, err);
@@ -183,7 +179,7 @@ function SAModelViewer({ src, autoRotate }){
     function animate(){
       if (state.disposed) return;
       requestAnimationFrame(animate);
-      if (state.autoRotate) rot.y += 0.0035;
+      if (state.autoRotate) rot.y += 0.0018;
       // apply orbit
       const cx = Math.sin(rot.y) * Math.cos(rot.x) * dist;
       const cy = Math.sin(rot.x) * dist;
@@ -220,9 +216,9 @@ function SAModelViewer({ src, autoRotate }){
       <div className="sa-viewer-overlay">
         <div className="tl">SPECIMEN</div>
         <div className="tr">ORTH. PROJ. · ROT. {autoRotate ? 'AUTO' : 'MAN.'}</div>
-        <div className="bl">computed radiator</div>
+        <div className="bl">{label || 'specimen'}</div>
         <div className="br">GLB / {fileLabel}</div>
-        <div className="crosshair"><i className="tick x" style={{left:0}}></i><i className="tick x" style={{right:0}}></i><i className="tick y" style={{top:0}}></i><i className="tick y" style={{bottom:0}}></i></div>
+        {loading && <div className="loading">loading specimen…</div>}
       </div>
     </div>
   );

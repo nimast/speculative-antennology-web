@@ -25,12 +25,12 @@ const ARCHIVE_GRID = ARCHIVE.filter(a => !FIELD_ARCHIVE_IS.has(a.i));
 
 // Whole-GLB specimens — each renders its own model file as a node in the field.
 const MODELS = [
-  { id: "model-0a", src: "assets/models/model-0a.glb", label: "spec · 0a", x: 420,  y: 220 },
-  { id: "model-0b", src: "assets/models/model-0b.glb", label: "spec · 0b", x: 1140, y: 180 },
-  { id: "model-1a", src: "assets/models/model-1a.glb", label: "spec · 1a", x: -300, y: 560 },
-  { id: "model-1b", src: "assets/models/model-1b.glb", label: "spec · 1b", x: 940,  y: 560 },
-  { id: "model-2a", src: "assets/models/model-2a.glb", label: "spec · 2a", x: 360,  y: 940 },
-  { id: "model-2b", src: "assets/models/model-2b.glb", label: "spec · 2b", x: 1080, y: 920 },
+  { id: "model-0a", src: "assets/models/model-0a.glb", label: "monumental",      x: 2000, y:  920 },
+  { id: "model-0b", src: "assets/models/model-0b.glb", label: "monumental",      x: 3600, y: 1100 },
+  { id: "model-1a", src: "assets/models/model-1a.glb", label: "mono monumental", x: 5500, y:  700 },
+  { id: "model-1b", src: "assets/models/model-1b.glb", label: "mono monumental", x: 3000, y:  240 },
+  { id: "model-2a", src: "assets/models/model-2a.glb", label: "grid",            x:  700, y: 1700 },
+  { id: "model-2b", src: "assets/models/model-2b.glb", label: "grid",            x: 2600, y: 2100 },
 ];
 const MODEL_W = 380;
 
@@ -319,22 +319,33 @@ function usePackedIslands(islands, deps){
 const THREADS = [
   ...(Array.isArray(window.SA_THREADS_FROM_NOTION) ? window.SA_THREADS_FROM_NOTION : []),
   // Dynamic — at least one endpoint is not Notion-tracked.
-  ["ess-6", "model-0a"],
-  ["title", "model-0a"],
-  ["model-0a", "arc-head"],
   ["field-1", "arc-head"],
   ["gl-2", "arc-head"],
   ["gl-4", "arc-head"],
-  ["pq-1", "model-0a"],
-  ["wh-2", "model-0b"],
   ["colophon", "arc-head"],
   ["pq-3", "arc-head"],
-  // Weave the model specimens into the field.
+  // monumental — near ess-6 "the antenna is the only object" and arc-head
+  ["ess-6",  "model-0a"],
+  ["title",  "model-0a"],
+  ["pq-1",   "model-0a"],
+  ["model-0a", "arc-head"],
   ["model-0a", "model-0b"],
-  ["model-0a", "model-1a"],
-  ["model-0b", "model-1b"],
-  ["model-1a", "model-2a"],
-  ["model-1b", "model-2b"],
+  // monumental — near ess-12 "operative chain … to the ISS"
+  ["ess-12", "model-0b"],
+  ["wh-2",   "model-0b"],
+  // mono monumental — near ess-4/ess-5 on energy + EM memory
+  ["ess-4",  "model-1a"],
+  ["ess-5",  "model-1a"],
+  ["model-1a", "model-1b"],
+  // mono monumental — near fi-04 Marconi + wh-3 "return stroke travels skyward"
+  ["wh-3",   "model-1b"],
+  ["fi-04",  "model-1b"],
+  // grid — near ess-8 "grid of polished steel rods, New Mexico"
+  ["ess-8",  "model-2a"],
+  ["model-2a", "model-2b"],
+  // grid — near ess-11 directivity/arrays + pq-2 "antennae are doors"
+  ["ess-11", "model-2b"],
+  ["pq-2",   "model-2b"],
 ];
 
 // Ordered reader path: "One Possible Route Through the Field"
@@ -538,11 +549,11 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
     return (
       <div className="island viewer" style={style} data-id={it.id}>
         <div className="stage">
-          <SAModelViewer src={it.src} autoRotate={viewer.autoRotate}/>
+          <SAModelViewer src={it.src} label={it.label} autoRotate={viewer.autoRotate}/>
         </div>
         <div className="controls">
           <div className="spec">{it.label}</div>
-          <div className="name">computed radiator — drag to orbit</div>
+          <div className="name">drag to orbit</div>
         </div>
       </div>
     );
