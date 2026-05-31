@@ -93,7 +93,7 @@ function SAModelViewer({ src, autoRotate }){
     // ── interaction: drag to orbit, wheel to zoom ──
     const rot = { x: 0.25, y: 0.6 };
     const target = new THREE.Vector3();
-    let dist = 5.0;
+    let dist = 6.7;
 
     let dragging = false, lx = 0, ly = 0;
     mount.addEventListener('pointerdown', (e)=>{
