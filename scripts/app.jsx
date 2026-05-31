@@ -145,6 +145,10 @@ function buildIslands(grouping){
   }
 
   // Dynamic islands — not Notion-tracked.
+  items.push({ id: "fi-barry", kind: "field", x: 360, y: 180, w: 420,
+    img: "assets/barry-jan1969.jpg",
+    cap: "Robert Barry — 88 mc Carrier Wave (FM) and 1600 kc Carrier Wave (AM), 1968. Radio transmitters flood the room with invisible fields; the gallery becomes antenna."
+  });
   for (const m of MODELS) {
     items.push({ id: m.id, kind: "model", src: m.src, label: m.label,
       x: m.x, y: m.y, w: MODEL_W });
