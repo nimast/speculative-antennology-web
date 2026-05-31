@@ -1,9 +1,8 @@
 /* global THREE */
-/* Speculative Antennology — 3D specimen viewer.
-   Loads assets/antennas.glb (a single GLB containing ~2463 anonymous meshes, one
-   shared material). At mount time we pick a set of distinct specimen meshes and
-   present them as "plates" in the viewer. Strict B/W: flat-shaded silhouette on
-   white, 1px ink outlines derived from world-space normals of the mesh edges. */
+/* Speculative Antennology — 3D model viewer.
+   Loads a whole GLB file (assets/models/*.glb) and renders its entire scene as a
+   single specimen. Strict B/W: flat-shaded silhouette on white, 1px ink outlines
+   derived from world-space normals via a near-binary "ink" shader. */
 
 const SA_VIEWER_CSS = `
   .sa-viewer-root{ position:absolute; inset:0; }
@@ -42,7 +41,7 @@ const SA_VIEWER_CSS = `
   const s = document.createElement('style'); s.textContent = SA_VIEWER_CSS; document.head.appendChild(s);
 })();
 
-function SAViewer({ specimenIndex, setSpecimenIndex, specimens, autoRotate }){
+function SAModelViewer({ src, autoRotate }){
   const mountRef = React.useRef(null);
   const stateRef = React.useRef({});
 
@@ -94,7 +93,7 @@ function SAViewer({ specimenIndex, setSpecimenIndex, specimens, autoRotate }){
     // ── interaction: drag to orbit, wheel to zoom ──
     const rot = { x: 0.25, y: 0.6 };
     const target = new THREE.Vector3();
-    let dist = 3;
+    let dist = 6.7;
 
     let dragging = false, lx = 0, ly = 0;
     mount.addEventListener('pointerdown', (e)=>{
@@ -154,45 +153,32 @@ function SAViewer({ specimenIndex, setSpecimenIndex, specimens, autoRotate }){
     });
     state.inkMat = inkMat;
 
-    // ── GLB load ──
     const loader = new window.SA_GLTFLoader();
-    loader.load('assets/antennas.glb', (gltf)=>{
-      state.loadedGLTF = gltf;
-      // Collect all meshes
-      const allMeshes = [];
-      gltf.scene.traverse(o => { if (o.isMesh) allMeshes.push(o); });
-      state.allMeshes = allMeshes;
-      // Pre-compute bounding spheres
-      for (const m of allMeshes) { m.geometry.computeBoundingSphere(); m.geometry.computeBoundingBox(); }
-      state.ready = true;
-      swapSpecimen(specimenIndex);
-      animate();
-    }, undefined, (err)=>{
-      console.error('GLB load error', err);
-    });
 
-    function swapSpecimen(idx){
-      if (!state.ready || !specimens) return;
-      const spec = specimens[idx];
-      if (!spec) return;
-      const mesh = state.allMeshes[spec.meshIdx];
-      if (!mesh) return;
-      // remove prior
-      while (root.children.length) root.remove(root.children[0]);
-      // clone mesh geometry with ink material, center + scale
-      const g = mesh.geometry;
-      const s = g.boundingSphere;
-      const clone = new THREE.Mesh(g, inkMat);
-      // Reset world transform
-      clone.position.set(-s.center.x, -s.center.y, -s.center.z);
-      const scale = 1.0 / Math.max(0.0001, s.radius);
-      const group = new THREE.Group();
-      group.add(clone);
-      group.scale.setScalar(scale);
-      root.add(group);
-      state.currentMesh = clone;
+    // Load a whole GLB and fit it: apply the ink material to every mesh, then
+    // centre + scale the assembled scene to a unit bounding sphere.
+    function loadModel(url){
+      if (!url) return;
+      state.loading = url;
+      loader.load(url, (gltf)=>{
+        if (state.disposed || state.loading !== url) return;
+        while (root.children.length) root.remove(root.children[0]);
+        const obj = gltf.scene;
+        obj.traverse(o => { if (o.isMesh) o.material = inkMat; });
+        const box = new THREE.Box3().setFromObject(obj);
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+        const group = new THREE.Group();
+        obj.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
+        group.add(obj);
+        group.scale.setScalar(1.0 / Math.max(0.0001, sphere.radius));
+        root.add(group);
+        if (!state.animating){ state.animating = true; animate(); }
+      }, undefined, (err)=>{
+        console.error('GLB load error', url, err);
+      });
     }
-    state.swapSpecimen = swapSpecimen;
+    state.loadModel = loadModel;
+    loadModel(src);
 
     function animate(){
       if (state.disposed) return;
@@ -219,29 +205,27 @@ function SAViewer({ specimenIndex, setSpecimenIndex, specimens, autoRotate }){
 
   React.useEffect(()=>{
     const state = stateRef.current;
-    if (state && state.swapSpecimen) state.swapSpecimen(specimenIndex);
-  }, [specimenIndex]);
+    if (state && state.loadModel) state.loadModel(src);
+  }, [src]);
 
   React.useEffect(()=>{
     const state = stateRef.current;
     if (state) state.autoRotate = autoRotate;
   }, [autoRotate]);
 
-  const spec = specimens?.[specimenIndex];
-  const total = specimens?.length ?? 0;
-  const idLabel = spec ? `SPEC-${String(spec.i).padStart(4, '0')}` : '—';
+  const fileLabel = (src || '').split('/').pop()?.toUpperCase() || '—';
 
   return (
     <div className="sa-viewer-root" ref={mountRef}>
       <div className="sa-viewer-overlay">
-        <div className="tl">SPEC / {idLabel}</div>
+        <div className="tl">SPECIMEN</div>
         <div className="tr">ORTH. PROJ. · ROT. {autoRotate ? 'AUTO' : 'MAN.'}</div>
-        <div className="bl">№ {String(specimenIndex+1).padStart(3, '0')} / {String(total).padStart(3, '0')}</div>
-        <div className="br">GLB / ANTENNAS.GLB</div>
+        <div className="bl">computed radiator</div>
+        <div className="br">GLB / {fileLabel}</div>
         <div className="crosshair"><i className="tick x" style={{left:0}}></i><i className="tick x" style={{right:0}}></i><i className="tick y" style={{top:0}}></i><i className="tick y" style={{bottom:0}}></i></div>
       </div>
     </div>
   );
 }
 
-window.SAViewer = SAViewer;
+window.SAModelViewer = SAModelViewer;

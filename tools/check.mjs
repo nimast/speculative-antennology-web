@@ -54,6 +54,15 @@ for (const m of appSrc.matchAll(/items\.push\(\{\s*id:\s*"([^"]+)"/g)) {
   dynamicIds.add(m[1]);
 }
 
+// Model specimen nodes — pushed in a loop from the MODELS array, so grab their
+// ids from the array literal rather than the push call.
+const modelsBlock = appSrc.match(/const MODELS = \[([\s\S]*?)\n\];/);
+if (modelsBlock) {
+  for (const m of modelsBlock[1].matchAll(/id:\s*"([^"]+)"/g)) {
+    dynamicIds.add(m[1]);
+  }
+}
+
 // Archive thumbs and featured specimens
 const archiveSrc = fs.readFileSync(path.join(root, 'data/archive.js'), 'utf8');
 const archiveIs  = [...archiveSrc.matchAll(/\{\s*i:\s*(\d+)\s*,/g)].map(m => Number(m[1]));
