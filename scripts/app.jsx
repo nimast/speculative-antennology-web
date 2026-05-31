@@ -23,20 +23,16 @@ const FIELD_ARCHIVE_IS = new Set(
 );
 const ARCHIVE_GRID = ARCHIVE.filter(a => !FIELD_ARCHIVE_IS.has(a.i));
 
-const VIEWER_SPECIMENS = [
-  { i: 80, meshIdx: 37   },
-  { i: 81, meshIdx: 154  },
-  { i: 82, meshIdx: 321  },
-  { i: 83, meshIdx: 498  },
-  { i: 84, meshIdx: 780  },
-  { i: 85, meshIdx: 1012 },
-  { i: 86, meshIdx: 1333 },
-  { i: 87, meshIdx: 1604 },
-  { i: 88, meshIdx: 1870 },
-  { i: 89, meshIdx: 2099 },
-  { i: 90, meshIdx: 2287 },
-  { i: 91, meshIdx: 2440 },
+// Whole-GLB specimens — each renders its own model file as a node in the field.
+const MODELS = [
+  { id: "model-0a", src: "assets/models/model-0a.glb", label: "spec · 0a", x: 420,  y: 220 },
+  { id: "model-0b", src: "assets/models/model-0b.glb", label: "spec · 0b", x: 1140, y: 180 },
+  { id: "model-1a", src: "assets/models/model-1a.glb", label: "spec · 1a", x: -300, y: 560 },
+  { id: "model-1b", src: "assets/models/model-1b.glb", label: "spec · 1b", x: 940,  y: 560 },
+  { id: "model-2a", src: "assets/models/model-2a.glb", label: "spec · 2a", x: 360,  y: 940 },
+  { id: "model-2b", src: "assets/models/model-2b.glb", label: "spec · 2b", x: 1080, y: 920 },
 ];
+const MODEL_W = 380;
 
 // ───────────────────────────────────────────────────────────────────────────
 // Archive photograph plate — cycles through 48 real images
@@ -149,7 +145,10 @@ function buildIslands(grouping){
   }
 
   // Dynamic islands — not Notion-tracked.
-  items.push({ id: "viewer", kind: "viewer", x: 420, y: 220, w: 640 });
+  for (const m of MODELS) {
+    items.push({ id: m.id, kind: "model", src: m.src, label: m.label,
+      x: m.x, y: m.y, w: MODEL_W });
+  }
   items.push({ id: "arc-head", kind: "cluster-head",
     x: -600, y: 1400, k: "archive", n: "gathered · ongoing"
   });
@@ -187,16 +186,22 @@ function buildIslands(grouping){
 const THREADS = [
   ...(Array.isArray(window.SA_THREADS_FROM_NOTION) ? window.SA_THREADS_FROM_NOTION : []),
   // Dynamic — at least one endpoint is not Notion-tracked.
-  ["ess-6", "viewer"],
-  ["title", "viewer"],
-  ["viewer", "arc-head"],
+  ["ess-6", "model-0a"],
+  ["title", "model-0a"],
+  ["model-0a", "arc-head"],
   ["field-1", "arc-head"],
   ["gl-2", "arc-head"],
   ["gl-4", "arc-head"],
-  ["pq-1", "viewer"],
-  ["wh-2", "viewer"],
+  ["pq-1", "model-0a"],
+  ["wh-2", "model-0b"],
   ["colophon", "arc-head"],
   ["pq-3", "arc-head"],
+  // Weave the model specimens into the field.
+  ["model-0a", "model-0b"],
+  ["model-0a", "model-1a"],
+  ["model-0b", "model-1b"],
+  ["model-1a", "model-2a"],
+  ["model-1b", "model-2b"],
 ];
 
 // Ordered reader path: "One Possible Route Through the Field"
@@ -396,24 +401,15 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
     );
   }
 
-  if (it.kind === "viewer") {
+  if (it.kind === "model") {
     return (
       <div className="island viewer" style={style} data-id={it.id}>
         <div className="stage">
-          <SAViewer
-            specimenIndex={viewer.idx}
-            setSpecimenIndex={viewer.setIdx}
-            specimens={VIEWER_SPECIMENS}
-            autoRotate={viewer.autoRotate}
-          />
+          <SAModelViewer src={it.src} autoRotate={viewer.autoRotate}/>
         </div>
         <div className="controls">
-          <div className="spec">spec-{String(VIEWER_SPECIMENS[viewer.idx].i).padStart(4,"0")}</div>
+          <div className="spec">{it.label}</div>
           <div className="name">computed radiator — drag to orbit</div>
-          <div className="buttons">
-            <button onClick={()=>viewer.setIdx((viewer.idx - 1 + VIEWER_SPECIMENS.length) % VIEWER_SPECIMENS.length)}>◂</button>
-            <button onClick={()=>viewer.setIdx((viewer.idx + 1) % VIEWER_SPECIMENS.length)}>▸</button>
-          </div>
         </div>
       </div>
     );
@@ -458,7 +454,7 @@ function Threads({ islands, threads, show }){
     const hByKind = {
       title: 360, prose: 180, pullquote: 200, whisper: 80, note: 80,
       field: 340, gloss: 130, method: 280, bib: 340, colophon: 160,
-      "cluster-head": 280, thumb: 170, spec: 300, viewer: 580,
+      "cluster-head": 280, thumb: 170, spec: 300, model: 345,
       "group-label": 100, "group-tabs": 64
     };
     const h = hByKind[it.kind] || 160;
@@ -617,7 +613,6 @@ function Viewport({ children, onPose }){
 
 function App(){
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-  const [idx, setIdx] = React.useState(0);
   const [pose, setPose] = React.useState({x:0, y:0, k:0.85});
   const [groupPicker, setGroupPicker] = React.useState(false);
   const [pathMode, setPathMode] = React.useState(false);
@@ -675,7 +670,6 @@ function App(){
   }, [t.density, t.grid, t.numbering, grouping]);
 
   const viewer = {
-    idx, setIdx,
     autoRotate: t.autoRotate
   };
 
