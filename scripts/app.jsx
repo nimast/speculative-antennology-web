@@ -194,7 +194,7 @@ const PACK_GUTTER  = 44;                  // breathing room kept between cards
 
 function separateBoxes(boxes, gutter){
   const g = gutter / 2;
-  for (let iter = 0; iter < 400; iter++){
+  for (let iter = 0; iter < 3000; iter++){
     let moved = false;
     for (let i = 0; i < boxes.length; i++){
       for (let j = i + 1; j < boxes.length; j++){
@@ -242,6 +242,12 @@ function archiveObstacle(islands, measured){
 // Deterministic from the authored positions, so it converges in one re-render.
 function usePackedIslands(islands, deps){
   const [overrides, setOverrides] = React.useState({});
+  // Async content (3D model canvases, archive images, web fonts) finishes
+  // sizing after first paint, so the initial measurement under-reads heights.
+  // A ResizeObserver bumps this tick when any card's size settles, re-running
+  // the pass so the final layout reflects real heights.
+  const [tick, setTick] = React.useState(0);
+  const sizesRef = React.useRef({});
   React.useLayoutEffect(()=>{
     const world = document.querySelector(".world");
     if (!world) return;
@@ -249,6 +255,7 @@ function usePackedIslands(islands, deps){
     world.querySelectorAll(".island[data-id]").forEach(el => {
       measured[el.getAttribute("data-id")] = { w: el.offsetWidth, h: el.offsetHeight };
     });
+    sizesRef.current = measured;
     const boxes = islands
       .filter(it => !PACK_EXCLUDE.has(it.kind))
       .map(it => {
@@ -276,7 +283,22 @@ function usePackedIslands(islands, deps){
         kb.every(k => prev[k] && prev[k].x === next[k].x && prev[k].y === next[k].y);
       return same ? prev : next;
     });
-  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Re-pack when content settles. ResizeObserver only reports size changes,
+    // not the position changes we apply, so this can't loop on its own output.
+    let raf = 0;
+    const ro = new ResizeObserver(entries => {
+      const changed = entries.some(e => {
+        const id = e.target.getAttribute("data-id");
+        const prev = sizesRef.current[id];
+        return !prev || Math.abs(prev.w - e.target.offsetWidth) > 1
+                     || Math.abs(prev.h - e.target.offsetHeight) > 1;
+      });
+      if (changed){ cancelAnimationFrame(raf); raf = requestAnimationFrame(()=> setTick(t => t + 1)); }
+    });
+    world.querySelectorAll(".island[data-id]").forEach(el => ro.observe(el));
+    return ()=>{ cancelAnimationFrame(raf); ro.disconnect(); };
+  }, [...deps, tick]); // eslint-disable-line react-hooks/exhaustive-deps
   return React.useMemo(
     () => islands.map(it => overrides[it.id] ? { ...it, ...overrides[it.id] } : it),
     [islands, overrides]
