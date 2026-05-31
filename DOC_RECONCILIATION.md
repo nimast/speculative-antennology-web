@@ -9,11 +9,15 @@ _Last reconciled: 2026-05-31._
 **All 30 doc nodes are represented in the live exposition** (Notion → `islands.generated.js` → site).
 The earlier "22 missing nodes" backlog is closed — `ess-13`…`ess-34` were added and synced.
 
-Two items remain open, both **deferred to the authors**:
-1. **Nodes 10 & 27** were deliberately condensed rather than carried in full. The doc is now
-   the version to lean toward, which surfaces these. → see **`NODE_10_27_COMPARISON.md`** (for Yanai).
-2. **Footnotes / inline TODOs** in the doc — status table in §4 below. Several need author
-   content or assets; per decision these are **documented only**, not auto-resolved.
+**Nodes 10 & 27 are now resolved** by leaning toward the doc: the full doc texts were added
+as `ess-35` (Node 10) and `ess-36` (Node 27) in Notion (`Status = final`), and the reader path
+now routes through them. The condensed `ess-6`/`ess-9` and `ess-4`/`ess-5` are kept as
+supporting fragments (they carry technical specifics absent from the doc nodes). See
+**`NODE_10_27_COMPARISON.md`** for the side-by-side that informed the decision.
+
+One item remains open:
+- **Footnotes / inline TODOs** in the doc — status table in §4 below. Several need author
+  content or assets; per decision these are **documented only**, not auto-resolved.
 
 The "One Possible Route Through the Field" reader path is implemented and current — the
 `READER_PATH` array in `scripts/app.jsx:341` matches the doc's 11 steps exactly.
@@ -33,7 +37,7 @@ The "One Possible Route Through the Field" reader path is implemented and curren
 | 7 | The Desert Is Not Empty | `ess-22` | verbatim | |
 | 8 | The Lightning Field as Receiver | `ess-8` | verbatim **+ grounding sentences** | REVISION_FLAGS P1 |
 | 9 | The Radio Telescope / Distributed Eye | `ess-7` | **expanded** (richer than doc) | REVISION_FLAGS P2 — baseline/39 km/Earth-rotation added |
-| 10 | The Antenna Is Not a Metaphor | `ess-6` + `ess-9` | **condensed — CONFLICT** | full doc text absent → comparison doc |
+| 10 | The Antenna Is Not a Metaphor | `ess-35` (full) + `ess-6`/`ess-9` | **doc version live** | full doc text added as `ess-35`; condensed pair kept as support |
 | 11 | Direction Is Not Directivity | `ess-11` | condensed | |
 | 12 | Ground Is Part of the Circuit | `ess-15` | verbatim | |
 | 13 | Signal-to-Noise | `ess-23` | verbatim | |
@@ -50,7 +54,7 @@ The "One Possible Route Through the Field" reader path is implemented and curren
 | 24 | A Signal Leaves Earth | `ess-18` | verbatim | inline TODO: earth-signal sim asset (see §4) |
 | 25 | Seismometer as Author | `ess-31` | verbatim | |
 | 26 | Planetary Address | `ess-32` | verbatim **− last 2 sentences** | REVISION_FLAGS A2 |
-| 27 | Energy Too Remembers | `ess-4` + `ess-5` | **condensed — CONFLICT** | full doc text absent → comparison doc |
+| 27 | Energy Too Remembers | `ess-36` (full) + `ess-4`/`ess-5` | **doc version live** | full doc text added as `ess-36`; condensed pair kept as support |
 | 28 | Inscription Without Surface | `ess-33` | verbatim | |
 | 29 | Field-Like Conservation | `ess-34` | verbatim | |
 | 30 | Oeuvre as Array | `ess-19` | verbatim **− "under the title Fields of Reception"** | |
@@ -60,17 +64,21 @@ The "One Possible Route Through the Field" reader path is implemented and curren
 
 ---
 
-## 2. Open conflicts (doc version not used)
+## 2. Resolved conflicts (doc version now live)
 
-Per "lean toward the doc," these two are where the live exposition diverges by **omitting**
-doc content (not just rephrasing it). Both were deliberate condense decisions
-(`REVISION_FLAGS.md` M2 / A3) and are now **deferred to the authors** rather than auto-applied:
+Per "lean toward the doc," the two nodes that previously diverged by **omitting** doc content
+(not just rephrasing it) have been resolved by adding the full doc texts. Both had been
+deliberate condense decisions (`REVISION_FLAGS.md` M2 / A3); the doc-leaning decision overrides
+them:
 
-- **Node 10 — The Antenna Is Not a Metaphor** → condensed into `ess-6` + `ess-9`.
-- **Node 27 — Energy Too Remembers** → condensed into `ess-4` + `ess-5`.
+- **Node 10 — The Antenna Is Not a Metaphor** → full doc text added as `ess-35` (Notion,
+  `Status = final`, Centre antenna cluster). `ess-6` + `ess-9` kept as supporting fragments.
+- **Node 27 — Energy Too Remembers** → full doc text added as `ess-36` (Notion,
+  `Status = final`, Far-right EM-memory cluster). `ess-4` + `ess-5` kept as technical anchors.
 
-Full side-by-side text and a decision box for each are in **`NODE_10_27_COMPARISON.md`**
-(prepared for Yanai). Until resolved, the condensed versions remain live.
+The reader path now routes through `ess-35` (step 5) and `ess-36` (step 10). Full side-by-side
+text is preserved in **`NODE_10_27_COMPARISON.md`** for reference. The site reflects this after
+the next `notion-sync` regenerates `data/islands.generated.js`.
 
 ### Enrichments (NOT conflicts — no action)
 Several islands carry **more** than the doc, not less. These are intentional improvements and
@@ -83,10 +91,11 @@ Several islands carry **more** than the doc, not less. These are intentional imp
 
 ## 3. Reader path — current and correct
 
-`scripts/app.jsx:341` `READER_PATH`, 11 steps, matches the doc's "One Possible Route":
+`scripts/app.jsx:341` `READER_PATH`, 11 steps, matches the doc's "One Possible Route" (now
+routing through the full doc-text versions of Nodes 10 & 27):
 
 ```
-ess-1 → ess-13 → ess-2 → ess-14 → ess-6 → ess-15 → ess-16 → ess-17 → ess-18 → ess-4 → ess-19
+ess-1 → ess-13 → ess-2 → ess-14 → ess-35 → ess-15 → ess-16 → ess-17 → ess-18 → ess-36 → ess-19
 ```
 
 (Step 3 "Conceptual Art" routes through `ess-2`, the short Barry island, as the entry to that
@@ -130,15 +139,13 @@ assets that can't be produced here.
 
 ---
 
-## 5. What's left (staged — no changes applied yet)
+## 5. What's left
 
-Nothing has been written to Notion or the generated file in this pass. Outstanding, in
-priority order:
+Nodes 10 & 27 are done: `ess-35`/`ess-36` created in Notion (`Status = final`) and wired into
+`READER_PATH`. The generated file / live site update on the next `notion-sync` (needs
+`NOTION_TOKEN`, not set locally) or the daily workflow. Outstanding:
 
-1. **Authors decide Nodes 10 & 27** (`NODE_10_27_COMPARISON.md`). If "add full text," create
-   the rows in Notion (Centre cluster for 10, Far-right for 27) and optionally swap them into
-   `READER_PATH`.
-2. **Open footnotes** needing author content: endnotes 1, 3, 5, 6; inline title/earth-signal
-   rephrase; assets for nodes 15, 20, 24.
-3. After any Notion edits, run `tools/sync-from-notion.mjs` (needs `NOTION_TOKEN`) or let the
-   daily workflow regenerate `data/islands.generated.js`.
+1. **Open footnotes** needing author content: endnotes 1, 3, 5, 6; inline title/earth-signal
+   rephrase; assets for nodes 15, 20, 24 (see §4).
+2. Run `tools/sync-from-notion.mjs` (or let the daily workflow run) to regenerate
+   `data/islands.generated.js` so `ess-35`/`ess-36` appear on the site.
