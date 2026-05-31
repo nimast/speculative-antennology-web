@@ -189,35 +189,44 @@ function buildIslands(grouping){
 // position as possible. The archive grid, labels and background wash are laid
 // out deliberately, so they're excluded from packing.
 const PACK_EXCLUDE = new Set(["thumb", "group-label", "group-tabs", "cluster-head"]);
-const PACK_FIXED   = new Set(["title"]); // anchors: act as obstacles, never move
-const PACK_GUTTER  = 44;                  // breathing room kept between cards
+const PACK_FIXED   = new Set(["title", "model"]); // anchors: act as obstacles, never move
+const PACK_GUTTER  = 20;                  // breathing room kept between cards
 
-function separateBoxes(boxes, gutter){
+function boxesOverlap(a, b, g){
+  return a.x - g < b.x + b.w + g && a.x + a.w + g > b.x - g &&
+         a.y - g < b.y + b.h + g && a.y + a.h + g > b.y - g;
+}
+
+// Greedy placement. Fixed anchors (title, models, archive) are obstacles placed
+// first. Each movable card keeps its authored spot if free; otherwise it spirals
+// outward to the nearest free spot. Deterministic and jam-proof on the open
+// canvas — unlike pairwise relaxation, it can't settle into an overlapping
+// local minimum, because a card is never placed until it sits clear of every
+// box already down.
+function packBoxes(boxes, gutter){
   const g = gutter / 2;
-  for (let iter = 0; iter < 3000; iter++){
-    let moved = false;
-    for (let i = 0; i < boxes.length; i++){
-      for (let j = i + 1; j < boxes.length; j++){
-        const a = boxes[i], b = boxes[j];
-        if (a.fixed && b.fixed) continue;
-        const aL = a.x - g, aR = a.x + a.w + g, aT = a.y - g, aB = a.y + a.h + g;
-        const bL = b.x - g, bR = b.x + b.w + g, bT = b.y - g, bB = b.y + b.h + g;
-        const px = Math.min(aR, bR) - Math.max(aL, bL); // x penetration
-        const py = Math.min(aB, bB) - Math.max(aT, bT); // y penetration
-        if (px <= 0 || py <= 0) continue;               // not overlapping
-        const wa = a.fixed ? 0 : (b.fixed ? 1 : 0.5);   // share a takes
-        const wb = a.fixed ? 1 : (b.fixed ? 0 : 0.5);   // share b takes
-        if (px < py){
-          const dir = (a.x + a.w / 2) <= (b.x + b.w / 2) ? 1 : -1;
-          a.x -= dir * px * wa; b.x += dir * px * wb;
-        } else {
-          const dir = (a.y + a.h / 2) <= (b.y + b.h / 2) ? 1 : -1;
-          a.y -= dir * py * wa; b.y += dir * py * wb;
+  const placed = boxes.filter(b => b.fixed);
+  const movable = boxes.filter(b => !b.fixed)
+    .sort((a, b) => (a.y - b.y) || (a.x - b.x));
+  const clear = box => !placed.some(p => boxesOverlap(box, p, g));
+  for (const box of movable){
+    if (!clear(box)){
+      const ox = box.x, oy = box.y;
+      let found = false;
+      const step = 24;
+      for (let ring = 1; ring <= 240 && !found; ring++){
+        const rad = ring * step;
+        const samples = ring * 8;
+        for (let s = 0; s < samples; s++){
+          const ang = (s / samples) * Math.PI * 2;
+          box.x = ox + Math.cos(ang) * rad;
+          box.y = oy + Math.sin(ang) * rad;
+          if (clear(box)){ found = true; break; }
         }
-        moved = true;
       }
+      if (!found){ box.x = ox; box.y = oy; }
     }
-    if (!moved) break;
+    placed.push(box);
   }
 }
 
@@ -269,7 +278,7 @@ function usePackedIslands(islands, deps){
       });
     const archive = archiveObstacle(islands, measured);
     if (archive) boxes.push(archive);
-    separateBoxes(boxes, PACK_GUTTER);
+    packBoxes(boxes, PACK_GUTTER);
     const next = {};
     for (const b of boxes){
       if (b.fixed) continue;
