@@ -354,12 +354,12 @@ const READER_PATH = [
   "ess-13",  // Against the Visible
   "ess-2",   // Conceptual Art Was Never Dematerialised
   "ess-14",  // Light as Carrier, Not Image
-  "ess-6",   // The Antenna Is Not a Metaphor
+  "ess-35",  // The Antenna Is Not a Metaphor (Node 10, full doc text)
   "ess-15",  // Ground Is Part of the Circuit
   "ess-16",  // The Gallery Was Never Empty
   "ess-17",  // Simulation as Retinal Contract
   "ess-18",  // A Signal Leaves Earth
-  "ess-4",   // Energy Too Remembers
+  "ess-36",  // Energy Too Remembers (Node 27, full doc text)
   "ess-19",  // Oeuvre as Array
 ];
 

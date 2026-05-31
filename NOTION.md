@@ -4,7 +4,7 @@ The exposition's text islands live in the Notion **Exposition Text Fragments** D
 
 https://www.notion.so/c721d57e7d21435097690b0bb8c0b25c
 
-A daily GitHub Actions workflow (`.github/workflows/notion-sync.yml`) and on-demand `workflow_dispatch` runs `tools/sync-from-notion.mjs`, regenerates `data/islands.generated.js`, and opens a PR if anything changed.
+An on-demand GitHub Actions workflow (`.github/workflows/notion-sync.yml`, triggered via `workflow_dispatch`) runs `tools/sync-from-notion.mjs`, regenerates `data/islands.generated.js`, and opens a PR if anything changed.
 
 ## Quick add
 

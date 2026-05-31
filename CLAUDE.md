@@ -13,7 +13,7 @@
 **Notion is the source of truth** for stable-ID islands. To add or edit one:
 1. Open the **Exposition Text Fragments** DB (link below) and edit the row.
 2. Set `Status = final` when ready to publish.
-3. The daily `notion-sync` workflow regenerates `data/islands.generated.js` and opens a PR.
+3. Run the `notion-sync` workflow (manual `workflow_dispatch`) to regenerate `data/islands.generated.js` and open a PR.
 
 To run the sync locally: `NOTION_TOKEN=… node tools/sync-from-notion.mjs`.
 
