@@ -407,51 +407,6 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
 .island.viewer .meta dt{ color: var(--muted); text-transform:uppercase; letter-spacing:.12em }
 .island.viewer .meta dd{ margin:0; font-variant-numeric: tabular-nums }
 
-/* specimen plate (single archive entry as a loose card) */
-.island.spec{
-  width: 220px;
-  padding: 0;
-  border: 1px solid var(--ink);
-}
-.island.spec .plate{
-  border-bottom: 1px solid var(--ink);
-  aspect-ratio: 5/4;
-  position:relative;
-  background: var(--paper);
-  overflow:hidden;
-}
-.island.spec .plate svg{ display:block; width:100%; height:100% }
-.island.spec .plate img{
-  display:block; width:100%; height:100%; object-fit:cover;
-  filter: grayscale(1) contrast(1.05);
-  transition: filter .35s ease;
-}
-.island.spec .info{ padding: .5rem .6rem .7rem }
-.island.spec .no{
-  font-family: var(--f-mono); font-size: 10px;
-  letter-spacing:.14em; text-transform:uppercase;
-  color: var(--muted);
-  display:flex; justify-content: space-between;
-}
-.island.spec h3{
-  margin: .15rem 0 .2rem;
-  font-family: var(--f-grot); font-weight: 500;
-  font-size: 13px; line-height:1.2; letter-spacing:-.005em;
-}
-.island.spec dl{
-  margin:0; font-family: var(--f-mono);
-  font-size: 10px;
-  display:grid; grid-template-columns: 4ch 1fr; gap: 0 .4rem;
-}
-.island.spec dl dt{ color: var(--muted); text-transform:uppercase }
-.island.spec dl dd{ margin:0 }
-.island.spec .desc{
-  margin-top:.45rem;
-  font-family: var(--f-serif); font-size: 11.5px; line-height: 1.4;
-}
-
-/* archive constellation (80 specimens loose in the plane — drawn by JS) */
-
 /* field plate (photograph island) */
 .island.field{ padding: 0; border: 1px solid var(--ink); width: 420px; }
 .island.field .fig{
@@ -578,96 +533,251 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--muted);
 }
 
-/* specimen archive — dense scatter: small thumbs */
-.island.thumb{
-  width: 120px; padding: 0; border: 1px solid var(--ink);
+/* ── archive node — the field's single doorway into the archive ──────────── */
+.island.archive-node{
+  padding: 0; border: 1px solid var(--ink);
   background: var(--paper);
+  cursor: default;
 }
-.island.thumb .plate{
+.island.archive-node .head{
+  padding: .55rem .7rem .5rem;
   border-bottom: 1px solid var(--ink);
-  aspect-ratio: 1/1;
-  position: relative;
-  overflow:hidden;
 }
-.island.thumb .plate svg{ display:block; width:100%; height:100% }
-.island.thumb .plate img{
-  display:block; width:100%; height:100%; object-fit:cover;
-  filter: grayscale(1) contrast(1.05);
-  transition: filter .35s ease;
-}
-/* Hover any archive specimen → fade in the original colour photograph. */
-.island.thumb:hover .plate img,
-.island.spec:hover  .plate img{ filter: none; }
-.island.thumb .info{ padding: .3rem .4rem .4rem }
-.island.thumb .no{
-  font-family: var(--f-mono); font-size: 9.5px; letter-spacing:.14em;
-  color: var(--muted); text-transform:uppercase;
-}
-.island.thumb .nm{
+.island.archive-node .head .k{
   font-family: var(--f-grot); font-weight: 500;
-  font-size: 10.5px; line-height: 1.15; letter-spacing:-.005em;
-  margin-top: .1rem;
+  font-size: 1.5rem; line-height: 1; letter-spacing: -.02em;
 }
-
-/* archive grouping: animate thumbs as they re-flow into clusters */
-.island.thumb{
-  transition: left .85s cubic-bezier(.45,.05,.2,1),
-              top  .85s cubic-bezier(.45,.05,.2,1);
+.island.archive-node .head .n{
+  margin-top: .25rem;
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
 }
-
-/* group-tabs — in-world tab bar that sets the archive grouping mode */
-.island.group-tabs{
-  background: transparent; border: 0; padding: 0;
+.island.archive-node .mosaic{
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--ink);
+  border-bottom: 1px solid var(--ink);
 }
-.island.group-tabs .t{
-  font-family: var(--f-mono); font-size: 10.5px;
-  letter-spacing: .18em; text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: .4rem;
+.island.archive-node .mosaic .cell{
+  aspect-ratio: 1/1; overflow: hidden; background: var(--paper);
 }
-.island.group-tabs .tabs{
-  display: inline-flex; flex-wrap: wrap;
-  border: 1px solid var(--ink);
-  background: var(--paper);
+.island.archive-node .mosaic img{
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  transition: filter .4s ease, transform .4s ease;
 }
-.island.group-tabs .tabs button{
+.island.archive-node:hover .mosaic img{ filter: none; }
+.island.archive-node .enter{
+  display: block; width: 100%;
   font-family: var(--f-mono); font-size: 12px;
-  letter-spacing: .14em; text-transform: uppercase;
+  letter-spacing: .16em; text-transform: uppercase;
+  background: var(--paper); color: var(--ink);
+  border: 0; padding: .7rem .8rem; text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, letter-spacing .25s ease;
+}
+.island.archive-node:hover .enter,
+.island.archive-node .enter:hover{
+  background: var(--ink); color: var(--paper); letter-spacing: .22em;
+}
+
+/* ── archive layer — full-screen takeover ────────────────────────────────── */
+/* The field shrinks and fades behind it. */
+.viewport{ transition: transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease, filter .5s ease; }
+body.sa-archive-open .viewport{
+  transform: scale(.92); opacity: .12; filter: saturate(0);
+  pointer-events: none;
+}
+body.sa-archive-open .chrome{ opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+
+.archive-layer{
+  position: fixed; inset: 0; z-index: 1600;
+  background: var(--paper); color: var(--ink);
+  display: flex; flex-direction: column;
+  opacity: 0; visibility: hidden;
+  transform: scale(1.04);
+  transition: opacity .45s ease, transform .45s cubic-bezier(.2,.7,.3,1), visibility 0s linear .45s;
+}
+.archive-layer.open{
+  opacity: 1; visibility: visible; transform: scale(1);
+  transition: opacity .45s ease, transform .45s cubic-bezier(.2,.7,.3,1), visibility 0s;
+}
+.archive-layer .ax-close{
+  position: absolute; top: .6rem; left: .8rem; z-index: 3;
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-grot); font-size: 2.6rem; line-height: 1;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--ink); cursor: pointer;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.archive-layer .ax-close:hover{ background: var(--ink); color: var(--paper); transform: rotate(90deg); }
+
+.archive-layer .ax-bar{
+  flex: 0 0 auto;
+  display: flex; align-items: flex-end; gap: 1.5rem;
+  padding: .7rem 1rem .7rem 5.5rem;
+  border-bottom: 1px solid var(--ink);
+}
+.archive-layer .ax-heading{
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 1.7rem; line-height: 1; letter-spacing: -.02em;
+  display: flex; align-items: baseline; gap: .6rem;
+}
+.archive-layer .ax-heading span{
+  font-family: var(--f-mono); font-size: 10px; font-weight: 400;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.archive-layer .ax-tabs{
+  display: inline-flex; flex-wrap: wrap; margin-left: auto;
+  border: 1px solid var(--ink);
+}
+.archive-layer .ax-tabs button{
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: .12em; text-transform: uppercase;
   background: var(--paper); border: 0;
   border-left: 1px solid var(--ink);
-  padding: .55rem 1.1rem; color: var(--ink);
+  padding: .5rem .9rem; color: var(--ink); cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.archive-layer .ax-tabs button:first-child{ border-left: 0 }
+.archive-layer .ax-tabs button:hover{ background: var(--ink); color: var(--paper); }
+.archive-layer .ax-tabs button.on{ background: var(--ink); color: var(--paper); }
+.archive-layer .ax-tabs button.spec-tab{ border-left-width: 3px; }
+
+.archive-layer .ax-body{ flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; }
+
+/* grid + grouped views */
+.archive-layer .ax-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1px; background: var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.archive-layer .ax-groups .ax-grid{ margin: 0; }
+.archive-layer .ax-thumb{
+  display: flex; flex-direction: column; text-align: left;
+  background: var(--paper); border: 0; padding: 0; cursor: pointer;
+  font: inherit; color: inherit;
+}
+.archive-layer .ax-thumb .img{ aspect-ratio: 1/1; overflow: hidden; }
+.archive-layer .ax-thumb img{
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  transition: filter .35s ease, transform .6s ease;
+}
+.archive-layer .ax-thumb:hover img{ filter: none; transform: scale(1.04); }
+.archive-layer .ax-thumb .meta{ padding: .35rem .5rem .55rem; }
+.archive-layer .ax-thumb .no{
+  display: block;
+  font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+}
+.archive-layer .ax-thumb .nm{
+  display: block; margin-top: .1rem;
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 11px; line-height: 1.15; letter-spacing: -.005em;
+}
+.archive-layer .ax-thumb:hover{ outline: 2px solid var(--ink); outline-offset: -2px; z-index: 1; }
+
+.archive-layer .ax-group{ border-bottom: 1px solid var(--ink); }
+.archive-layer .ax-group-h{
+  display: flex; align-items: baseline; gap: .8rem;
+  padding: .8rem 1rem .55rem;
+  position: sticky; top: 0; z-index: 2;
+  background: var(--paper);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.archive-layer .ax-group-h .gmeta{
+  font-family: var(--f-mono); font-size: 9.5px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+}
+.archive-layer .ax-group-h .glbl{
+  font-family: var(--f-grot); font-weight: 500;
+  font-size: 1.3rem; line-height: 1; letter-spacing: -.012em;
+}
+.archive-layer .ax-group-h .gcnt{
+  margin-left: auto;
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+
+/* single-specimen view */
+.archive-layer .ax-spec{
+  height: 100%;
+  display: grid; grid-template-columns: 64px 1fr 64px;
+}
+.archive-layer .ax-spec-nav{
+  background: var(--paper); border: 0;
+  border-right: 1px solid var(--ink);
+  font-family: var(--f-grot); font-size: 2.4rem; color: var(--ink);
   cursor: pointer;
   transition: background .18s ease, color .18s ease;
 }
-.island.group-tabs .tabs button:first-child{ border-left: 0 }
-.island.group-tabs .tabs button:hover{ background: var(--ink); color: var(--paper) }
-.island.group-tabs .tabs button.on{
-  background: var(--ink); color: var(--paper);
+.archive-layer .ax-spec-nav.next{ border-right: 0; border-left: 1px solid var(--ink); }
+.archive-layer .ax-spec-nav:hover{ background: var(--ink); color: var(--paper); }
+.archive-layer .ax-spec-stage{
+  display: grid; grid-template-columns: 1.6fr 1fr; min-height: 0;
 }
-
-/* group-label island — every grouping mode's labels are mounted at once;
-   only the active mode renders opaque so switching is a symmetric crossfade. */
-.island.group-label{
-  background: transparent; border: 0; padding: 0;
-  pointer-events: none;
-  transition: opacity .55s ease;
+.archive-layer .ax-spec-img{
+  display: flex; align-items: center; justify-content: center;
+  padding: 2.2rem; min-height: 0;
+  border-right: 1px solid var(--ink);
+  background:
+    repeating-linear-gradient(45deg, #00000005 0 8px, transparent 8px 16px);
 }
-.island.group-label .meta{
-  font-family: var(--f-mono); font-size: 9.5px;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--muted);
+.archive-layer .ax-spec-img img{
+  max-width: 100%; max-height: 100%; object-fit: contain;
+  box-shadow: 0 18px 50px rgba(0,0,0,.18);
 }
-.island.group-label .lbl{
-  margin-top: .15rem;
+.archive-layer .ax-spec-info{
+  padding: 2.2rem 2rem; overflow-y: auto;
+}
+.archive-layer .ax-spec-info .count{
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+}
+.archive-layer .ax-spec-info .no{
+  margin-top: 1rem;
+  font-family: var(--f-mono); font-size: 12px;
+  letter-spacing: .18em; color: var(--dim);
+}
+.archive-layer .ax-spec-info h3{
+  margin: .2rem 0 .8rem;
   font-family: var(--f-grot); font-weight: 500;
-  font-size: 1.65rem; line-height: 1.05; letter-spacing: -.012em;
-  color: var(--ink);
+  font-size: 1.9rem; line-height: 1.05; letter-spacing: -.02em;
 }
-.island.group-label .cnt{
-  margin-top: .2rem;
-  font-family: var(--f-mono); font-size: 10px;
-  letter-spacing: .14em; text-transform: uppercase;
+.archive-layer .ax-spec-info .facets{
+  display: flex; flex-wrap: wrap; gap: .4rem .8rem;
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  padding-bottom: .8rem; margin-bottom: .8rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.archive-layer .ax-spec-info .desc{
+  font-family: var(--f-serif); font-size: 14px; line-height: 1.5;
+}
+.archive-layer .ax-spec-info .def{
+  margin-top: 1rem;
+  font-family: var(--f-serif); font-size: 13px; line-height: 1.55;
   color: var(--muted);
+}
+.archive-layer .ax-spec-info .links{
+  margin: 1.2rem 0 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: .3rem;
+}
+.archive-layer .ax-spec-info .links a{
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: .06em; color: var(--ink);
+  text-decoration: none; border-bottom: 1px solid var(--faint);
+}
+.archive-layer .ax-spec-info .links a:hover{ border-bottom-color: var(--ink); }
+
+@media (max-width: 720px){
+  .archive-layer .ax-bar{ padding-left: 4.5rem; flex-wrap: wrap; gap: .6rem; }
+  .archive-layer .ax-tabs{ margin-left: 0; }
+  .archive-layer .ax-spec{ grid-template-columns: 48px 1fr 48px; }
+  .archive-layer .ax-spec-stage{ grid-template-columns: 1fr; }
+  .archive-layer .ax-spec-img{ border-right: 0; border-bottom: 1px solid var(--ink); }
 }
 
 /* cluster header (subtle ground-text like "archive", "essay") */
@@ -687,7 +797,7 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
 }
 
 /* hover affordance — specimens */
-.island.spec:hover, .island.thumb:hover, .island.field:hover{
+.island.field:hover{
   box-shadow: inset 0 0 0 2px var(--ink);
 }
 
@@ -701,7 +811,6 @@ body[data-density="compact"] .island.prose-frag{ width: 400px }
 body[data-density="compact"] .island.prose-frag .body p{ font-size: 13px }
 body[data-density="archival"] .island.prose-frag{ width: 340px }
 body[data-density="archival"] .island.prose-frag .body p{ font-size: 12px }
-body[data-density="archival"] .island.thumb{ width: 92px }
 
 body[data-numbering="roman"] .figno .n{ font-variant: small-caps; font-family: var(--f-serif); }
 
