@@ -111,23 +111,58 @@ Critical gotchas (cost real time — don't relearn them):
 
 ## Field images placed on canvas (2026-05-31) — DONE
 10 `kind:"field"` photos created as RC **picture** tools, each with its simple-media attached and positioned at origX+1540 / origY+840. (field-1 / field-2 are empty placeholders in source → no media, not built.)
+Sizes halved on 2026-05-31 (user: "drag resize most of them to be half as big") — all 210 wide, native aspect preserved (RC picture tools use `object-fit:fill`, so keeping native aspect avoids distortion). Original exposition rendered field images as uniform 3:2 cover-cropped thumbnails (420×280 authored, world scale 0.85); RC can't cover-crop, so we keep native aspect instead.
 | island | picture tool data-id | simple-media id | RC left,top | w×h |
 |--------|---------------------|-----------------|-------------|-----|
-| fi-01 (VLA)            | 4644067 | 4644048 | 6640,940  | 420×314 |
-| fi-02 (ALMA)           | 4644069 | 4644049 | 6640,1440 | 420×279 |
-| fi-03 (Blitzortung)    | 4644070 | 4644051 | 2940,2040 | 420×420 |
-| fi-04 (Marconi)        | 4644071 | 4644052 | 4200,1460 | 420×349 |
-| fi-05 (Goonhilly)      | 4644072 | 4644053 | 5840,1640 | 420×299 |
-| fi-06 (ATS Flower)     | 4644073 | 4644054 | 6440,40   | 420×538 |
-| fi-07 (Hubble)         | 4644075 | 4644056 | 7840,240  | 420×277 |
-| fi-08 (Barry Radiation)| 4644076 | 4644057 | 1860,1080 | 420×314 |
-| fi-barry-am            | 4644077 | 4644058 | 5300,2240 | 420×301 |
-| fi-barry-fm            | 4644078 | 4644059 | 4220,2240 | 420×296 |
+| fi-01 (VLA)            | 4644067 | 4644048 | 6640,940  | 210×157 |
+| fi-02 (ALMA)           | 4644069 | 4644049 | 6640,1440 | 210×140 |
+| fi-03 (Blitzortung)    | 4644070 | 4644051 | 2940,2040 | 210×210 |
+| fi-04 (Marconi)        | 4644071 | 4644052 | 4200,1460 | 210×175 |
+| fi-05 (Goonhilly)      | 4644072 | 4644053 | 5840,1640 | 210×150 |
+| fi-06 (ATS Flower)     | 4644073 | 4644054 | 6440,40   | 210×269 |
+| fi-07 (Hubble)         | 4644075 | 4644056 | 7840,240  | 210×139 |
+| fi-08 (Barry Radiation)| 4644076 | 4644057 | 1860,1080 | 210×157 |
+| fi-barry-am            | 4644077 | 4644058 | 5300,2240 | 210×151 |
+| fi-barry-fm            | 4644078 | 4644059 | 4220,2240 | 210×148 |
 
 Archive **Slideshow** tool `4644005` placed at RC 940,2600 (560×420), seeded with Roof-yagi (sm 4644031); to be extended with remaining 47 archive images.
 
+## Border styling system (2026-05-31) — DONE
+Visual grouping by border (all 2px, color #000):
+- **Solid border**: the 11 main-narrative roman-numeral sections (I–XI) + the 10 field images. Narrative text padding 8px; images padding 0.
+- **Dashed border**: the other 40 text nodes (pullquotes, whispers, glosses, notes, bib, captions), padding 8px.
+- The 11 narrative tool ids: 4643356(I) 4643358(II) 4643359(III) 4643360(IV) 4643361(V) 4643362(VI) 4643367(VII) 4643368(VIII) 4643369(IX) 4643370(X) 4643371(XI).
+- **Font differentiation (DONE)**: the 6 poetic nodes — whispers wh-2/3/4 (`4643635`,`4643640`,`4643641`) + pullquotes pq-1/2/3 (`4643630`,`4643631`,`4643633`) — set to **CrimsonPro serif italic** (echoes the original whisper voice = Times serif italic 17.5px). Everything else stays NimbusSansL grotesk. wh-1 ("twelve of two thousand four hundred…") was not in RC (deleted earlier).
+
+### Changing a text node's FONT — ⚠️ RC strips inline content font wrappers
+Wrapping content in `<div style="font-family:…">` via `setContent` is **stripped by RC's sanitizer** on save (this is why the original build's per-kind fonts got flattened to grotesk). The working path is the editor's **own font commands**, which emit sanitizer-safe `<span style="font-family:…">` / `<em>`:
+```js
+window.Editor.editItem(id);            // inline TinyMCE edit (NOT Dialog.editItem)
+// poll until window.tinymce.activeEditor.initialized
+const ed=window.tinymce.activeEditor; ed.focus();
+ed.selection.select(ed.getBody(), true);          // select all
+ed.execCommand('FontName', false, "'crimson pro', serif");
+ed.execCommand('italic');                          // wraps in <em>
+ed.setDirty(true);
+// exit edit by clicking empty canvas (top-right of #container-content) -> saves
+```
+RC-hosted css font names (lowercase): `'crimson pro'` (serif), `'nimbus sans l'` (grotesk), `'courier prime'` (mono). The tool edit dialog (`Dialog.editItem`) has NO custom-CSS-rules box — only a `cssClasses` class-name input (`#form_style_cssClasses_cssClasses`) + scrollbar setting; per-tool font must go through the inline editor as above.
+
+### Style-tab edit flow (CONFIRMED — persists, dialog closes on submit)
+`Dialog.editItem(id)` (NOT `Editor.editItem`, which enters inline TinyMCE edit for text tools) opens the settings DialogForm with tabs common/media/style/options/history. Click the `a[href="#style-tab"]`, then set fields (fire `input`+`change`): `#form_style_border_borderStyle` (select: none/solid/dashed/dotted/outset/double/groove/ridge/inset), `#form_style_border_borderWidth` ("2"), `#form_style_border_borderColor` ("#000000"), `#form_style_padding_padding{Left,Top,Right,Bottom}`. Click `button.btn-success` ("submit") — it saves AND closes the dialog (unlike the picture media flow). Reusable helper: `window.__styleTool(id, borderStyle, padding)`. Occasional dialog-race miss → re-run that id.
+
 ### Picture-tool creation flow (CONFIRMED, see `window.__RC.buildPicture`)
 1. Drag `span.icon.mif-image` → new `tool-picture` (no auto-dialog). 2. `Editor.editItem(id)` opens edit dialog — **poll until the `media` tab anchor exists** (tab-not-ready race caused a mid-batch failure; don't click before it appears). 3. Click `media` tab → click `select media` btn → picker dialog with `<select id="form_mediaList">` multiselect (max 1). 4. Click the `.ms-selectable li.ms-elem-selectable` whose text matches → underlying select.selectedOptions updates. 5. Picker `submit` btn. 6. Back in edit dialog, set `#form_style_position_{left,top,width,height}` inputs (fire input+change). 7. Edit-dialog `submit` saves geometry+media LIVE but does NOT close — **close via `.ui-dialog-titlebar-close`** (geometry already persisted, so X is safe). Run ≤3 per evaluate_script call; the hardened builder polls every dialog transition.
+
+### Endnotes apparatus box (2026-05-31 — DONE)
+Added a peripheral **Endnotes** text node (`4644375`) at lower-left periphery `left:40, top:2300`, dashed 2px black border + 8px padding (reference apparatus, like the bibliography at `4643428` left:40 top:580). 6 paragraphs: heading + 5 endnotes (Barry *0.5 Microcurie Radiation Installation*; Barry carrier-wave works; De Maria *The Lightning Field*; Turrell *Afrum (White)*; McCall *Line Describing a Cone*). Work titles italicised via `<em>`; curly quotes + en-dashes preserved verbatim. Box ~600–620 wide × ~1740 tall.
+
+### ⚠️ Geometry round-trip shrink (box-sizing) — known gotcha
+A text node's stored geometry **shrinks by ~20px in BOTH dims per save→reload cycle** (= 2×border 2px + 2×padding 8px = 20px). RC stores one box model but re-applies as the other, losing the border+padding each round trip. Implications when sizing a *bordered* box:
+- Don't chase pixel-perfect height across reloads — it will drift smaller. **Oversize generously** (e.g. target +60–80px taller than content) so it still fits after the shrink.
+- `Editor.notify('tool.resize', {...})` and direct inline-style writes **do NOT persist** — only the genuine resizable `_mouseStop` lifecycle saves geometry server-side.
+- The resizable SE-handle lifecycle gets **clamped when the handle is off-screen** (box taller than viewport → height/width deltas come back partial). No fix found; just oversize and accept ~580–620 final width.
+- `.tool-content` has `min-height:100%`, so its `scrollHeight` tracks the box height, not the real content height. To measure *real* content height, clone the inner into an off-DOM div with `height:auto;min-height:0` at the target inner width.
 
 ## Media grouping (future ref, per user)
 Keep TWO distinct media groups — they are laid out differently:
