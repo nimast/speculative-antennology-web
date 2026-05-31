@@ -25,12 +25,12 @@ const ARCHIVE_GRID = ARCHIVE.filter(a => !FIELD_ARCHIVE_IS.has(a.i));
 
 // Whole-GLB specimens — each renders its own model file as a node in the field.
 const MODELS = [
-  { id: "model-0a", src: "assets/models/model-0a.glb", label: "spec · 0a", x: 420,  y: 220 },
-  { id: "model-0b", src: "assets/models/model-0b.glb", label: "spec · 0b", x: 1140, y: 180 },
-  { id: "model-1a", src: "assets/models/model-1a.glb", label: "spec · 1a", x: -300, y: 560 },
-  { id: "model-1b", src: "assets/models/model-1b.glb", label: "spec · 1b", x: 940,  y: 560 },
-  { id: "model-2a", src: "assets/models/model-2a.glb", label: "spec · 2a", x: 360,  y: 940 },
-  { id: "model-2b", src: "assets/models/model-2b.glb", label: "spec · 2b", x: 1080, y: 920 },
+  { id: "model-0a", src: "assets/models/model-0a.glb", label: "monumental", x: 420,  y: 220 },
+  { id: "model-0b", src: "assets/models/model-0b.glb", label: "monumental", x: 1140, y: 180 },
+  { id: "model-1a", src: "assets/models/model-1a.glb", label: "mono monumental", x: -300, y: 560 },
+  { id: "model-1b", src: "assets/models/model-1b.glb", label: "mono monumental", x: 940,  y: 560 },
+  { id: "model-2a", src: "assets/models/model-2a.glb", label: "grid", x: 360,  y: 940 },
+  { id: "model-2b", src: "assets/models/model-2b.glb", label: "grid", x: 1080, y: 920 },
 ];
 const MODEL_W = 380;
 
