@@ -847,8 +847,6 @@ function App(){
       <div className="chrome">
         <div className="crop t"/><div className="crop b"/><div className="crop l"/><div className="crop r"/>
 
-        <div className="wip">work in progress</div>
-
         <div className="jumpmenu">
           <div className="t">drift to →</div>
           {jumps.map(j => (
