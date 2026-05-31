@@ -24,9 +24,9 @@ Body conventions per Kind are in `NOTION.md` — read that before editing fragme
 - The colophon island uses `id: "colophon"` (matches Notion). Threads to it must use `"colophon"`, not the legacy `"col"`.
 
 ## Archive ↔ Notion mapping
-- `data/notion-mapping.json` maps all 48 archive images (0-based indices) to Notion pages in the Antenna Repository DB. Source of truth for the `notion: { ... }` objects in `data/archive.js`.
-- Archive images live at `assets/archive/ant-00.jpg` through `ant-47.jpg` (zero-padded).
-- `archive.js` uses 1-based `i` values (1–48); `notion-mapping.json` uses 0-based indices (0–47).
+- `data/notion-mapping.json` maps all 49 archive images (0-based indices) to Notion pages in the Antenna Repository DB. Source of truth for the `notion: { ... }` objects in `data/archive.js`.
+- Archive images live at `assets/archive/ant-00.jpg` through `ant-48.jpg` (zero-padded).
+- `archive.js` uses 1-based `i` values (1–49); `notion-mapping.json` uses 0-based indices (0–48).
 - Some Notion pages contain multiple archive images (multi-image pages, e.g. Misato → ant-18 + ant-19).
 - Notion is the canonical source for all antenna images. If an archive entry appears "unmatched", the Notion page exists but wasn't found — search harder rather than creating new pages.
 
