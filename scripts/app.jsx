@@ -182,6 +182,88 @@ function buildIslands(grouping){
   return items;
 }
 
+// ───────────────────────────────────────────────────────────────────────────
+// Overlap relaxation — islands carry only (x, y, w); their height is content-
+// driven (and shifts with the `density` tweak), so vertical overlap can't be
+// known from the data. After render we measure each card's real box and nudge
+// overlapping ones apart, keeping every card as close to its authored Notion
+// position as possible. The archive grid, labels and background wash are laid
+// out deliberately, so they're excluded from packing.
+const PACK_EXCLUDE = new Set(["thumb", "group-label", "group-tabs", "cluster-head"]);
+const PACK_FIXED   = new Set(["title"]); // anchors: act as obstacles, never move
+const PACK_GUTTER  = 44;                  // breathing room kept between cards
+
+function separateBoxes(boxes, gutter){
+  const g = gutter / 2;
+  for (let iter = 0; iter < 400; iter++){
+    let moved = false;
+    for (let i = 0; i < boxes.length; i++){
+      for (let j = i + 1; j < boxes.length; j++){
+        const a = boxes[i], b = boxes[j];
+        if (a.fixed && b.fixed) continue;
+        const aL = a.x - g, aR = a.x + a.w + g, aT = a.y - g, aB = a.y + a.h + g;
+        const bL = b.x - g, bR = b.x + b.w + g, bT = b.y - g, bB = b.y + b.h + g;
+        const px = Math.min(aR, bR) - Math.max(aL, bL); // x penetration
+        const py = Math.min(aB, bB) - Math.max(aT, bT); // y penetration
+        if (px <= 0 || py <= 0) continue;               // not overlapping
+        const wa = a.fixed ? 0 : (b.fixed ? 1 : 0.5);   // share a takes
+        const wb = a.fixed ? 1 : (b.fixed ? 0 : 0.5);   // share b takes
+        if (px < py){
+          const dir = (a.x + a.w / 2) <= (b.x + b.w / 2) ? 1 : -1;
+          a.x -= dir * px * wa; b.x += dir * px * wb;
+        } else {
+          const dir = (a.y + a.h / 2) <= (b.y + b.h / 2) ? 1 : -1;
+          a.y -= dir * py * wa; b.y += dir * py * wb;
+        }
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+}
+
+// Measure rendered boxes, resolve overlaps, and return id → {x, y} overrides.
+// Deterministic from the authored positions, so it converges in one re-render.
+function usePackedIslands(islands, deps){
+  const [overrides, setOverrides] = React.useState({});
+  React.useLayoutEffect(()=>{
+    const world = document.querySelector(".world");
+    if (!world) return;
+    const measured = {};
+    world.querySelectorAll(".island[data-id]").forEach(el => {
+      measured[el.getAttribute("data-id")] = { w: el.offsetWidth, h: el.offsetHeight };
+    });
+    const boxes = islands
+      .filter(it => !PACK_EXCLUDE.has(it.kind))
+      .map(it => {
+        const m = measured[it.id];
+        return {
+          id: it.id, x: it.x, y: it.y,
+          w: m ? m.w : (it.w || 240),
+          h: m ? m.h : 160,
+          fixed: PACK_FIXED.has(it.kind),
+        };
+      });
+    separateBoxes(boxes, PACK_GUTTER);
+    const next = {};
+    for (const b of boxes){
+      const o = islands.find(i => i.id === b.id);
+      const nx = Math.round(b.x), ny = Math.round(b.y);
+      if (nx !== o.x || ny !== o.y) next[b.id] = { x: nx, y: ny };
+    }
+    setOverrides(prev => {
+      const ka = Object.keys(prev), kb = Object.keys(next);
+      const same = ka.length === kb.length &&
+        kb.every(k => prev[k] && prev[k].x === next[k].x && prev[k].y === next[k].y);
+      return same ? prev : next;
+    });
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+  return React.useMemo(
+    () => islands.map(it => overrides[it.id] ? { ...it, ...overrides[it.id] } : it),
+    [islands, overrides]
+  );
+}
+
 // Threads = Notion-driven (between stable islands) + dynamic (involving
 // viewer / arc-head / sp-* — non-Notion islands).
 const THREADS = [
@@ -624,7 +706,10 @@ function App(){
   const [pathStep, setPathStep] = React.useState(0);
 
   const grouping = GROUP_MODES.includes(t.grouping) ? t.grouping : "scatter";
-  const islands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  const baseIslands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  // Nudge overlapping cards apart using their real measured heights; re-runs
+  // when the layout (grouping) or card sizing (density) changes.
+  const islands = usePackedIslands(baseIslands, [baseIslands, t.density]);
   const groupingCtl = React.useMemo(()=> ({
     value: grouping,
     set: (m) => setTweak("grouping", m),
