@@ -759,7 +759,7 @@ function App(){
     const island = islands.find(it => it.id === id);
     if (!island || !window.SA_goTo) return;
     const world = document.querySelector('.world');
-    if (world) { world.classList.add('path-anim'); setTimeout(()=>world.classList.remove('path-anim'), 650); }
+    if (world) { world.classList.add('path-anim'); setTimeout(()=>world.classList.remove('path-anim'), 1400); }
     window.SA_goTo(island.x + (island.w || 460) / 2, island.y + 100, 1.0);
   }
 
