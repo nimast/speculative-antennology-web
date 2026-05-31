@@ -276,7 +276,7 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   margin:0;
   font-family: var(--f-grot);
   font-weight: 400;
-  font-size: 4.5rem;
+  font-size: 3.75rem;
   line-height:.92;
   letter-spacing: -.025em;
 }
