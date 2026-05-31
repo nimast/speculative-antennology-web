@@ -143,7 +143,9 @@ function SAModelViewer({ src, autoRotate }){
           float rim = smoothstep(uEdge, uEdge + 0.05, n);
           // a faint hatching step to suggest form without becoming "illustrative"
           float shade = step(0.55, n);
-          vec3 col = mix(vec3(0.0), vec3(1.0), rim);
+          // camera-facing surfaces get a light-grey fill (not pure white) so the
+          // specimen and its podium read against the white background.
+          vec3 col = mix(vec3(0.0), vec3(0.82), rim);
           // subtle mid tone step
           col = mix(col, vec3(0.35), (1.0 - shade) * rim);
           gl_FragColor = vec4(col, 1.0);
@@ -183,7 +185,7 @@ function SAModelViewer({ src, autoRotate }){
     function animate(){
       if (state.disposed) return;
       requestAnimationFrame(animate);
-      if (state.autoRotate) rot.y += 0.0035;
+      if (state.autoRotate) rot.y += 0.0018;
       // apply orbit
       const cx = Math.sin(rot.y) * Math.cos(rot.x) * dist;
       const cy = Math.sin(rot.x) * dist;
