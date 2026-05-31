@@ -646,17 +646,20 @@ body.sa-archive-open .chrome{ opacity: 0; pointer-events: none; transition: opac
 
 .archive-layer .ax-body{ flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; }
 
-/* grid + grouped views */
+/* grid + grouped views — separators are drawn per-thumb so an incomplete
+   last row leaves white space, not a black stub, where the category ends. */
 .archive-layer .ax-grid{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1px; background: var(--ink);
-  border-bottom: 1px solid var(--ink);
+  gap: 0; background: var(--paper);
+  border-left: 1px solid var(--ink);
 }
 .archive-layer .ax-groups .ax-grid{ margin: 0; }
 .archive-layer .ax-thumb{
   display: flex; flex-direction: column; text-align: left;
-  background: var(--paper); border: 0; padding: 0; cursor: pointer;
+  background: var(--paper);
+  border: 0; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+  padding: 0; cursor: pointer;
   font: inherit; color: inherit;
 }
 .archive-layer .ax-thumb .img{ aspect-ratio: 1/1; overflow: hidden; }
