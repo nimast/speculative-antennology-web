@@ -32,7 +32,7 @@ const SA_VIEWER_CSS = `
   const s = document.createElement('style'); s.textContent = SA_VIEWER_CSS; document.head.appendChild(s);
 })();
 
-function SAModelViewer({ src, autoRotate }){
+function SAModelViewer({ src, label, autoRotate }){
   const mountRef = React.useRef(null);
   const stateRef = React.useRef({});
   const [loading, setLoading] = React.useState(true);
@@ -216,7 +216,7 @@ function SAModelViewer({ src, autoRotate }){
       <div className="sa-viewer-overlay">
         <div className="tl">SPECIMEN</div>
         <div className="tr">ORTH. PROJ. · ROT. {autoRotate ? 'AUTO' : 'MAN.'}</div>
-        <div className="bl">computed radiator</div>
+        <div className="bl">{label || 'specimen'}</div>
         <div className="br">GLB / {fileLabel}</div>
         {loading && <div className="loading">loading specimen…</div>}
       </div>

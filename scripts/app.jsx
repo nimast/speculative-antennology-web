@@ -405,11 +405,11 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
     return (
       <div className="island viewer" style={style} data-id={it.id}>
         <div className="stage">
-          <SAModelViewer src={it.src} autoRotate={viewer.autoRotate}/>
+          <SAModelViewer src={it.src} label={it.label} autoRotate={viewer.autoRotate}/>
         </div>
         <div className="controls">
           <div className="spec">{it.label}</div>
-          <div className="name">computed radiator — drag to orbit</div>
+          <div className="name">drag to orbit</div>
         </div>
       </div>
     );
