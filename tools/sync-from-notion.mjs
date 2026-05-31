@@ -191,11 +191,21 @@ function parseList(blocks) {
     .map(b => b.type === 'bulleted_list_item' ? blockText.bulleted_list_item(b) : blockText.numbered_list_item(b));
 }
 
+// Notion stores field images as absolute raw.githubusercontent URLs (so Notion
+// can render them). On the site, serve them from the deployment itself: rewrite
+// this repo's own raw-GitHub asset URLs to relative paths so they don't depend
+// on GitHub's CDN or a specific branch (preview deploys would 404 otherwise).
+function toLocalAsset(url) {
+  if (!url) return '';
+  const m = url.match(/^https?:\/\/raw\.githubusercontent\.com\/nimast\/speculative-antennology-web\/[^/]+\/(assets\/.+)$/);
+  return m ? m[1] : url;
+}
+
 function parseField(blocks) {
   const img = blocks.find(b => b.type === 'image');
   const cap = blocks.find(b => b.type === 'paragraph');
   return {
-    img: img?.image?.external?.url || img?.image?.file?.url || '',
+    img: toLocalAsset(img?.image?.external?.url || img?.image?.file?.url || ''),
     cap: cap ? blockText.paragraph_plain(cap) : '',
   };
 }
