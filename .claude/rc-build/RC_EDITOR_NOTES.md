@@ -206,5 +206,65 @@ refreshes the cookie.
 - [x] Size save: confirmed via resizable internal lifecycle (persists across reload).
 - [x] Text content + styling via `tinymce.activeEditor.setContent(html)` then save.
 - [x] Slideshow creation + picture tools + media upload/attach (Windows-path upload).
-- [ ] Extend the archive Slideshow with the remaining 47 images; upload 6 model MP4s.
-- [ ] Shape/connector line drawing for the 39 threads.
+- [x] Upload 6 model MP4s: placed as video tools, solid 1px black border, 0 overlaps, license cc-by-nc-nd (persists across reload).
+- [x] Extend the archive Slideshow with the remaining archive images: 42 new uploads added to slideshow tool `4644005` via the two-step REST flow below (the previously-uploaded 7 archive media were intentionally left out per nimast — slideshow now has 43 slides = Roof-yagi + 42 new).
+- [x] Shape/connector line drawing for the threads: 49 shape tools (10 `arrowRight` for the 11-step narrative arc, 39 `line` cycling solid/dotted/dashed), all sent to back layer via `Editor.LayerList.layersToBack`. See "Direct REST upload / shape creation" + "Shape tool" below.
+
+## Direct REST endpoints — bypass the drag-drop UI (CONFIRMED, faster than synthetic gestures)
+
+These return `rc-form-status: success` and `rc-form-url: …` headers when an AJAX `X-Requested-With: XMLHttpRequest` request is used.
+
+**Create any tool** — `POST /editor/{rid}/{wid}/tools/new?simpleMedia=null` (Content-Type `application/x-www-form-urlencoded`)
+Body: `toolType=shape&left=X&top=Y&width=W&height=H` (or `toolType=simpletext|picture|video|slideshow|…`).
+Returns new tool id; the canvas needs `Editor.loadItems()` (or a manual reload) to render it.
+
+**Edit any tool** — `POST /editor/{rid}/{wid}/tools/{id}/edit` with multipart `FormData` mirroring the inline edit dialog (`form[common][title]`, `form[style][position][left/top/width/height/rotate]`, `form[style][background][backgroundColor]`, `form[media][...]`, `form[options][...]`, etc.). Add `form[_buttons][submit]=''`. Validation echoes the form HTML at status 422 if a required field is missing.
+**Preserve-existing-fields pattern:** GET the same `/edit` URL first, scrape every `<input|select|textarea>[name]` into a `FormData`, apply your overrides, then POST. Used to batch-flip video `loop`/`autoplay` and text `backgroundColor` across 57 tools without losing other settings.
+
+**Batch reorder (z-index)** — `Editor.LayerList.layersToBack(children)` / `…layersToFront(children)` where `children = Editor.LayerList.children(ids)`. Posts to `/editor/{rid}/{wid}/tools/update` with `data: {id: {index}, …}`. Persists across reload. After ordering, optionally `Editor.clearItemSelection()`.
+
+**Batch delete** — `Dialog.removeItems([ids])` opens a confirm dialog; click `#_buttons_submit`. Direct REST `POST /editor/{rid}/{wid}/tools/delete` with `selection[]=…` returns 422 "selected choice is invalid" unless those ids are present as `<option>` in the form's hidden select; populate via the dialog flow rather than fighting it. (Same dead-end I hit on three stray test shapes — easier to right-click delete in the UI.)
+
+## Simple-media upload — direct REST flow (alternative to the Windows-path UI flow)
+
+Two-step, no file picker:
+
+1. `POST /editor/{rid}/{wid}/tools/{toolId}/simple-medias/new` (multipart, no file) with
+   `form[image][name]`, `form[image][copyrightHolder]`, `form[image][license]` (default `all-rights-reserved`),
+   `form[image][ariaLabel]`, `form[image][description]`, `form[_buttons][finish]=''`.
+   Server responds with `rc-form-status: success` and a `rc-form-url: /researches/{rid}/simple-medias/{slotId}/edit` header containing the new slot id.
+2. `POST {rc-form-url}` (multipart) with only `form[image][media]=<File>` to attach the binary.
+
+Result: the media is created in the slideshow's child list *and* in the media library, and the slot becomes a slide on `toolId`. **Cross-origin gotcha:** fetching the source file from `http://localhost:…` is blocked as mixed content from the HTTPS editor — host the files at the project's HTTPS deploy URL (e.g. `https://speculative-antennology-web.vercel.app/assets/archive/ant-NN.jpg`, CORS open) and `fetch()` from there. Vercel was 49/49 successful.
+
+## Shape tool — connectors / lines / arrows (CONFIRMED)
+
+`POST /tools/new?simpleMedia=null` body `toolType=shape&left=…&top=…&width=…&height=…` to create, then edit:
+- `form[media][shapeType]` ∈ `rect | circle | line | verticalLine | arrowDown | arrowLeft | arrowRight | arrowUp`
+- `form[media][fillColor]`, `form[media][strokeColor]` (e.g. `black`)
+- `form[media][strokeWidth]` (px, integer text)
+- `form[media][strokeDashArray]` ∈ `'' (solid) | '3,3' (dotted) | '7,3' (dashed)`
+- `form[style][position][rotate]` (degrees, integer)
+
+**Drawing a connector A → B**: treat the line as a horizontal SVG (`<line x1=0 y1=h/2 x2=W y2=h/2>`) inside a bounding box, then rotate the box. Set width = `dist(centreA, centreB)`, height = 4–16 (use larger for arrow tips), centre the box on the midpoint, rotate by `atan2(dy, dx) * 180/π`. To end an arrow with a small gap before the target box edge, project from the target centre back along the unit vector by `min(hw/|ux|, hh/|uy|) + gap` (~30px gap looked clean here). Same for the source side. Use shapeType `arrowRight` (the arrowhead follows the rotation).
+
+`.tool-shape .tool-content { overflow: hidden }` clips the SVG to the bounding box — fine for thin rotated lines, but a tall rotated `arrowRight` may visually clip its tip if the bounding box is too short; bump `height` to ~16px and `strokeWidth` to ~4 for visible arrows.
+
+## Video tool — autoplay + loop
+
+Edit fields (checkboxes; send `'1'` to enable):
+- `form[options][settings][loop]`
+- `form[options][settings][autoplay]`
+- `form[options][settings][stopOtherPlayers]`
+- `form[options][appearance][displayVolume]`, `displayMinimal`, `hidePlayer`
+
+## Text tool — opaque background
+
+`form[style][background][backgroundColor] = 'white'` on `tool-simpletext` makes the island opaque so back-layer threads/lines no longer show through the prose. Apply by batch (preserve-existing-fields pattern above) — flipped all 51 text tools cleanly.
+
+## Exposition coordinates (this project)
+
+- Research id `4312417`, weave id `4312418`.
+- Canvas size (Map panel): 8700 × 5074 px.
+- Archive slideshow tool id: `4644005`.
+- Thread shapes occupy z-index 1–50 (back); islands occupy 51+ (front).

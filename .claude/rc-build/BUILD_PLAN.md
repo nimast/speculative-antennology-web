@@ -27,6 +27,7 @@ so the RC canvas needs to be ~8800×5400.
 - [x] #2 Learn RC editor mechanics (resize canvas, add text/image/slideshow, draw connectors)
 - [x] #3 Generate turntable MP4s from the 6 GLB models → `assets/models/turntable/model-*.mp4`
 - [ ] #4 Upload all media to RC (12 field photos, 48 archive images, 6 model MP4s); license CC BY-NC-ND  ← **media agent**
+  - [x] 6 model MP4s: uploaded + placed as video tools, solid 1px black border, 0 overlaps, license cc-by-nc-nd (media ids 4644243/4644245/4644255/4644260/4644266/4644269; tool data-ids 4644278/4644286/4644287/4644288/4644290/4644295)
 - [ ] #5 Build all static text islands at original scatter coords (12 placed so far, see below)
 - [ ] #6 Place archive slideshow + model clips into the layout
 - [ ] #7 Recreate the 39 inter-island threads with the shape tool

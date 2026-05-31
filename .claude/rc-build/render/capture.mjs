@@ -1,17 +1,20 @@
 import puppeteer from 'puppeteer-core';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 import { Buffer } from 'node:buffer';
 
-const CHROME = process.env.CHROME_BIN;
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+const CHROME = process.env.CHROME_BIN || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const PORT = process.env.PORT || '8765';
 const BASE = `http://localhost:${PORT}/.claude/rc-build/render/render.html`;
-const FFMPEG = process.env.FFMPEG || '/home/nimast/bin/ffmpeg';
-const OUT = '/home/nimast/dev/repos/speculative-antennology-web/assets/models/turntable';
+const FFMPEG = process.env.FFMPEG || '/opt/homebrew/bin/ffmpeg';
+const OUT = process.env.OUT || `${REPO_ROOT}/assets/models/turntable`;
 const TMP = '/tmp/sa-turntable-frames';
-const MODELS = ['model-0a','model-0b','model-1a','model-1b','model-2a','model-2b'];
-const N = 150;        // frames per full rotation
-const FPS = 25;       // -> 6s loop
+const MODELS = (process.env.MODELS || 'model-0a,model-0b,model-1a,model-1b,model-2a,model-2b').split(',');
+const N = Number(process.env.N || 300);   // frames per full rotation (300 -> 12s loop, 2x slower than original 150)
+const FPS = Number(process.env.FPS || 25);
 
 mkdirSync(OUT, { recursive: true });
 
