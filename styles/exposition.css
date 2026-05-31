@@ -5,6 +5,16 @@
    threads connect them by association. Strict black-and-white.
 ───────────────────────────────────────────────────────────────────────────── */
 
+@font-face{
+  font-family: "ABC Gaisyr";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/ABCGaisyr-Regular-Trial.woff2") format("woff2"),
+       url("../assets/fonts/ABCGaisyr-Regular-Trial.woff")  format("woff"),
+       url("../assets/fonts/ABCGaisyr-Regular-Trial.otf")   format("opentype");
+}
+
 :root{
   --ink:#000;
   --paper:#fff;
@@ -15,7 +25,7 @@
 
   --f-grot:  "Neue Haas Grotesk Display Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
   --f-body:  "Neue Haas Grotesk Text Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --f-serif: "Times New Roman", Times, serif;
+  --f-serif: "ABC Gaisyr", "Times New Roman", Times, serif;
   --f-mono:  "Courier New", "Courier", ui-monospace, monospace;
 }
 
