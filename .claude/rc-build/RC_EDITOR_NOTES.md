@@ -179,6 +179,24 @@ set `#form_style_position_{left,top,width,height}` in the `style` tab → edit `
 saves LIVE but does NOT close → close via `.ui-dialog-titlebar-close`. Slideshow attach
 uses `Dialog.selectResource(toolId)` similarly. Run ≤3 builds per evaluate_script call.
 
+## Deleting tools — ⚠️ `Editor.removeItems` is CLIENT-ONLY
+`Editor.removeItems([ids])` removes from the DOM + emits a socket notify but does NOT
+persist — the tools **reappear on reload**. The persisting delete is
+**`Dialog.removeItems([ids])`** → opens a "delete tool" confirmation DialogForm →
+click the **btn-danger "submit"** button (recoverable later via Options → "Restore
+deleted objects"). Same client-only/persisting split as `Editor.removeSimpleMedia` vs
+`Dialog.removeSimpleMedia`.
+
+## ⚠️ Orphan tools can be invisible until reload
+Half-built / duplicate tools from a prior session may be saved **server-side but not
+rendered into `#content` until the page reloads**. So a live `#content .tool` sweep can
+under-count, and an overlap/pack pass run against it will miss them. **Before any layout
+pass: reload, then sweep.** Tell-tale orphan = a `tool-simpletext` stuck at default
+**150×150** (real islands were all fit to content) — and its text usually duplicates a
+properly-placed island. (2026-05-31: 13 such orphans piled at top-left, ids 4643468/
+4643511/4643512/4643513/4643514/4643515/4643519/4643520/4643521/4643523/4643524/4643525/
+4643526 — all duplicates, deleted via `Dialog.removeItems`.)
+
 ## Session model
 HTTP session cookie can expire independently of the websocket (`Editor.isOnline()` may
 still be true). Expired → REST endpoints (pickers, lists) 401 "Session expired". Re-login
