@@ -149,10 +149,44 @@ RC-hosted css font names (lowercase): `'nimbus sans l'` (grotesk), `'crimson pro
 Editing disables drag/resize (`ui-draggable-disabled`) — always exit edit before move/resize.
 Auto-fit height: after setText, read `.tool-content` scrollHeight and resize box to fit.
 
+## Simple-media UPLOAD (CONFIRMED) — ⚠️ WINDOWS PATHS REQUIRED
+Chrome runs on **Windows** (debug port 9223); WSL drives it via CDP. `upload_file`/
+`DOM.setFileInputFiles` with a **WSL path** (`/home/nimast/...`) silently creates a
+**0-byte file** → media saves as `missing-media`. FIX: copy files to
+`/mnt/c/temp/rc-upload/` and pass **Windows** paths (`C:\temp\rc-upload\<file>`).
+**Always verify `document.querySelector('#form_image_media').files[0].size > 0` before submit.**
+Real (non-empty) uploads keep the dialog open during the binary transfer — poll for the
+form to disappear (`#form_image_name` gone) before continuing.
+
+Flow: `Dialog.addSimpleMedia()` → DialogForm `/researches/{rid}/simple-medias/new` →
+set `#form_type_type='image'` → click "next" → image form: `#form_image_media` (file),
+`#form_image_name`, `#form_image_copyrightHolder`, `#form_image_license` (select:
+all-rights-reserved | public-domain | cc-by | cc-by-nd | cc-by-sa | cc-by-nc |
+cc-by-nc-nd | cc-by-nc-sa), `[name="form[image][ariaLabel]"]`, `[name="form[image][description]"]`,
+then SUBMIT. **Delete**: `Dialog.removeSimpleMedia([ids])` → click the btn-danger "delete"
+(persists server-side; reversible via "Restore deleted objects"). Note `Editor.removeSimpleMedia`
+is client-only and does NOT persist.
+
+List endpoint (200 when authed): `/editor/{rid}/{wid}/simple-medias/list` → `<tr class="simple-media [missing-media]" data-id ...>` rows with name + WxH dims.
+
+## Picture & Slideshow tools — creating + attaching media (CONFIRMED)
+See `window.__RC.buildPicture` (re-inject each session) and BUILD_PLAN.md for the full
+step list. Key facts: picture tool drag opens NO dialog → `Editor.editItem(id)`, **poll
+until the `media` tab anchor exists** (tab-not-ready race caused a mid-batch failure) →
+`media` tab → `select media` btn → picker has `<select id="form_mediaList">` multiselect
+(max 1); click the matching `.ms-selectable li.ms-elem-selectable` → picker `submit` →
+set `#form_style_position_{left,top,width,height}` in the `style` tab → edit `submit`
+saves LIVE but does NOT close → close via `.ui-dialog-titlebar-close`. Slideshow attach
+uses `Dialog.selectResource(toolId)` similarly. Run ≤3 builds per evaluate_script call.
+
+## Session model
+HTTP session cookie can expire independently of the websocket (`Editor.isOnline()` may
+still be true). Expired → REST endpoints (pickers, lists) 401 "Session expired". Re-login
+refreshes the cookie.
+
 ## TODO / to verify
 - [x] Size save: confirmed via resizable internal lifecycle (persists across reload).
-- [ ] Text content + styling: via `tinymce.activeEditor.setContent(html)` then save.
-- [ ] Exit edit mode to re-enable drag/resize (object is `ui-draggable-disabled` while editing).
-- [ ] Extend page height for the tall vertical layout (page default 823 tall).
-- [ ] Slideshow creation + adding the 48 images.
-- [ ] Shape/connector line drawing for threads.
+- [x] Text content + styling via `tinymce.activeEditor.setContent(html)` then save.
+- [x] Slideshow creation + picture tools + media upload/attach (Windows-path upload).
+- [ ] Extend the archive Slideshow with the remaining 47 images; upload 6 model MP4s.
+- [ ] Shape/connector line drawing for the 39 threads.
