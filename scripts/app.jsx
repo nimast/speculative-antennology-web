@@ -377,8 +377,8 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
           a field of found and computed radiators; notes on the shape of antennas and the persistence of the electromagnetic trace.
         </div>
         <div className="auth">
-          <span>Yanai Toister <span className="aff">Tampere</span></span>
-          <span>Nimrod Astarhan <span className="aff">independent</span></span>
+          <span>Yanai Toister <span className="aff">Tampere University</span></span>
+          <span>Nimrod Astarhan <span className="aff">School of the Art Institute of Chicago</span></span>
         </div>
       </div>
     );
