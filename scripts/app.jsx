@@ -222,6 +222,23 @@ function separateBoxes(boxes, gutter){
   }
 }
 
+// The archive (specimen grid + its tab bar) is laid out as one deliberate
+// block. We don't repack it, but it must not be covered by — or pushed under —
+// editorial cards, so we feed it in as one immovable obstacle: the union box of
+// every thumb plus the group-tabs bar. Editorial cards then flow around it.
+function archiveObstacle(islands, measured){
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (const it of islands){
+    if (it.kind !== "thumb" && it.kind !== "group-tabs") continue;
+    const m = measured[it.id];
+    const w = m ? m.w : (it.w || 120), h = m ? m.h : 120;
+    x1 = Math.min(x1, it.x); y1 = Math.min(y1, it.y);
+    x2 = Math.max(x2, it.x + w); y2 = Math.max(y2, it.y + h);
+  }
+  if (x1 === Infinity) return null;
+  return { id: "__archive__", x: x1, y: y1, w: x2 - x1, h: y2 - y1, fixed: true };
+}
+
 // Measure rendered boxes, resolve overlaps, and return id → {x, y} overrides.
 // Deterministic from the authored positions, so it converges in one re-render.
 function usePackedIslands(islands, deps){
@@ -244,9 +261,12 @@ function usePackedIslands(islands, deps){
           fixed: PACK_FIXED.has(it.kind),
         };
       });
+    const archive = archiveObstacle(islands, measured);
+    if (archive) boxes.push(archive);
     separateBoxes(boxes, PACK_GUTTER);
     const next = {};
     for (const b of boxes){
+      if (b.fixed) continue;
       const o = islands.find(i => i.id === b.id);
       const nx = Math.round(b.x), ny = Math.round(b.y);
       if (nx !== o.x || ny !== o.y) next[b.id] = { x: nx, y: ny };
@@ -790,6 +810,8 @@ function App(){
 
       <div className="chrome">
         <div className="crop t"/><div className="crop b"/><div className="crop l"/><div className="crop r"/>
+
+        <div className="wip">work in progress</div>
 
         <div className="jumpmenu">
           <div className="t">drift to →</div>

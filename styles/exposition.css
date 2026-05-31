@@ -139,6 +139,14 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   color:var(--muted);
 }
 
+.chrome .wip{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  padding:.3rem .7rem;
+  background:var(--ink); color:var(--paper);
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.18em; text-transform:uppercase;
+}
+
 /* Hidden grouping picker — opens on `g`, closes on Esc. Not chrome-bound
    because it's intentionally undiscoverable. */
 @keyframes sa-picker-in {
