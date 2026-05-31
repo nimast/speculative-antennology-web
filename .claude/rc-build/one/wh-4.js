@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"wh-4","kind":"whisper","x":4520,"y":740,"w":320,"html":"<div style=\"font-family:'crimson pro',serif;font-size:17px;font-style:italic;line-height:1.4;color:#000\">the male silk moth is tuned to a single frequency — pheromone</div>"}]);

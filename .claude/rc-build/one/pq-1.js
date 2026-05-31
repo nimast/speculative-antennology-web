@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"pq-1","kind":"pullquote","x":1200,"y":220,"w":560,"html":"<blockquote style=\"font-family:'crimson pro',serif;font-size:29px;font-style:italic;line-height:1.15;color:#000;margin:0\">Energy, too, remembers.</blockquote>"}]);

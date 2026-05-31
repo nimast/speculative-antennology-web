@@ -92,3 +92,45 @@ window.__RC = (() => {
   return { OX, OY, exitEdit, createText, setText, resize, move, fit, place };
 })();
 ```
+
+## Session learnings (2026-05-31) — text-island build, READ before continuing
+
+All 56 text islands are now built & placed (the other 12 of 68 are `kind:"field"` image islands awaiting media upload). Offset in use is **OX=1540 / OY=840** (NOT the 1700/1000 in the helper block above — the helper was re-injected with the corrected values live). `place(id,ox,oy) => move(id, ox+1540, oy+840)`.
+
+Critical gotchas (cost real time — don't relearn them):
+
+1. **One synthetic operation per settled "moment".** Each of createText / setText / resize / move drives jQuery UI via synthetic mouse events. Two synthetic ops back-to-back in the SAME `evaluate_script` call: the 2nd silently no-ops (box stays at default size/pos). Either (a) one op per `evaluate_script` call, or (b) within one call, insert a **requestAnimationFrame double-wait settle** between ops: `const raf=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))); const settle=async(n=8)=>{for(let k=0;k<n;k++)await raf();};`. `setTimeout`-only waits are NOT enough — must yield to RAF/paint. With RAF-settle, full create→setText→fit→place runs reliably in ONE call, well under the ~30s evaluate timeout.
+
+2. **The "draggable prior to initialization / enable" error during setText** is a RACE, not a broken tool. Calling setText immediately after createText in the same call throws because RC destroys the edited box's draggable during edit and exitEdit's re-enable loop hits it mid-transition. Fix = the RAF-settle between createText and setText (gotcha #1). It is NOT a corrupted canvas — all tools verify healthy afterward.
+
+3. **fit() height is measured WRONG by the helper above.** `.tool-content`.scrollHeight is CLIPPED and under-reports. Use the inner editor element instead: `t.querySelector('.simple-text-editor-content').scrollHeight + 24`. This reads true content height regardless of current tool height (overflow content), so a single `resize(id, w, innerScroll+24)` is enough — no need to expand-then-measure. Calibration: gl-2 at w=300, innerScroll=61 → correct toolH=85 (=61+24).
+
+4. **Failed islands leave orphan boxes.** On any error, `Editor.removeItems([rid])` the half-built box so it doesn't get reused/overwritten by the next item. Orphan = a `#content .tool` whose data-id is not a value in `window.__MAP`.
+
+5. **Verification sweep** (run after any batch): for each `__MAP` entry check (a) tool exists, (b) `parseInt(style.height) >= inner.scrollHeight`, (c) not at default drop (~left 290-360 / top 300-430 = unplaced), (d) width > 150 (=never fit). Two of the original 33 (ess-20 + 7 short ones) were unplaced/unfit from the prior session and were repaired this way.
+
+## Field images placed on canvas (2026-05-31) — DONE
+10 `kind:"field"` photos created as RC **picture** tools, each with its simple-media attached and positioned at origX+1540 / origY+840. (field-1 / field-2 are empty placeholders in source → no media, not built.)
+| island | picture tool data-id | simple-media id | RC left,top | w×h |
+|--------|---------------------|-----------------|-------------|-----|
+| fi-01 (VLA)            | 4644067 | 4644048 | 6640,940  | 420×314 |
+| fi-02 (ALMA)           | 4644069 | 4644049 | 6640,1440 | 420×279 |
+| fi-03 (Blitzortung)    | 4644070 | 4644051 | 2940,2040 | 420×420 |
+| fi-04 (Marconi)        | 4644071 | 4644052 | 4200,1460 | 420×349 |
+| fi-05 (Goonhilly)      | 4644072 | 4644053 | 5840,1640 | 420×299 |
+| fi-06 (ATS Flower)     | 4644073 | 4644054 | 6440,40   | 420×538 |
+| fi-07 (Hubble)         | 4644075 | 4644056 | 7840,240  | 420×277 |
+| fi-08 (Barry Radiation)| 4644076 | 4644057 | 1860,1080 | 420×314 |
+| fi-barry-am            | 4644077 | 4644058 | 5300,2240 | 420×301 |
+| fi-barry-fm            | 4644078 | 4644059 | 4220,2240 | 420×296 |
+
+Archive **Slideshow** tool `4644005` placed at RC 940,2600 (560×420), seeded with Roof-yagi (sm 4644031); to be extended with remaining 47 archive images.
+
+### Picture-tool creation flow (CONFIRMED, see `window.__RC.buildPicture`)
+1. Drag `span.icon.mif-image` → new `tool-picture` (no auto-dialog). 2. `Editor.editItem(id)` opens edit dialog — **poll until the `media` tab anchor exists** (tab-not-ready race caused a mid-batch failure; don't click before it appears). 3. Click `media` tab → click `select media` btn → picker dialog with `<select id="form_mediaList">` multiselect (max 1). 4. Click the `.ms-selectable li.ms-elem-selectable` whose text matches → underlying select.selectedOptions updates. 5. Picker `submit` btn. 6. Back in edit dialog, set `#form_style_position_{left,top,width,height}` inputs (fire input+change). 7. Edit-dialog `submit` saves geometry+media LIVE but does NOT close — **close via `.ui-dialog-titlebar-close`** (geometry already persisted, so X is safe). Run ≤3 per evaluate_script call; the hardened builder polls every dialog transition.
+
+## Media grouping (future ref, per user)
+Keep TWO distinct media groups — they are laid out differently:
+- **Archive group**: the 48 archive images that stayed *in the archive* → one RC **Slideshow** tool.
+- **Scattered group**: the 12 field photos that were scattered around the exposition as individual `kind:"field"` islands → placed at their own scatter coords, one image tool each.
+Plus the 6 model turntable MP4s. Do not lump these three together.

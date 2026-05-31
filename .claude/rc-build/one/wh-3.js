@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"wh-3","kind":"whisper","x":3260,"y":480,"w":320,"html":"<div style=\"font-family:'crimson pro',serif;font-size:17px;font-style:italic;line-height:1.4;color:#000\">the return stroke travels skyward — what we see is the answer, not the call</div>"}]);

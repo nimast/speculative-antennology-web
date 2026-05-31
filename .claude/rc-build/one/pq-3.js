@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"pq-3","kind":"pullquote","x":4480,"y":1820,"w":540,"html":"<blockquote style=\"font-family:'crimson pro',serif;font-size:29px;font-style:italic;line-height:1.15;color:#000;margin:0\">Art as radar acts as an early alarm system, enabling us to discover social and psychic targets in lots of time to prepare to cope with them.</blockquote>"}]);

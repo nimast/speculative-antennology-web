@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"pq-2","kind":"pullquote","x":3060,"y":1740,"w":540,"html":"<blockquote style=\"font-family:'crimson pro',serif;font-size:29px;font-style:italic;line-height:1.15;color:#000;margin:0\">Antennae are doors — but doors opening to a cosmos devoid of an outdoors.</blockquote>"}]);

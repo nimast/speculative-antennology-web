@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"wh-1","kind":"whisper","x":200,"y":120,"w":300,"html":"<div style=\"font-family:'crimson pro',serif;font-size:17px;font-style:italic;line-height:1.4;color:#000\">twelve of two thousand four hundred sixty-three —</div>"}]);

@@ -1,0 +1,1 @@
+return await window.__doIslands([{"id":"wh-2","kind":"whisper","x":1080,"y":560,"w":340,"html":"<div style=\"font-family:'crimson pro',serif;font-size:17px;font-style:italic;line-height:1.4;color:#000\">objects that need not exist to be thought</div>"}]);
