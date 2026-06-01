@@ -1,5 +1,11 @@
 # Speculative Antennology — project memory
 
+> **Transition in progress:** the exposition is being rebuilt inside the Research Catalogue (RC)
+> editor for JAR submission (see `.claude/rc-build/BUILD_PLAN.md`). The website + Notion →
+> `islands.generated.js` pipeline below remains the content-of-record but is **no longer the primary
+> publishing surface**. Edit fragment content in Notion as before; the generated JS / website render
+> is now secondary.
+
 ## Run / build
 - Static site, no build step. `index.html` loads JSX via Babel standalone — do not run `npm install`.
 - Open `index.html` directly in a browser, or serve with `python3 -m http.server`.
