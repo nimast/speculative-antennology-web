@@ -30,8 +30,18 @@ so the RC canvas needs to be ~8800×5400.
 - [ ] #5 Build all static text islands at original scatter coords (12 placed so far, see below)
 - [ ] #6 Place archive slideshow + model clips into the layout
 - [ ] #7 Recreate the 39 inter-island threads with the shape tool
-- [ ] #8 Convert bibliography to MHRA author-date References
-- [ ] #9 JAR metadata: license, abstract (125–250 words), ≥5 keywords, linked TOC (RC TOC tool), title/author
+- [x] #8 Convert bibliography to MHRA author-date References — done in Notion (`bib` row renamed "References"); RC-ready text + abstract/keywords in [JAR_METADATA.md](./JAR_METADATA.md)
+- [ ] #9 JAR metadata: license, abstract (125–250 words), ≥5 keywords, linked TOC (RC TOC tool), title/author — abstract + keywords drafted in [JAR_METADATA.md](./JAR_METADATA.md)
+
+## Note — exposition is moving into RC (parser path now secondary)
+Content authoring is transitioning **from the website into the Research Catalogue editor itself**.
+As a result, the Notion → `tools/sync-from-notion.mjs` → `data/islands.generated.js` pipeline (and
+the website render in `scripts/app.jsx`) is **no longer the primary surface** — it stays as the
+content-of-record but is not where the published exposition is built. Practical implications:
+- Edits to fragment *content* (incl. the References list) still go in Notion as source of truth, but
+  the generated JS / website rendering is secondary; don't block on re-running the sync.
+- New formatting (e.g. the "References" section heading, MHRA author-date entries) is authored for
+  the **RC text boxes**; the website `bib` island renders only a bare numbered list with no heading.
 
 ## Boxes already created in RC (vertical column — STILL NEED repositioning to scatter)
 | island | RC data-id | orig x | orig y |
