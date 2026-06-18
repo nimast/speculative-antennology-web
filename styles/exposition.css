@@ -655,6 +655,21 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
   background: var(--ink); color: var(--paper);
 }
 
+/* group-frame — hand-drawn pen ellipse around each cluster. Rendered as an
+   SVG ellipse passed through the #sa-pen turbulence filter so the stroke
+   wobbles. Stays mounted for every mode; only the active mode renders opaque
+   so switching is a clean crossfade. Sits behind labels/thumbs and ignores
+   pointer events. */
+.island.group-frame{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+  overflow: visible;
+  color: var(--ink);
+  transition: opacity .55s ease;
+}
+
 /* group-label island — every grouping mode's labels are mounted at once;
    only the active mode renders opaque so switching is a symmetric crossfade. */
 .island.group-label{
