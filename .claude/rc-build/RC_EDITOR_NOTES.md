@@ -268,3 +268,135 @@ Edit fields (checkboxes; send `'1'` to enable):
 - Canvas size (Map panel): 8700 × 5074 px.
 - Archive slideshow tool id: `4644005`.
 - Thread shapes occupy z-index 1–50 (back); islands occupy 51+ (front).
+
+## Tool-to-tool hyperlinks (CONFIRMED 2026-09-23)
+
+The public view emits `<a id="tool-<toolId>"></a>` inside every tool, and the viewer's
+scroll container (`#container-weave`) jumps to it on load or on click. RC's own
+right-click "copy tool link" (added to the context menu 2025-06-16) yields
+`/view/<rid>/<wid>/<x>/<y>#tool-<toolId>` — the `x/y` is just the current scroll
+position, the `#tool-` fragment is what matters. Documented in the RC Guide
+("Hyperlinking → Link to a Specific Tool or Coordinate") and FAQ 2.13.
+
+The TinyMCE `rclink` dialog has no tool picker (URL field + page picker + popover only),
+so insert programmatically: `Editor.editItem(id)` → poll for `tinymce.activeEditor`
+whose body is inside the tool → `ed.setContent(ed.getContent() + navHtml)`,
+`ed.setDirty(true)` → exit by the synthetic empty-canvas click (see "Text tool" above).
+Link HTML that persisted across reload:
+`<a href="https://www.researchcatalogue.net/view/4312417/4312418#tool-4643358" style="color:#000">→ II · Against the Visible</a>`
+Verify server-side with `fetch('/view/4312417/4312418', {cache:'no-store'})` and grep the
+segment after `id="tool-<sourceId>"`. Note: the viewer intercepts the click and scrolls
+without changing `location.hash`, so browser Back does not undo the jump.
+Gotcha: `navigate_page` to a URL that differs only by hash does NOT reload — use
+`type: 'reload'` to see freshly saved content in the view tab.
+
+### In-text anchors survive the sanitizer (CONFIRMED 2026-09-23)
+`<a id="ref-05"></a>` (and `id`/`data-*` on spans) inside a text tool persist through
+setContent → save. A link to `…/view/<rid>/<wid>#ref-05` makes the viewer scroll so the
+anchor sits at the viewport's top-left — same behaviour as `#tool-` links. Used for
+per-entry bibliography anchors (`ref-01..28` in tool 4643428) and endnotes (`note-1..5`
+in 4644375). `location.hash` does update for these, unlike `#tool-` clicks.
+
+### Default position (Options → "Set default position")
+`Editor.setDefaultAspect(x, y)` — ⚠️ args are combined with the CURRENT scroll via
+bitwise OR (`x |= scrollLeft`), so never pass coordinates. Instead:
+`Editor.ContentList.CONTAINER_SCROLL.scrollLeft(x).scrollTop(y); Editor.setDefaultAspect();`
+It opens a DialogForm to `/editor/<rid>/<wid>/update-default-aspect?x=&y=` which applies
+on open (no submit); close it with `.ui-dialog-titlebar-close`. The dialog text echoes the
+saved x/y. Currently set to (1940, 460) so section I lands top-left.
+
+### Batch resize/move via REST preserve pattern (CONFIRMED)
+GET `/tools/<id>/edit` (XHR) → scrape inputs into FormData → override
+`form[style][position][height|top|…]` → POST with `form[_buttons][submit]=''` →
+`rc-form-status: success`. 35 tools in one evaluate_script call, all persisted; no
+viewport-clamping issue (unlike the resizable-widget gesture). Fit height =
+`.simple-text-editor-content` rect height + 20 (8px padding ×2 + 2px border ×2) + ~6.
+Shape lines whose endpoints hit a moved box: endpoints = centre ± (w/2)(cosθ, sinθ);
+recompute width/left/top/rotate the same way and POST via the same pattern.
+
+### Text-tool gotchas hit this session
+- `evaluate_script` calls do NOT share `window.*` state reliably — hardcode lookup
+  tables in each call rather than stashing them on `window`.
+- Reading another tool's DOM right after exiting edit on a neighbour can race its
+  re-render (`.simple-text-editor-content p` momentarily null): read all titles first.
+- Section IV (4643360) had lost its `<p>` structure (title run into body); rebuilt as
+  title `<p>` + body `<p>` using section II's inline styles.
+
+### Creating text tools purely over REST (CONFIRMED 2026-09-23)
+`POST /tools/new?simpleMedia=null` (`toolType=simpletext&left&top&width&height`) returns
+the new id in the `rc-form-url` header (`…/tools/<id>/edit`). Then the preserve-pattern
+POST with `form[media][textcontent]=<html>` + style fields (padding, dashed border,
+`backgroundColor=white`) renders correctly after reload — no TinyMCE needed. Used for the
+11 figure captions (`data-title` = `caption:<island-key>`, ids 4895397–4895407).
+
+### House style for the numbered sections (set by Nimrod on section V, 2026-09-23)
+Box padding 15 L/R, 12 T/B (form[style][padding][*]); solid 2px border. Paragraphs:
+- title `<p …10pt uppercase…><span style="font-size: 12pt; font-family: 'nimbus sans l', sans-serif;"><strong>…</strong></span></p>`
+- body `<p …crimson pro…><span style="font-size: 11pt; font-family: 'libre baskerville', serif;">…</span></p>`
+- blank `<p style="font-family: 'crimson pro', serif; line-height: 1.5; margin: 0px; color: #000000;"><br></p>`
+- nav (next first, then back) `<span style="text-decoration: underline; font-family: 'nimbus sans l', sans-serif;"><a style="color: #000000; text-decoration: underline;" href="…#tool-<id>">→ …</a></span>`
+Layout rule: ≥15px gap between any two non-shape tools; no text tool may scroll.
+Verification = dump geometry (left/top/w/h + content height) → check pairs with
+`gx<15 && gy<15`. Current default position (1940,160) = title + section I.
+
+### ⚠️ Tool geometry is CONTENT-BOX (learned the hard way, 2026-09-23)
+`form[style][position][width|height]` (= `style.width/height`) exclude padding and border.
+Rendered footprint = width + padL + padR + 2·border  ×  height + padT + padB + 2·border
+(a 460-wide section with 15px sides and 2px border occupies 494px). Fit height for a
+text tool = `.simple-text-editor-content` rect height + ~12, with NO padding added.
+Always run gap/collision checks on rendered rects from the **view page** (`#weave .tool`
+getBoundingClientRect + container scroll), after `document.fonts.ready` + ~2.5s — the
+editor measured Crimson Pro ~20px shorter before webfonts settled.
+Thread-line endpoints: lines are centre-to-centre of the footprint; the true key→tool map
+(ess-1→I 4643356, ess-2→III 4643359, ess-4→X 4643370, ess-6→V 4643361, ess-18→IX 4643369,
+bib→4643428, model-0a..2b→video #1..#6 in title order) is in this session's scratch
+`line-plan` and was used to redraw all 35 lines; wh-3/wh-4/gl-6 no longer exist in RC, so
+their 4 lines were deleted.
+Stored link markup puts `style` before `href` — match `<a\b[^>]*href=…` not `<a href=…`.
+
+### Centring a link target (CONFIRMED 2026-09-23)
+Viewer `scrollToElement(el)`: text tools scroll to top-left (`left-7, top-30`); any
+NON-text tool is centred (`left - width/2 + el.width/2`). So each numbered section has a
+4×4 transparent `rect` shape (`fillColor`/`strokeColor` empty, `strokeWidth 0`,
+`data-title` = `anchor:<sectionId>`, ids 4895792–4895803, sent to back) at its footprint
+centre, and the nav links point at `#tool-<anchorId>`. Same-weave links without a hash
+(`/view/<rid>/<wid>/<x>/<y>`) are also intercepted: animated scroll to x/y, no reload.
+
+### Field-note labels + picture-in-caption (Nimrod's pattern, 2026-09-23)
+Caption box gets `paddingTop = picH + 4 + 13 + 18` and width ≥ picW + 30; picture moved
+to (cap.left+13, cap.top+15) and `layersToFront` above the caption. A separate label tool
+(237×30, no border, no background, `data-title` = `fieldnote:<key>`) sits at
+(cap.left+15, cap.top−36) with `<p><em><span style="font-family: 'libre baskerville', serif;">field note #N:</span></em></p>`.
+Numbers are arbitrary ("random"). Same label above the four big-font quote boxes.
+Gap solver treats caption+picture+label (and quote+label) as one unit.
+`POST /tools/new` returns the new tool as HTML in the BODY (`data-id="…"`), not a header.
+Fit heights from the VIEW tab's measurements, not the editor's (editor renders Crimson
+Pro/Baskerville ~20px shorter): `styleH += spanBottom − toolContentBottom + 8`.
+
+### ⚠️ In-text anchor links must be RELATIVE (`href="#ref-05"`) — 2026-09-23
+The viewer binds a click handler to every `a[href*="/view/<rid>/<wid>"]`: `#tool-…` →
+scrollToElement, anything else → scroll to the URL's x/y (i.e. the default position) and
+`return false`. So an absolute link to `#ref-05` silently goes nowhere. A relative
+`href="#ref-05"` escapes the selector and gets native fragment scrolling (survives the
+sanitizer). Native scrolling uses inline:nearest, so a target to the RIGHT of the current
+view lands on the right edge — link to whole text tools via absolute `#tool-<id>` instead
+(top-left), and reserve `#ref-NN` for the bibliography, which sits at the far left.
+Bibliography is now 26 entries (01 Barry Radiation and 12 McCall moved into captions
+4895404 / 4895407 as a second 9pt credit line; all `#ref-` links renumbered).
+Height refit from the view oscillates ±40px on two boxes (4643428, 4643635) between
+loads — only ever grow heights, never shrink.
+
+## STATE as of 2026-09-24 (end of session) — resume here
+Exposition: editor https://www.researchcatalogue.net/editor/4312417/4312418 · view https://www.researchcatalogue.net/view/4312417/4312418
+Driven entirely over REST from a logged-in tab via chrome-devtools `evaluate_script` (tool ids in this file; helpers: preserve-pattern `editTool`, gap solver, line recompute — all in the session transcript, rewrite from the notes above).
+
+Done: section nav (next above back, underlined, centred via anchor shapes 4895792–4895803); section V house style applied to all 11; 41 field-note labels (arbitrary numbers) above every non-section text box, dashed borders removed everywhere; 11 captions with picture inside (paddingTop) + Notion credit line; endnotes 1/2/5 moved under pictures 8/10/11, endnotes renumbered 1–2; bib entries 01 Barry + 12 McCall moved into captions, bib renumbered 01–26; all ref links relative and working; 10 arrow shapes + 4 orphan lines deleted, 35 thread lines redrawn centre-to-centre; default position (1940,160) = title + section I; layout: no unit closer than 15px, no text scrolls (verified from the view page).
+
+Open items / to check by eye:
+- Endnote 2 cites Lippard, *Six Years* — not in the bibliography (unlinked).
+- Section IV prose cites "Hilarie Sheets, 'A Tribute for Turning Light into Art'" but bib 09 (was 10) is Carol Kino, different title — unlinked, needs a decision.
+- Section IV was rebuilt as title + ONE body paragraph (original paragraph breaks lost).
+- McCall caption credit text was composed from the asset's commit message — verify wording.
+- Label numbers are random; renumbering = one REST textcontent edit per label (`data-title` fieldnote:*).
+- Video below section VII was moved 62px left; video model-2b moved up ~1000px to (4099,~1937) by the solver — check it reads well.
+- Two boxes (bib 4643428, whisper 4643635) measure ±40px differently between loads; heights were left at the larger value.
