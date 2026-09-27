@@ -267,4 +267,55 @@ Edit fields (checkboxes; send `'1'` to enable):
 - Research id `4312417`, weave id `4312418`.
 - Canvas size (Map panel): 8700 × 5074 px.
 - Archive slideshow tool id: `4644005`.
-- Thread shapes occupy z-index 1–50 (back); islands occupy 51+ (front).
+- Thread shapes were deleted 2026-09-25; z-order is now text/picture tools only.
+
+## Session 2026-09-25 — REST-only editing, upload gotcha, opacity rendering
+
+### Text content is REST-editable — no TinyMCE needed
+The tool edit form has `form[media][textcontent]` (the source HTML of a `tool-simpletext`). Use the
+preserve-existing-fields pattern (GET `/tools/{id}/edit` → scrape → override → POST) to rewrite a box's
+HTML, title (`form[common][title]`), geometry, padding, opacity, etc. in one round trip. Persists across
+reload. Batch of 41 boxes ≈ 10 s in one `evaluate_script` call. Helper shape:
+```js
+async function editTool(id, ov){ const g=await fetch(`${base}/tools/${id}/edit`,{headers:H}); const doc=new DOMParser().parseFromString(await g.text(),'text/html'); const f=new FormData();
+  for(const e of doc.querySelectorAll('input[name],select[name],textarea[name]')){ if(e.type==='file') continue; if(e.type==='checkbox'||e.type==='radio'){ if(e.checked) f.append(e.name,e.value); continue; } if(e.tagName==='SELECT'){ for(const o of e.selectedOptions) f.append(e.name,o.value); continue; } f.append(e.name,e.value); }
+  for(const [k,v] of Object.entries(ov)){ f.delete(k); if(v!==null) f.append(k,v); } if(!f.has('form[_buttons][submit]')) f.append('form[_buttons][submit]','');
+  return fetch(`${base}/tools/${id}/edit`,{method:'POST',headers:H,body:f}); }   // H = {'X-Requested-With':'XMLHttpRequest'}
+```
+`POST /tools/new?simpleMedia=null` returns the new tool's HTML — grab the id with `/data-id="(\d+)"/`.
+New REST-created tools are NOT in `#content` until reload (`Editor.loadItems()` did not add them).
+
+### ⚠️ `upload_file` (chrome-devtools MCP) can no longer take Windows paths
+The current MCP resolves the path locally (WSL) and refuses anything outside the workspace roots, so
+`C:\temp\...` becomes `<cwd>/C:\temp\...` and `/temp/...` is "Access denied". Any WSL path it accepts
+reaches Windows Chrome as an unreadable path → **0-byte file** (mirroring the file under `C:\home\...`
+did not help either). Working route: **build the File in-page and set it via DataTransfer**:
+```js
+const bin=atob(B64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+// verify: crypto.subtle.digest('SHA-256',arr) === local sha256sum
+const dt=new DataTransfer(); dt.items.add(new File([arr],'name.jpg',{type:'image/jpeg'})); inp.files=dt.files; inp.dispatchEvent(new Event('change',{bubbles:true}));
+```
+Fine for small images (a 21 KB JPEG = 28 KB base64 pasted into the script). For big files host them on
+HTTPS (Vercel/GitHub raw) and `fetch()` — see the direct-REST upload flow above. Flow used:
+`Dialog.addSimpleMedia()` → `#form_type_type='image'` → "next" → set files + `#form_image_name`,
+`#form_image_copyrightHolder`, `#form_image_license`, ariaLabel, description → "submit" → poll until
+`#form_image_name` is gone.
+
+### Attaching library media to a picture tool — tab selector
+`Editor.editItem(id)` opens the edit dialog; the **media tab anchor has no `#media-tab` href** — it is
+`a[href="/editor/{rid}/{wid}/tools/{id}/simple-medias/list"]` (match by text `media`). The dialog opens
+on it already showing `SELECT MEDIA` / `ADD MEDIA`. Then: click `select media` → wait for
+`.ms-selectable li.ms-elem-selectable` → click the li by name → topmost dialog `submit` → edit dialog
+`submit` (saves, stays open) → `.ui-dialog-titlebar-close`. `/editor/{rid}/{wid}/simple-medias/list`
+still works but parse it with a regex (`DOMParser` + `tr.simple-media` returned 0 rows).
+
+### Opacity — how RC renders `form[style][opacity][opacity]`
+Not `opacity` on the `.tool` (that stays 1). RC applies it as `.tool-content { opacity: .5 }` plus
+`background-color: rgba(255,255,255,.5)` and `border-color: rgba(0,0,0,.5)` on the tool. So a
+"50 % faded" text box also has a half-transparent white ground: back-layer thread lines show through
+faintly. Verify with `getComputedStyle(t.querySelector('.tool-content')).opacity`.
+
+### z-order after REST-created tools
+Tools created via REST get `z-index` = max+1 (above everything). `Editor.LayerList.layersToFront(...)`
+renumbers the whole stack 1..N, so call it on the tool that must be on top **last** (e.g. bring a
+caption box to front, then the picture that sits inside its padded area).

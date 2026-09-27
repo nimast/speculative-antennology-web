@@ -30,7 +30,7 @@ so the RC canvas needs to be ~8800×5400.
   - [x] 6 model MP4s: uploaded + placed as video tools, solid 1px black border, 0 overlaps, license cc-by-nc-nd (media ids 4644243/4644245/4644255/4644260/4644266/4644269; tool data-ids 4644278/4644286/4644287/4644288/4644290/4644295)
 - [ ] #5 Build all static text islands at original scatter coords (12 placed so far, see below)
 - [ ] #6 Place archive slideshow + model clips into the layout
-- [ ] #7 Recreate the 39 inter-island threads with the shape tool
+- [x] #7 Threads: drawn 2026-05-31, then **deleted 2026-09-25 on request** (no connector lines in the exposition)
 - [x] #8 Convert bibliography to MHRA author-date References — done in Notion (`bib` row renamed "References"); RC-ready text + abstract/keywords in [JAR_METADATA.md](./JAR_METADATA.md)
 - [ ] #9 JAR metadata: license, abstract (125–250 words), ≥5 keywords, linked TOC (RC TOC tool), title/author — abstract + keywords drafted in [JAR_METADATA.md](./JAR_METADATA.md)
 
@@ -180,3 +180,68 @@ Keep TWO distinct media groups — they are laid out differently:
 - **Archive group**: the 48 archive images that stayed *in the archive* → one RC **Slideshow** tool.
 - **Scattered group**: the 12 field photos that were scattered around the exposition as individual `kind:"field"` islands → placed at their own scatter coords, one image tool each.
 Plus the 6 model turntable MP4s. Do not lump these three together.
+
+## Session 2026-09-25 — Barry swap, apparatus to bottom, field-note styling (DONE)
+
+**Barry cluster (section III, ess-2 `4643359` at 1377,1129).** The "field note #7" box
+`caption:fi-08` (`4895404`, 1913,1358, 460 wide, padding-top 200) now holds only the *0.5 Microcurie
+Radiation Installation* caption + the long note; the new park photo (media `4902801`,
+`assets/barry-05-microcurie-1969.jpg`, 228×179 source) is picture tool `4902712` at 1921,1381 210×164,
+solid 2 px border, left-aligned with the box text (box.left + 8). The *Radiation Installation; Cesium
+137* image (picture `4644076`, media `4644057`) moved to the side at 2403,1205 with its own caption box
+`caption:fi-08-cesium` (`4902728`, 2390,1190, 225×110, padding-top 192, white, 9 pt NimbusSansL, opacity 50 like the other captions).
+Two Barry works, two captions, one long note — do not merge them again.
+
+**Apparatus at the bottom-left of the canvas.** `References` (`4643428`) rebuilt as a heading +
+one `<p>` per entry (hanging indent, `<a id="ref-NN">` anchors kept — captions/endnotes link to them)
+and moved to 40,2780 at 760×1360 (content measures 1339 at 744 inner width; canvas is 4175 tall so it ends at 4156); `Endnotes` (`4644375`) to 840,3300 at 600×640. Bottom-left band x 40–1440, y 2780–4156 is now the apparatus zone. The single-`<p>`
+References box had rendered as one run-on line ("…Siegelaub.02Berlant…"). No "list of figures" tool
+exists anywhere on the canvas or in the TOC dialog (2026-09-25) — nothing to delete.
+
+**Field notes.** 41 label boxes (`fieldnote:*`, `4895740` retitled `fieldnote:fi-barry-fm`) sit 36 px
+above their body box; their left edge = body.left + body.paddingLeft (8) so the italic label aligns with
+the text column (was +15). Labels stay 100 % opacity; the 41 **body** boxes (captions + text notes) are
+`opacity 50` (see RC_EDITOR_NOTES for how RC renders it). Body ids are the `box` values in the label
+plan: every `caption:*` box plus the dashed/plain text notes.
+
+## Session 2026-09-25 (later) — threads removed, endnotes → field notes, References wide at bottom (DONE)
+- **All 45 thread shapes deleted** via `Dialog.removeItems(ids)` + btn-danger submit (recoverable via Options →
+  Restore deleted objects). The canvas now has no connector lines/arrows; task #7 is moot unless revived.
+- **Endnotes box dissolved into two field notes**: the Lightning Field note reuses tool `4644375`
+  (`text: endnote Lightning Field`, 2449,2131 460×450, label `4902838` "field note #23:" at 2457,2095) directly
+  under the Lightning Field note `4643626`; the Turrell *Afrum (White)* note is new tool `4902839`
+  (140,380 460×378, label `4902840` "field note #47:" at 148,344) left of section IV. Both keep their
+  `<a id="note-N">` anchors and `#ref-NN` links. Same styling as other field-note bodies (opacity 50, padding 8, white).
+- **References** (`4643428`) is one wide box at **40,4000, 2600×890** — the very bottom of the exposition
+  (content bottom 4906; RC auto-grew the canvas to 8716×5156). Left column x 40–620 above y 4000 is otherwise empty.
+- Whisper `4643635` + label `4895787` nudged right 20 px (to 2640/2648) to clear the Cesium caption box.
+- Field-note numbers in use: 2 3 5 6 7 11 12 14 17 18 20 22 23 27 28 31–38 41–43 46 47 52–54 56 58 61 62 64 69 71 81 89 95 96 98.
+
+## Session 2026-09-25 (later still) — References pruned/restored, chapter links repointed
+- **References now 21 entries** (anchors `ref-01`…`ref-21`, alphabetical): Barry et al., De Maria, Dia (collection page only —
+  the duplicate exhibitions page dropped), Eleey, Flusser, Kahn, Kino, Kittler *Optical Media*, Lippard *Six Years*, McCall,
+  McLuhan *Understanding Media*, NRAO ×2, Peters, Primary Information, Siegert, Tate ×2, Turrell *Afrum (White)*, Whitney, Winters.
+  Dropped as uncited (owner's rule: keep only what is quoted or whose idea/term is used): Berlant, Parikka, Smithson, Turrell
+  *Roden Crater*, Wark, Zielinski. Lippard and McLuhan were *added* because the FM-carrier caption cites Lippard and the
+  "Art as radar" pullquote is McLuhan verbatim. Every `href="#ref-NN"` in captions/notes/section IV was remapped.
+- Section IV's NYT citation corrected to Carol Kino, 'Paying Homage to James Turrell, Who Turns Light into Art' (linked to `#ref-07`);
+  it previously read "Hilarie Sheets, 'A Tribute for Turning Light into Art'" (wrong author/title, same article).
+- **Chapter navigation (→ / ← links in the 11 sections)** used to point at 4×4 px anchor *shapes* (`4895792`–`4895803`), which
+  went with the thread deletion. They now point straight at the chapter text tools:
+  I 4643356, II 4643358, III 4643359, IV 4643360, V 4643361, VI 4643362, VII 4643367, VIII 4643368, IX 4643369, X 4643370, XI 4643371
+  (`https://www.researchcatalogue.net/view/4312417/4312418#tool-<id>`). Don't recreate anchor shapes.
+- Notion `References` row is now out of sync with RC — RC is the edited copy; port back to Notion if the website pipeline matters again.
+
+## Session 2026-09-25 (final pass) — References 23 entries with chapter pointers, in-text citations
+- References (`4643428`) now **23 entries**, `ref-01`…`ref-23` alphabetical: Barry, **Bondi–van der Burg–Metzner 1962**,
+  **Coole & Frost 2010**, De Maria, Dia, Eleey, Flusser, Kahn, Kino, Kittler, Lippard, McCall, McLuhan, NRAO ×2, Peters,
+  Primary Information, Siegert, Tate ×2, Turrell, Whitney, Winters. Five theory entries carry "Esp. …" chapter/page
+  pointers (Flusser 15–22, 33–40; Kahn Intro + ch. 17 pp. 218–26 + ch. 20 pp. 255–58; Kittler Preface 19–28, ch. 1 29–46,
+  §2.2 70–88; Peters ch. 1 13–52, ch. 4 165–212; Siegert Intro 1–18 (p. 11), ch. 1 19–32, ch. 6 97–120, ch. 10 192–206).
+- In-text author-date citations (linked to the anchors) added at: VI `4643362` (Kahn 255–58); Barry note `4895404`
+  (Kahn 218–26); noise note `4643457` (Siegert 19–32); transceiver note `4643445` (Siegert 11); artistic-research note
+  `4643446` (Flusser) — **Flusser is cited only there, never in VIII**; IV `4643360` (Kittler); XI `4643371` and apparatus
+  note `4643555` (Peters); X `4643370` (Coole & Frost; Bondi, van der Burg & Metzner).
+- Removed the dangling "→ note" link from the AM carrier-wave caption `4895405`.
+- Renumbering recipe (reuse): parse the References `<p>`s by `a[id^=ref-]`, rebuild in the new order, then remap every
+  `href="#ref-NN"` in the other boxes with a two-pass placeholder replace so chains don't collide.
