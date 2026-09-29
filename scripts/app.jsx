@@ -13,15 +13,10 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ARCHIVE = window.SA_ARCHIVE || [];
-
-// Archive entries already placed as field islands on the canvas — excluded from the grid.
-const FIELD_ARCHIVE_IS = new Set(
-  (window.SA_ISLANDS || [])
-    .filter(it => it.kind === "field" && it.img)
-    .map(it => { const m = it.img.match(/ant-(\d+)\.jpg/); return m ? parseInt(m[1], 10) + 1 : null; })
-    .filter(Boolean)
-);
-const ARCHIVE_GRID = ARCHIVE.filter(a => !FIELD_ARCHIVE_IS.has(a.i));
+// The archive browser shows the complete archive, in catalogue order.
+const ARCHIVE_ORDERED = [...ARCHIVE].sort((a, b) => a.i - b.i);
+// A spread sample used for the field node's preview mosaic.
+const ARCHIVE_PREVIEW = ARCHIVE_ORDERED.filter((_, idx) => idx % 4 === 0).slice(0, 12);
 
 // Whole-GLB specimens — each renders its own model file as a node in the field.
 const MODELS = [
@@ -37,16 +32,8 @@ const MODEL_W = 380;
 // ───────────────────────────────────────────────────────────────────────────
 // Archive photograph plate — cycles through 48 real images
 
-function Plate({ n }){
-  const idx = (n - 1).toString().padStart(2, '0');
-  return (
-    <img
-      src={`assets/archive/ant-${idx}.jpg`}
-      alt=""
-      style={{ display:'block', width:'100%', height:'100%', objectFit:'cover' }}
-    />
-  );
-}
+// Archive image src by 1-based specimen number (files are zero-padded, 0-based).
+const archiveSrc = (n) => `assets/archive/ant-${(n - 1).toString().padStart(2, '0')}.jpg`;
 
 // ───────────────────────────────────────────────────────────────────────────
 // Layout — absolute coords in the infinite plane. No section order.
@@ -54,7 +41,6 @@ function Plate({ n }){
 // (0,0) is the title; negative/positive in both axes.
 
 const GROUP_MODES = ["scatter", "application", "decade", "frequency", "type"];
-const GROUP_MODES_BIN = ["application", "decade", "frequency", "type"]; // non-scatter
 
 // Friendly label per mode — used by the tab bar, the group label meta line,
 // and the hidden picker so all three stay in lockstep.
@@ -79,63 +65,25 @@ function pickGroupKey(a, mode){
   return "all";
 }
 
-// Geometry shared between scatter and grouped layouts and the label layer.
-const ARCHIVE_LAYOUT = {
-  startX: -600,
-  scatterStartY: 1760,
-  groupedStartY: 1860,
-  groupedLabelOffsetY: -120,
-  colsInGroup: 3,
-  thumbPitchX: 130,
-  thumbPitchY: 140,
-  get colWidth(){ return this.colsInGroup * this.thumbPitchX + 40; },
-};
-
-function layoutGroupMode(mode){
+// Group the archive by a mode, returning ordered [key, list] pairs. Used by the
+// archive layer's grouped views (the field no longer lays the archive out).
+function groupArchive(mode){
   const groups = new Map();
-  for (const a of ARCHIVE_GRID){
+  for (const a of ARCHIVE_ORDERED){
     const key = pickGroupKey(a, mode);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(a);
   }
-  const ordered = [...groups.entries()].sort((A, B) => {
+  return [...groups.entries()].sort((A, B) => {
     if (A[0] === "Unspecified") return 1;
     if (B[0] === "Unspecified") return -1;
     // Decades read chronologically; all other modes stay sorted by size.
     if (mode === "decade") return parseInt(A[0], 10) - parseInt(B[0], 10);
     return B[1].length - A[1].length;
   });
-
-  const L = ARCHIVE_LAYOUT;
-  const labels = [];
-  const thumbs = [];
-  ordered.forEach(([key, list], gi) => {
-    const gx = L.startX + gi * L.colWidth;
-    labels.push({
-      id: "grp-" + mode + "-" + key.replace(/\s+/g, "_"),
-      kind: "group-label",
-      mode, x: gx, y: L.groupedStartY + L.groupedLabelOffsetY,
-      w: L.colWidth - 40, label: key, count: list.length,
-    });
-    list.forEach((a, k) => {
-      const col = k % L.colsInGroup;
-      const row = Math.floor(k / L.colsInGroup);
-      thumbs.push({ id: "arc-"+a.i, kind: "thumb",
-        x: gx + col * L.thumbPitchX,
-        y: L.groupedStartY + row * L.thumbPitchY,
-        w: 120, a
-      });
-    });
-  });
-  return { labels, thumbs };
 }
 
-// Pre-compute every label for every grouping mode. The label layer renders
-// all of them at all times, controlling visibility via opacity so the fade
-// in/out is symmetric instead of a hard mount/unmount pop.
-const ALL_GROUP_LABELS = GROUP_MODES_BIN.flatMap(m => layoutGroupMode(m).labels);
-
-function buildIslands(grouping){
+function buildIslands(){
   const items = [];
 
   // Notion-driven stable-ID islands. Sourced from data/islands.generated.js
@@ -152,31 +100,11 @@ function buildIslands(grouping){
   items.push({ id: "arc-head", kind: "cluster-head",
     x: -600, y: 1400, k: "archive", n: "gathered · ongoing"
   });
-  // In-world tab selector — sits beneath the giant "archive" wash so it reads
-  // as a section index rather than floating chrome.
-  items.push({ id: "group-tabs", kind: "group-tabs",
-    x: -600, y: 1620, w: 900
+  // The archive no longer spills across the field. A single node sits beneath
+  // the giant "archive" wash; entering it opens the full-screen archive layer.
+  items.push({ id: "archive-node", kind: "archive-node",
+    x: -600, y: 1640, w: 460
   });
-
-  if (grouping === "scatter") {
-    // Archive thumbs — seeded pseudo-random distribution (original layout)
-    let seed = 97;
-    const rand = ()=>{ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-    for (const a of ARCHIVE_GRID){
-      const col = (a.i - 1) % 10;
-      const row = Math.floor((a.i - 1) / 10);
-      const jx = (rand() - 0.5) * 80;
-      const jy = (rand() - 0.5) * 60;
-      const baseX = ARCHIVE_LAYOUT.startX + col * 170 + jx;
-      const baseY = ARCHIVE_LAYOUT.scatterStartY + row * 220 + jy;
-      items.push({ id: "arc-"+a.i, kind: "thumb",
-        x: baseX, y: baseY, w: 120, a
-      });
-    }
-  } else {
-    const { thumbs } = layoutGroupMode(grouping);
-    items.push(...thumbs);
-  }
 
   return items;
 }
@@ -186,10 +114,10 @@ function buildIslands(grouping){
 // driven (and shifts with the `density` tweak), so vertical overlap can't be
 // known from the data. After render we measure each card's real box and nudge
 // overlapping ones apart, keeping every card as close to its authored Notion
-// position as possible. The archive grid, labels and background wash are laid
-// out deliberately, so they're excluded from packing.
-const PACK_EXCLUDE = new Set(["thumb", "group-label", "group-tabs", "cluster-head"]);
-const PACK_FIXED   = new Set(["title", "model"]); // anchors: act as obstacles, never move
+// position as possible. The background "archive" wash is laid out deliberately,
+// so it's excluded from packing.
+const PACK_EXCLUDE = new Set(["cluster-head"]);
+const PACK_FIXED   = new Set(["title", "model", "archive-node"]); // anchors: act as obstacles, never move
 const PACK_GUTTER  = 20;                  // breathing room kept between cards
 
 function boxesOverlap(a, b, g){
@@ -230,23 +158,6 @@ function packBoxes(boxes, gutter){
   }
 }
 
-// The archive (specimen grid + its tab bar) is laid out as one deliberate
-// block. We don't repack it, but it must not be covered by — or pushed under —
-// editorial cards, so we feed it in as one immovable obstacle: the union box of
-// every thumb plus the group-tabs bar. Editorial cards then flow around it.
-function archiveObstacle(islands, measured){
-  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
-  for (const it of islands){
-    if (it.kind !== "thumb" && it.kind !== "group-tabs") continue;
-    const m = measured[it.id];
-    const w = m ? m.w : (it.w || 120), h = m ? m.h : 120;
-    x1 = Math.min(x1, it.x); y1 = Math.min(y1, it.y);
-    x2 = Math.max(x2, it.x + w); y2 = Math.max(y2, it.y + h);
-  }
-  if (x1 === Infinity) return null;
-  return { id: "__archive__", x: x1, y: y1, w: x2 - x1, h: y2 - y1, fixed: true };
-}
-
 // Measure rendered boxes, resolve overlaps, and return id → {x, y} overrides.
 // Deterministic from the authored positions, so it converges in one re-render.
 function usePackedIslands(islands, deps){
@@ -276,8 +187,6 @@ function usePackedIslands(islands, deps){
           fixed: PACK_FIXED.has(it.kind),
         };
       });
-    const archive = archiveObstacle(islands, measured);
-    if (archive) boxes.push(archive);
     packBoxes(boxes, PACK_GUTTER);
     const next = {};
     for (const b of boxes){
@@ -366,7 +275,7 @@ const READER_PATH = [
 // ───────────────────────────────────────────────────────────────────────────
 // Islands
 
-function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
+function Island({ it, viewer, onEnterArchive, pathCurrent, pathIndex }){
   const style = { left: it.x + "px", top: it.y + "px", width: it.w + "px" };
 
   if (it.kind === "title") {
@@ -487,60 +396,21 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
     );
   }
 
-  if (it.kind === "group-label") {
+  if (it.kind === "archive-node") {
     return (
-      <div className="island group-label" style={style} data-id={it.id}>
-        <div className="meta">grouped by · {it.mode}</div>
-        <div className="lbl">{it.label}</div>
-        <div className="cnt">{it.count} specimen{it.count !== 1 ? "s" : ""}</div>
-      </div>
-    );
-  }
-
-  if (it.kind === "group-tabs") {
-    return (
-      <div className="island group-tabs" style={style} data-id={it.id}>
-        <div className="t">arrange archive by</div>
-        <div className="tabs" role="tablist">
-          {GROUP_MODES.map(m => (
-            <button key={m} role="tab"
-              aria-selected={groupingCtl.value === m}
-              className={groupingCtl.value === m ? "on" : ""}
-              onClick={()=> groupingCtl.set(m)}>
-              {MODE_LABEL[m]}
-            </button>
+      <div className="island archive-node" style={style} data-id={it.id}>
+        <div className="head">
+          <div className="k">archive</div>
+          <div className="n">{ARCHIVE_ORDERED.length} specimens · gathered, ongoing</div>
+        </div>
+        <div className="mosaic" aria-hidden="true">
+          {ARCHIVE_PREVIEW.map(a => (
+            <span key={a.i} className="cell">
+              <img loading="lazy" src={archiveSrc(a.i)} alt=""/>
+            </span>
           ))}
         </div>
-      </div>
-    );
-  }
-
-  if (it.kind === "thumb") {
-    const a = it.a;
-    return (
-      <div className="island thumb" style={style} data-id={it.id}>
-        <div className="plate"><Plate n={a.i}/></div>
-        <div className="info">
-          <div className="no">{String(a.i).padStart(3,"0")}</div>
-          <div className="nm">{a.name}</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (it.kind === "spec") {
-    const a = it.a;
-    return (
-      <div className="island spec" style={style} data-id={it.id}>
-        <div className="plate"><Plate n={a.i}/></div>
-        <div className="info">
-          <div className="no">
-            <span>{String(a.i).padStart(3,"0")}</span>
-            <span>{a.y ?? "—"}</span>
-          </div>
-          <h3>{a.name}</h3>
-          <p className="desc">{a.d}</p>
-        </div>
+        <button className="enter" onClick={onEnterArchive}>enter the archive →</button>
       </div>
     );
   }
@@ -563,27 +433,129 @@ function Island({ it, viewer, groupingCtl, pathCurrent, pathIndex }){
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Group label layer — every mode's labels stay mounted at all times. Only
-// the active mode renders opaque; the others stay at opacity 0. Switching
-// modes is then a pure crossfade rather than a DOM mount/unmount.
+// Archive layer — a full-screen browser that takes over from the field. The
+// field shrinks and fades behind it; entering is triggered by the field's
+// archive-node. It carries every grouping mode plus a single-specimen mode.
 
-function GroupLabelLayer({ labels, active }){
-  return labels.map(lbl => {
-    const visible = lbl.mode === active;
-    return (
-      <div key={lbl.id}
-        className="island group-label"
-        style={{
-          left: lbl.x + "px", top: lbl.y + "px", width: lbl.w + "px",
-          opacity: visible ? 1 : 0,
-        }}
-        aria-hidden={!visible}>
-        <div className="meta">grouped by · {MODE_LABEL[lbl.mode] || lbl.mode}</div>
-        <div className="lbl">{lbl.label}</div>
-        <div className="cnt">{lbl.count} specimen{lbl.count !== 1 ? "s" : ""}</div>
+function ArchiveThumb({ a, onOpen }){
+  return (
+    <button className="ax-thumb" onClick={()=> onOpen(a)} title={a.name}>
+      <span className="img"><img loading="lazy" src={archiveSrc(a.i)} alt=""/></span>
+      <span className="meta">
+        <span className="no">{String(a.i).padStart(3,"0")}</span>
+        <span className="nm">{a.name}</span>
+      </span>
+    </button>
+  );
+}
+
+function hostOf(u){ try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } }
+
+function ArchiveLayer({ open, grouping, setGrouping, onClose }){
+  const [view, setView] = React.useState("grid"); // "grid" | "specimen"
+  const [idx, setIdx]   = React.useState(0);
+
+  const openSpec = React.useCallback((a) => {
+    const i = ARCHIVE_ORDERED.findIndex(x => x.i === a.i);
+    setIdx(i < 0 ? 0 : i);
+    setView("specimen");
+  }, []);
+  const nav = React.useCallback((d) => {
+    setIdx(i => (i + d + ARCHIVE_ORDERED.length) % ARCHIVE_ORDERED.length);
+  }, []);
+
+  // Keyboard — only while the layer is open. Esc exits; arrows page the
+  // specimen. The field's own key handler stands down via window.SA_ARCHIVE_OPEN.
+  React.useEffect(()=>{
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") { onClose(); return; }
+      if (view === "specimen") {
+        if (e.key === "ArrowLeft")  { nav(-1); e.preventDefault(); }
+        if (e.key === "ArrowRight") { nav(1);  e.preventDefault(); }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return ()=> window.removeEventListener("keydown", onKey);
+  }, [open, view, nav, onClose]);
+
+  const a = ARCHIVE_ORDERED[idx];
+
+  return (
+    <div className={"archive-layer" + (open ? " open" : "")} aria-hidden={!open}>
+      <button className="ax-close" onClick={onClose} aria-label="exit the archive">×</button>
+
+      <div className="ax-bar">
+        <div className="ax-heading">archive<span>{ARCHIVE_ORDERED.length} specimens</span></div>
+        <div className="ax-tabs" role="tablist">
+          {GROUP_MODES.map(m => (
+            <button key={m} role="tab"
+              aria-selected={view === "grid" && grouping === m}
+              className={view === "grid" && grouping === m ? "on" : ""}
+              onClick={()=> { setGrouping(m); setView("grid"); }}>
+              {MODE_LABEL[m]}
+            </button>
+          ))}
+          <button role="tab"
+            aria-selected={view === "specimen"}
+            className={"spec-tab" + (view === "specimen" ? " on" : "")}
+            onClick={()=> setView("specimen")}>
+            single specimen
+          </button>
+        </div>
       </div>
-    );
-  });
+
+      <div className="ax-body">
+        {view === "grid" ? (
+          grouping === "scatter" ? (
+            <div className="ax-grid">
+              {ARCHIVE_ORDERED.map(a => <ArchiveThumb key={a.i} a={a} onOpen={openSpec}/>)}
+            </div>
+          ) : (
+            <div className="ax-groups">
+              {groupArchive(grouping).map(([key, list]) => (
+                <section className="ax-group" key={key}>
+                  <header className="ax-group-h">
+                    <span className="gmeta">grouped by · {MODE_LABEL[grouping]}</span>
+                    <span className="glbl">{key}</span>
+                    <span className="gcnt">{list.length} specimen{list.length !== 1 ? "s" : ""}</span>
+                  </header>
+                  <div className="ax-grid">
+                    {list.map(a => <ArchiveThumb key={a.i} a={a} onOpen={openSpec}/>)}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="ax-spec">
+            <button className="ax-spec-nav prev" onClick={()=> nav(-1)} aria-label="previous specimen">‹</button>
+            <div className="ax-spec-stage">
+              <div className="ax-spec-img"><img src={archiveSrc(a.i)} alt={a.name}/></div>
+              <div className="ax-spec-info">
+                <div className="count">{String(idx + 1).padStart(2,"0")} / {ARCHIVE_ORDERED.length}</div>
+                <div className="no">{String(a.i).padStart(3,"0")}</div>
+                <h3>{a.name}</h3>
+                <div className="facets">
+                  <span>{a.y ?? "—"}</span><span>{a.k}</span><span>{a.loc}</span>
+                </div>
+                <p className="desc">{a.d}</p>
+                {a.notion && a.notion.def && <p className="def">{a.notion.def}</p>}
+                {a.notion && Array.isArray(a.notion.urls) && a.notion.urls.length > 0 && (
+                  <ul className="links">
+                    {a.notion.urls.map((u, i) => (
+                      <li key={i}><a href={u} target="_blank" rel="noopener noreferrer">{hostOf(u)} ↗</a></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+            <button className="ax-spec-nav next" onClick={()=> nav(1)} aria-label="next specimen">›</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -598,8 +570,7 @@ function Threads({ islands, threads, show }){
     const hByKind = {
       title: 360, prose: 180, pullquote: 200, whisper: 80, note: 80,
       field: 340, gloss: 130, method: 280, bib: 340, colophon: 160,
-      "cluster-head": 280, thumb: 170, spec: 300, model: 345,
-      "group-label": 100, "group-tabs": 64
+      "cluster-head": 280, model: 345, "archive-node": 360,
     };
     const h = hByKind[it.kind] || 160;
     const w = it.w || 240;
@@ -706,6 +677,7 @@ function Viewport({ children, onPose }){
       apply();
     };
     const onKey = (e) => {
+      if (window.SA_ARCHIVE_OPEN) return;
       const s = stateRef.current;
       const step = 120;
       if (e.key === "ArrowLeft")  { s.x += step; apply(); }
@@ -761,20 +733,28 @@ function App(){
   const [groupPicker, setGroupPicker] = React.useState(false);
   const [pathMode, setPathMode] = React.useState(false);
   const [pathStep, setPathStep] = React.useState(0);
+  const [archiveOpen, setArchiveOpen] = React.useState(false);
 
+  // The archive layer's arrangement mode is the same `grouping` tweak the
+  // hidden picker drives, so both stay in lockstep.
   const grouping = GROUP_MODES.includes(t.grouping) ? t.grouping : "scatter";
-  const baseIslands = React.useMemo(()=> buildIslands(grouping), [grouping]);
+  const baseIslands = React.useMemo(()=> buildIslands(), []);
   // Nudge overlapping cards apart using their real measured heights; re-runs
-  // when the layout (grouping) or card sizing (density) changes.
+  // when card sizing (density) changes.
   const islands = usePackedIslands(baseIslands, [baseIslands, t.density]);
-  const groupingCtl = React.useMemo(()=> ({
-    value: grouping,
-    set: (m) => setTweak("grouping", m),
-  }), [grouping, setTweak]);
 
-  // Hidden grouping picker — press `g` to toggle, Esc to close.
+  // Shrink + fade the field behind the archive layer, and tell the field's
+  // key/pointer handlers to stand down while the archive is open.
+  React.useEffect(()=>{
+    document.body.classList.toggle("sa-archive-open", archiveOpen);
+    window.SA_ARCHIVE_OPEN = archiveOpen;
+  }, [archiveOpen]);
+
+  // Hidden grouping picker — press `g` to toggle, Esc to close. Inert while
+  // the archive layer owns the keyboard.
   React.useEffect(()=>{
     const onKey = (e) => {
+      if (window.SA_ARCHIVE_OPEN) return;
       const tag = e.target && e.target.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
       if (e.key === "g" || e.key === "G") {
@@ -787,9 +767,6 @@ function App(){
     window.addEventListener("keydown", onKey);
     return ()=> window.removeEventListener("keydown", onKey);
   }, []);
-  // Drop dynamic-archive threads whose endpoint thumbs no longer share the
-  // featured layout; the curated THREADS list addresses sp-N + arc-head only,
-  // both of which stay put, so the list itself is grouping-independent.
   const threads = THREADS;
 
   function goToIsland(id) {
@@ -823,8 +800,7 @@ function App(){
   const jumps = [
     { label: "title",    x: 0,    y: 0 },
     { label: "essay",    x: 1400, y: 120 },
-    { label: "specimen", x: 720,  y: 420 },
-    { label: "archive",  x: 360,  y: 2200 },
+    { label: "archive",  x: -370, y: 1740 },
     { label: "field",    x: -400, y: 500 },
     { label: "sources",  x: -1280, y: -80 },
   ];
@@ -837,11 +813,17 @@ function App(){
         <Threads islands={islands} threads={threads} show={t.threads}/>
         {islands.map(it => {
           const pathIdx = pathMode ? READER_PATH.indexOf(it.id) : -1;
-          return <Island key={it.id} it={it} viewer={viewer} groupingCtl={groupingCtl}
+          return <Island key={it.id} it={it} viewer={viewer} onEnterArchive={()=> setArchiveOpen(true)}
             pathCurrent={pathIdx === pathStep} pathIndex={pathIdx >= 0 ? pathIdx + 1 : 0}/>;
         })}
-        <GroupLabelLayer labels={ALL_GROUP_LABELS} active={grouping}/>
       </Viewport>
+
+      <ArchiveLayer
+        open={archiveOpen}
+        grouping={grouping}
+        setGrouping={(m)=> setTweak("grouping", m)}
+        onClose={()=> setArchiveOpen(false)}
+      />
 
 
       <div className="chrome">
